@@ -6,18 +6,7 @@ The project focuses on a clear object-oriented architecture rather than a comple
 
 The system is organized into three layers, as shown below:
 
-```mermaid
-flowchart TD
-    subgraph Strategy["Strategy Layer (e.g. BreedStrategy, ActivityStrategy, ...)"]
-    end
-    subgraph Service["Service Layer (e.g. MatchingService, ExplanationService, ...)"]
-    end
-    subgraph Domain["Domain Layer (e.g. Animal, Adopter, ...)"]
-    end
-
-    Service -->|uses rules from| Strategy
-    Service -->|operates on| Domain
-```
+![Layer Diagram](diagram-layer.png)
 
 The domain layer represents the core entities and system state:
 
@@ -42,85 +31,7 @@ This design demonstrates abstraction, composition, and extensibility, since new 
 
 The class structure is outlined below **(proposal only, subject to change)**:
 
-```mermaid
-classDiagram
-    class Animal {
-        +String name
-        +String breed
-        +int age
-        +ActivityLevel activityLevel
-    }
-    class Dog
-    class Cat
-    class Rabbit
-    Animal <|-- Dog
-    Animal <|-- Cat
-    Animal <|-- Rabbit
-
-    class Shelter {
-        +String name
-        +String location
-        +List~Animal~ animals
-        +addAnimal()
-        +removeAnimal()
-    }
-
-    class Adopter {
-        +String name
-        +String livingSpace
-        +String dailySchedule
-        +String personalNotes
-        +AdopterPreferences preferences
-    }
-
-    class AdoptionRequest {
-        +Adopter adopter
-        +Animal animal
-        +RequestStatus status
-        +approve()
-        +reject()
-    }
-
-    class TransferRequest {
-        +Animal animal
-        +Shelter from
-        +Shelter to
-        +RequestStatus status
-    }
-
-    Shelter "1" o-- "many" Animal
-    Adopter "1" --> "many" AdoptionRequest
-    AdoptionRequest --> Animal
-    TransferRequest --> Animal
-    TransferRequest --> Shelter
-
-    class MatchingStrategy {
-        <<interface>>
-        +score(Adopter, Animal) int
-    }
-    class BreedStrategy
-    class ActivityStrategy
-    class LifestyleStrategy
-    MatchingStrategy <|.. BreedStrategy
-    MatchingStrategy <|.. ActivityStrategy
-    MatchingStrategy <|.. LifestyleStrategy
-
-    class ExplanationService {
-        <<interface>>
-        +explain(List~MatchResult~, Adopter) String
-    }
-    class AIExplanationService
-    class MockExplanationService
-    ExplanationService <|.. AIExplanationService
-    ExplanationService <|.. MockExplanationService
-
-    class MatchingService {
-        +List~MatchingStrategy~ strategies
-        +match(Adopter) List~MatchResult~
-    }
-    MatchingService --> MatchingStrategy
-    MatchingService --> ExplanationService
-```
+![Class Diagram](diagram-class.png)
 
 The system's core features include animal management, multi-shelter coordination, adoption and transfer workflows, vaccination management, recommendation matching, event notifications, and AI-assisted match explanation.
 In the matching workflow, MatchingService first computes structured scores using the strategy pattern; the resulting ranked list is then passed to ExplanationService, which produces a human-readable narrative for each top match.
