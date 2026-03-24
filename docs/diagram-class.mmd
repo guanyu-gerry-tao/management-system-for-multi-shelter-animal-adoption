@@ -1,0 +1,77 @@
+classDiagram
+    class Animal {
+        +String name
+        +String breed
+        +int age
+        +ActivityLevel activityLevel
+    }
+    class Dog
+    class Cat
+    class Rabbit
+    Animal <|-- Dog
+    Animal <|-- Cat
+    Animal <|-- Rabbit
+
+    class Shelter {
+        +String name
+        +String location
+        +List~Animal~ animals
+        +addAnimal()
+        +removeAnimal()
+    }
+
+    class Adopter {
+        +String name
+        +String livingSpace
+        +String dailySchedule
+        +String personalNotes
+        +AdopterPreferences preferences
+    }
+
+    class AdoptionRequest {
+        +Adopter adopter
+        +Animal animal
+        +RequestStatus status
+        +approve()
+        +reject()
+    }
+
+    class TransferRequest {
+        +Animal animal
+        +Shelter from
+        +Shelter to
+        +RequestStatus status
+    }
+
+    Shelter "1" o-- "many" Animal
+    Adopter "1" --> "many" AdoptionRequest
+    AdoptionRequest --> Animal
+    TransferRequest --> Animal
+    TransferRequest --> Shelter
+
+    class MatchingStrategy {
+        <<interface>>
+        +score(Adopter, Animal) int
+    }
+    class BreedStrategy
+    class ActivityStrategy
+    class LifestyleStrategy
+    MatchingStrategy <|.. BreedStrategy
+    MatchingStrategy <|.. ActivityStrategy
+    MatchingStrategy <|.. LifestyleStrategy
+
+    class ExplanationService {
+        <<interface>>
+        +explain(List~MatchResult~, Adopter) String
+    }
+    class AIExplanationService
+    class MockExplanationService
+    ExplanationService <|.. AIExplanationService
+    ExplanationService <|.. MockExplanationService
+
+    class MatchingService {
+        +List~MatchingStrategy~ strategies
+        +match(Adopter) List~MatchResult~
+    }
+    MatchingService --> MatchingStrategy
+    MatchingService --> ExplanationService

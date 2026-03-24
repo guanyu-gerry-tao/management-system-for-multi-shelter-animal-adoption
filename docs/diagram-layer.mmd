@@ -1,0 +1,10 @@
+flowchart TD
+    subgraph Strategy["Strategy Layer (e.g. BreedStrategy, ActivityStrategy, ...)"]
+    end
+    subgraph Service["Service Layer (e.g. MatchingService, ExplanationService, ...)"]
+    end
+    subgraph Domain["Domain Layer (e.g. Animal, Adopter, ...)"]
+    end
+
+    Service -->|uses rules from| Strategy
+    Service -->|operates on| Domain
