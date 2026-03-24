@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'edu.northeastern.cs5004'
+group = 'shelter'
 version = '1.0-SNAPSHOT'
 
 repositories {
