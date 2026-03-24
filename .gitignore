@@ -45,6 +45,4 @@ bin/
 .DS_Store
 
 ### AI ###
-CLAUDE.md
 CLAUDE.local.md
-.claude/
