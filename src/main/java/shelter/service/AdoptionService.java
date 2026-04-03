@@ -40,6 +40,14 @@ public interface AdoptionService {
     void reject(AdoptionRequest request);
 
     /**
+     * Cancels a pending adoption request at the adopter's request.
+     * Throws an exception if the request is not in a pending state.
+     *
+     * @param request the adoption request to cancel
+     */
+    void cancel(AdoptionRequest request);
+
+    /**
      * Returns all adoption requests submitted by the given adopter.
      * Returns an empty list if the adopter has no requests on record.
      *

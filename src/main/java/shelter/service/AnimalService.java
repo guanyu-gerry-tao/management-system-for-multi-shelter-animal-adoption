@@ -66,6 +66,15 @@ public interface AnimalService {
     List<Animal> adoptedAfter(LocalDate date);
 
     /**
+     * Returns the animal with the given ID.
+     * Throws an exception if no animal with that ID is found.
+     *
+     * @param id the unique identifier of the animal
+     * @return the matching animal
+     */
+    Animal findById(String id);
+
+    /**
      * Returns all animals adopted by the given adopter.
      * Returns an empty list if the adopter has not adopted any animals.
      *
