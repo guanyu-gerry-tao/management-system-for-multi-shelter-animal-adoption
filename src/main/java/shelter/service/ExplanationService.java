@@ -14,6 +14,8 @@ public interface ExplanationService {
     /**
      * Produces a structured explanation of the top match results, including rationale,
      * confidence assessment, and personalized advice derived from the MatchResult data.
+     * The returned ExplanationResult breaks the explanation into independent components
+     * that callers may display or log separately.
      *
      * @param results the ranked list of match results to explain
      * @return an ExplanationResult containing structured components of the explanation

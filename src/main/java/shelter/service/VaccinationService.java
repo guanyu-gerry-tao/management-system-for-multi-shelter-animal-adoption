@@ -1,6 +1,7 @@
 package shelter.service;
 
 import shelter.domain.Animal;
+import shelter.domain.VaccinationRecord;
 import shelter.domain.VaccineType;
 import shelter.service.model.OverdueVaccination;
 
@@ -33,11 +34,20 @@ public interface VaccinationService {
     List<OverdueVaccination> getOverdueVaccinations(Animal animal);
 
     /**
+     * Returns all vaccination records for the given animal.
+     * Returns an empty list if no vaccinations have been recorded for the animal.
+     *
+     * @param animal the animal to query
+     * @return a list of vaccination records for the animal
+     */
+    List<VaccinationRecord> getVaccinationHistory(Animal animal);
+
+    /**
      * Returns the vaccination record for the given unique record ID.
      * Throws an exception if no record with that ID is found.
      *
      * @param id the unique identifier of the vaccination record
      * @return the matching vaccination record
      */
-    shelter.domain.VaccinationRecord findById(String id);
+    VaccinationRecord findById(String id);
 }

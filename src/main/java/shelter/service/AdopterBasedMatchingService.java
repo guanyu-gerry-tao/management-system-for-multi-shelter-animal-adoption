@@ -15,6 +15,8 @@ public interface AdopterBasedMatchingService {
     /**
      * Evaluates each animal in the provided list against the adopter's preferences and returns
      * a ranked list of match results ordered from highest to lowest score.
+     * Animals with no compatibility with the adopter's preferences may still appear in the result
+     * with a score of zero.
      *
      * @param adopter the adopter to match against
      * @param animals the pool of animals to evaluate

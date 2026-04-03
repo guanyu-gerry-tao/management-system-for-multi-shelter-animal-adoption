@@ -40,6 +40,14 @@ public interface TransferService {
     void reject(TransferRequest request);
 
     /**
+     * Dismisses a pending transfer request without approving or rejecting it.
+     * Throws an exception if the request is not in a pending state.
+     *
+     * @param request the transfer request to dismiss
+     */
+    void dismiss(TransferRequest request);
+
+    /**
      * Returns all pending transfer requests involving the given shelter, either as source or destination.
      * Returns an empty list if the shelter has no pending transfer requests.
      *

@@ -35,6 +35,15 @@ public interface ShelterService {
     void remove(Shelter shelter);
 
     /**
+     * Returns the shelter with the given ID.
+     * Throws an exception if no shelter with that ID is found.
+     *
+     * @param id the unique identifier of the shelter
+     * @return the matching shelter
+     */
+    Shelter findById(String id);
+
+    /**
      * Returns all shelters currently registered in the system.
      * Returns an empty list if no shelters are registered.
      *
