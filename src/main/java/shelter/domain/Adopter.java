@@ -1,5 +1,8 @@
 package shelter.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -15,6 +18,7 @@ public class Adopter {
     private final DailySchedule dailySchedule;
     private final String personalNotes;
     private final AdopterPreferences preferences;
+    private final List<String> adoptedAnimalIds;
 
     /**
      * Constructs a new Adopter with the given personal information and preferences.
@@ -48,6 +52,7 @@ public class Adopter {
         this.dailySchedule = dailySchedule;
         this.personalNotes = personalNotes;
         this.preferences = preferences;
+        this.adoptedAnimalIds = new ArrayList<>();
     }
 
     /**
@@ -106,5 +111,29 @@ public class Adopter {
      */
     public AdopterPreferences getPreferences() {
         return preferences;
+    }
+
+    /**
+     * Returns an unmodifiable list of IDs of animals this adopter has adopted.
+     * Returns an empty list if the adopter has not yet adopted any animals.
+     *
+     * @return an unmodifiable list of adopted animal ID strings
+     */
+    public List<String> getAdoptedAnimalIds() {
+        return Collections.unmodifiableList(adoptedAnimalIds);
+    }
+
+    /**
+     * Records that this adopter has adopted an animal with the given ID.
+     * Typically called by {@code AdoptionService} when an adoption request is approved.
+     *
+     * @param animalId the ID of the adopted animal; must not be null or blank
+     * @throws IllegalArgumentException if {@code animalId} is null or blank
+     */
+    public void addAdoptedAnimalId(String animalId) {
+        if (animalId == null || animalId.isBlank()) {
+            throw new IllegalArgumentException("Animal ID must not be null or blank.");
+        }
+        adoptedAnimalIds.add(animalId);
     }
 }

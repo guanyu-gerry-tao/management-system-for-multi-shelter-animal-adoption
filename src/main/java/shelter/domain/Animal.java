@@ -15,10 +15,12 @@ public abstract class Animal {
     private final int age;
     private final ActivityLevel activityLevel;
     private boolean vaccinated;
+    private String adopterId;
 
     /**
      * Constructs a new Animal with the given core attributes.
      * All parameters are required and validated; age must be non-negative.
+     * The animal is initialized as available for adoption ({@code adopterId} is null).
      *
      * @param name          the animal's name; must not be null or blank
      * @param breed         the animal's breed; must not be null or blank
@@ -47,6 +49,7 @@ public abstract class Animal {
         this.age = age;
         this.activityLevel = activityLevel;
         this.vaccinated = vaccinated;
+        this.adopterId = null;
     }
 
     /**
@@ -123,6 +126,39 @@ public abstract class Animal {
     }
 
     /**
+     * Returns whether this animal is currently available for adoption.
+     * An animal is available if it has not yet been adopted by anyone.
+     *
+     * @return {@code true} if no adopter has claimed this animal, {@code false} otherwise
+     */
+    public boolean isAvailable() {
+        return adopterId == null;
+    }
+
+    /**
+     * Returns the ID of the adopter who adopted this animal, or {@code null} if not yet adopted.
+     *
+     * @return the adopter's ID string, or {@code null}
+     */
+    public String getAdopterId() {
+        return adopterId;
+    }
+
+    /**
+     * Records that this animal has been adopted by the given adopter.
+     * Typically called by {@code AdoptionService} when an adoption request is approved.
+     *
+     * @param adopterId the ID of the adopter; must not be null or blank
+     * @throws IllegalArgumentException if {@code adopterId} is null or blank
+     */
+    public void setAdopterId(String adopterId) {
+        if (adopterId == null || adopterId.isBlank()) {
+            throw new IllegalArgumentException("Adopter ID must not be null or blank.");
+        }
+        this.adopterId = adopterId;
+    }
+
+    /**
      * Returns a string representation of this animal including its species, name, breed, and age.
      *
      * @return a human-readable description of this animal
@@ -131,6 +167,7 @@ public abstract class Animal {
     public String toString() {
         return getSpecies() + "[id=" + id + ", name=" + name + ", breed=" + breed
                 + ", age=" + age + ", activity=" + activityLevel
-                + ", vaccinated=" + vaccinated + "]";
+                + ", vaccinated=" + vaccinated
+                + ", adopterId=" + (adopterId != null ? adopterId : "none") + "]";
     }
 }
