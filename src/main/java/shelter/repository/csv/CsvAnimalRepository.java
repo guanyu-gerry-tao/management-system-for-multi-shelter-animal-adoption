@@ -68,7 +68,7 @@ public class CsvAnimalRepository implements AnimalRepository {
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvAnimalRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvAnimalRepository: " + e.getMessage(), e);
         }
     }
 
@@ -87,7 +87,7 @@ public class CsvAnimalRepository implements AnimalRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load animals from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load animals from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -183,7 +183,7 @@ public class CsvAnimalRepository implements AnimalRepository {
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush animals to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush animals to CSV: " + e.getMessage(), e);
         }
     }
 

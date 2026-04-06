@@ -65,7 +65,7 @@ public class CsvAdopterRepository implements AdopterRepository {
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvAdopterRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvAdopterRepository: " + e.getMessage(), e);
         }
     }
 
@@ -84,7 +84,7 @@ public class CsvAdopterRepository implements AdopterRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load adopters from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load adopters from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -141,7 +141,7 @@ public class CsvAdopterRepository implements AdopterRepository {
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush adopters to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush adopters to CSV: " + e.getMessage(), e);
         }
     }
 

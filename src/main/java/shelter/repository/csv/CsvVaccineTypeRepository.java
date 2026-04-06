@@ -58,7 +58,7 @@ public class CsvVaccineTypeRepository implements VaccineTypeRepository {
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvVaccineTypeRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvVaccineTypeRepository: " + e.getMessage(), e);
         }
     }
 
@@ -77,7 +77,7 @@ public class CsvVaccineTypeRepository implements VaccineTypeRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load vaccine types from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load vaccine types from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -110,7 +110,7 @@ public class CsvVaccineTypeRepository implements VaccineTypeRepository {
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush vaccine types to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush vaccine types to CSV: " + e.getMessage(), e);
         }
     }
 

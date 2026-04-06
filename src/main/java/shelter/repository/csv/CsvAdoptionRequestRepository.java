@@ -78,7 +78,7 @@ public class CsvAdoptionRequestRepository implements AdoptionRequestRepository {
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvAdoptionRequestRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvAdoptionRequestRepository: " + e.getMessage(), e);
         }
     }
 
@@ -100,7 +100,7 @@ public class CsvAdoptionRequestRepository implements AdoptionRequestRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load adoption requests from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load adoption requests from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -144,7 +144,7 @@ public class CsvAdoptionRequestRepository implements AdoptionRequestRepository {
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush adoption requests to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush adoption requests to CSV: " + e.getMessage(), e);
         }
     }
 

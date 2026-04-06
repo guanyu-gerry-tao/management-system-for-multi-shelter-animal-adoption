@@ -116,7 +116,7 @@ public class AdoptionRequest {
      */
     private void requirePending(String action) {
         if (status != RequestStatus.PENDING) {
-            throw new IllegalStateException(
+            throw new shelter.exception.InvalidRequestStatusException(
                     "Cannot " + action + " a request that is already " + status + ".");
         }
     }

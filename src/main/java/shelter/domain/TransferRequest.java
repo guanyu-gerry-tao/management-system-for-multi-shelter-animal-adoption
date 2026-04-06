@@ -136,7 +136,7 @@ public class TransferRequest {
      */
     private void requirePending(String action) {
         if (status != RequestStatus.PENDING) {
-            throw new IllegalStateException(
+            throw new shelter.exception.InvalidRequestStatusException(
                     "Cannot " + action + " a transfer request that is already " + status + ".");
         }
     }

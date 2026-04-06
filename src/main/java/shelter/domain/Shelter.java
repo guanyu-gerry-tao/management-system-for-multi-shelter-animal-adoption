@@ -92,7 +92,7 @@ public class Shelter {
                     "Animal with ID " + animal.getId() + " is already in this shelter.");
         }
         if (animals.size() >= capacity) {
-            throw new IllegalStateException(
+            throw new shelter.exception.ShelterAtCapacityException(
                     "Shelter \"" + name + "\" is at full capacity (" + capacity + ").");
         }
         animals.add(animal);
