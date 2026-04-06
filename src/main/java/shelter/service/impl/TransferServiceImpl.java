@@ -9,6 +9,7 @@ import shelter.repository.ShelterRepository;
 import shelter.repository.TransferRequestRepository;
 import shelter.exception.AnimalNotInShelterException;
 import shelter.exception.ShelterAtCapacityException;
+import shelter.service.AuditService;
 import shelter.service.TransferService;
 
 import java.util.List;
@@ -24,20 +25,24 @@ public class TransferServiceImpl implements TransferService {
     private final TransferRequestRepository requestRepository;
     private final AnimalRepository animalRepository;
     private final ShelterRepository shelterRepository;
+    private final AuditService<TransferRequest> auditService;
 
     /**
-     * Constructs a new {@code TransferServiceImpl} with the required repositories.
-     * All three are needed: requests track workflow state, the animal carries the
+     * Constructs a new {@code TransferServiceImpl} with the required repositories and audit service.
+     * All three repositories are needed: requests track workflow state, the animal carries the
      * authoritative shelter reference, and both shelters maintain their in-memory animal lists.
+     * The audit service records every state-changing operation for traceability.
      *
      * @param requestRepository the repository for transfer request persistence; must not be null
      * @param animalRepository  the repository for animal record persistence; must not be null
      * @param shelterRepository the repository for shelter record persistence; must not be null
-     * @throws IllegalArgumentException if any repository is null
+     * @param auditService      the service used to log transfer operations; must not be null
+     * @throws IllegalArgumentException if any argument is null
      */
     public TransferServiceImpl(TransferRequestRepository requestRepository,
                                AnimalRepository animalRepository,
-                               ShelterRepository shelterRepository) {
+                               ShelterRepository shelterRepository,
+                               AuditService<TransferRequest> auditService) {
         if (requestRepository == null) {
             throw new IllegalArgumentException("TransferRequestRepository must not be null.");
         }
@@ -47,9 +52,13 @@ public class TransferServiceImpl implements TransferService {
         if (shelterRepository == null) {
             throw new IllegalArgumentException("ShelterRepository must not be null.");
         }
+        if (auditService == null) {
+            throw new IllegalArgumentException("AuditService must not be null.");
+        }
         this.requestRepository = requestRepository;
         this.animalRepository = animalRepository;
         this.shelterRepository = shelterRepository;
+        this.auditService = auditService;
     }
 
     /**
@@ -82,6 +91,7 @@ public class TransferServiceImpl implements TransferService {
         // Create and persist the PENDING request
         TransferRequest request = new TransferRequest(animal, from, to);
         requestRepository.save(request);
+        auditService.log("submitted transfer request", request);
         return request;
     }
 
@@ -113,6 +123,7 @@ public class TransferServiceImpl implements TransferService {
         shelterRepository.save(from);
         shelterRepository.save(to);
         requestRepository.save(request);
+        auditService.log("approved transfer request", request);
     }
 
     /**
@@ -126,6 +137,7 @@ public class TransferServiceImpl implements TransferService {
         // Animal does not move; only the request status changes
         request.reject();
         requestRepository.save(request);
+        auditService.log("rejected transfer request", request);
     }
 
     /**
@@ -140,6 +152,7 @@ public class TransferServiceImpl implements TransferService {
         // "dismiss" is the service-level term; "cancel" is the domain-level state name
         request.cancel();
         requestRepository.save(request);
+        auditService.log("dismissed transfer request", request);
     }
 
     /**
