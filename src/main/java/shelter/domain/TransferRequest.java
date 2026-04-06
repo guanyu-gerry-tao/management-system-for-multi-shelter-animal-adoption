@@ -19,6 +19,51 @@ public class TransferRequest {
     private RequestStatus status;
 
     /**
+     * Reconstruction constructor for deserializing a TransferRequest from persistent storage.
+     * This constructor accepts an explicit {@code id}, pre-existing status, and request timestamp
+     * so that the full transfer state can be restored from CSV data without modification.
+     *
+     * @param id          the pre-existing unique identifier; must not be null or blank
+     * @param animal      the animal to be transferred; must not be null
+     * @param from        the source shelter; must not be null
+     * @param to          the destination shelter; must not be null and must differ from {@code from}
+     * @param status      the current status of the request; must not be null
+     * @param requestedAt the original timestamp when the request was submitted; must not be null
+     * @throws IllegalArgumentException if any parameter is null, {@code id} is blank, or shelters
+     *                                  are the same
+     */
+    public TransferRequest(String id, Animal animal, Shelter from, Shelter to,
+                           RequestStatus status, LocalDateTime requestedAt) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("TransferRequest ID must not be null or blank.");
+        }
+        if (animal == null) {
+            throw new IllegalArgumentException("Animal must not be null.");
+        }
+        if (from == null) {
+            throw new IllegalArgumentException("Source shelter must not be null.");
+        }
+        if (to == null) {
+            throw new IllegalArgumentException("Destination shelter must not be null.");
+        }
+        if (from.getId().equals(to.getId())) {
+            throw new IllegalArgumentException("Source and destination shelters must be different.");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null.");
+        }
+        if (requestedAt == null) {
+            throw new IllegalArgumentException("RequestedAt must not be null.");
+        }
+        this.id = id;
+        this.animal = animal;
+        this.from = from;
+        this.to = to;
+        this.status = status;
+        this.requestedAt = requestedAt;
+    }
+
+    /**
      * Constructs a new TransferRequest in {@link RequestStatus#PENDING} status.
      * All parameters are required, and the source and destination shelters must differ.
      *

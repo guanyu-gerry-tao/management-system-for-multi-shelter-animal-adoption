@@ -16,6 +16,50 @@ public abstract class Animal {
     private final ActivityLevel activityLevel;
     private boolean vaccinated;
     private String adopterId;
+    private String shelterId;
+
+    /**
+     * Reconstruction constructor for deserializing an Animal from persistent storage.
+     * This constructor accepts an explicit {@code id} so that the original identifier
+     * is preserved when reloading from CSV or other external sources.
+     *
+     * @param id            the pre-existing unique identifier; must not be null or blank
+     * @param name          the animal's name; must not be null or blank
+     * @param breed         the animal's breed; must not be null or blank
+     * @param age           the animal's age in years; must be non-negative
+     * @param activityLevel the animal's activity level; must not be null
+     * @param vaccinated    whether the animal has been vaccinated
+     * @param adopterId     the ID of the adopter who adopted this animal, or {@code null} if available
+     * @param shelterId     the ID of the shelter this animal belongs to, or {@code null} if unassigned
+     * @throws IllegalArgumentException if any required parameter is null, blank, or invalid
+     */
+    protected Animal(String id, String name, String breed, int age,
+                     ActivityLevel activityLevel, boolean vaccinated,
+                     String adopterId, String shelterId) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Animal ID must not be null or blank.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Animal name must not be null or blank.");
+        }
+        if (breed == null || breed.isBlank()) {
+            throw new IllegalArgumentException("Animal breed must not be null or blank.");
+        }
+        if (age < 0) {
+            throw new IllegalArgumentException("Animal age must be non-negative.");
+        }
+        if (activityLevel == null) {
+            throw new IllegalArgumentException("Activity level must not be null.");
+        }
+        this.id = id;
+        this.name = name;
+        this.breed = breed;
+        this.age = age;
+        this.activityLevel = activityLevel;
+        this.vaccinated = vaccinated;
+        this.adopterId = adopterId;
+        this.shelterId = shelterId;
+    }
 
     /**
      * Constructs a new Animal with the given core attributes.
@@ -53,12 +97,12 @@ public abstract class Animal {
     }
 
     /**
-     * Returns the species name of this animal (e.g., "Dog", "Cat", "Rabbit").
-     * Each concrete subclass must provide its own immutable species identifier.
+     * Returns the species of this animal.
+     * Each concrete subclass must return its own immutable {@link Species} constant.
      *
-     * @return the species name as a non-null, non-blank string
+     * @return the {@link Species} of this animal
      */
-    public abstract String getSpecies();
+    public abstract Species getSpecies();
 
     /**
      * Returns the unique identifier of this animal.
@@ -142,6 +186,30 @@ public abstract class Animal {
      */
     public String getAdopterId() {
         return adopterId;
+    }
+
+    /**
+     * Returns the ID of the shelter this animal currently belongs to, or {@code null} if unassigned.
+     * This field is the persistent reference used to associate an animal with its shelter.
+     *
+     * @return the shelter's ID string, or {@code null}
+     */
+    public String getShelterId() {
+        return shelterId;
+    }
+
+    /**
+     * Assigns this animal to the shelter with the given ID.
+     * Typically called by {@code AnimalService} when an animal is admitted or transferred.
+     *
+     * @param shelterId the ID of the shelter; must not be null or blank
+     * @throws IllegalArgumentException if {@code shelterId} is null or blank
+     */
+    public void setShelterId(String shelterId) {
+        if (shelterId == null || shelterId.isBlank()) {
+            throw new IllegalArgumentException("Shelter ID must not be null or blank.");
+        }
+        this.shelterId = shelterId;
     }
 
     /**

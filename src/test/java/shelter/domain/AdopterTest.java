@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AdopterTest {
 
     private AdopterPreferences defaultPrefs() {
-        return new AdopterPreferences("Dog", "Labrador", ActivityLevel.HIGH, 1, 5);
+        return new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, 1, 5);
     }
 
     // -------------------------------------------------------------------------
@@ -94,9 +94,9 @@ class AdopterTest {
 
     @Test
     void adopterPreferences_storesAllFields() {
-        AdopterPreferences prefs = new AdopterPreferences("Cat", "Persian",
+        AdopterPreferences prefs = new AdopterPreferences(Species.CAT, "Persian",
                 ActivityLevel.LOW, 0, 8);
-        assertEquals("Cat", prefs.getPreferredSpecies());
+        assertEquals(Species.CAT, prefs.getPreferredSpecies());
         assertEquals("Persian", prefs.getPreferredBreed());
         assertEquals(ActivityLevel.LOW, prefs.getPreferredActivityLevel());
         assertEquals(0, prefs.getMinAge());
@@ -125,12 +125,12 @@ class AdopterTest {
     @Test
     void adopterPreferences_throwsIllegalArgumentException_whenMinAgeIsNegative() {
         assertThrows(IllegalArgumentException.class, () ->
-                new AdopterPreferences("Dog", "Labrador", ActivityLevel.HIGH, -1, 5));
+                new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, -1, 5));
     }
 
     @Test
     void adopterPreferences_throwsIllegalArgumentException_whenMaxAgeLessThanMinAge() {
         assertThrows(IllegalArgumentException.class, () ->
-                new AdopterPreferences("Dog", "Labrador", ActivityLevel.HIGH, 5, 3));
+                new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, 5, 3));
     }
 }

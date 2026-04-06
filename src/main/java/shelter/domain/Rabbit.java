@@ -22,6 +22,31 @@ public class Rabbit extends Animal {
     private final FurLength furLength;
 
     /**
+     * Reconstruction constructor for deserializing a Rabbit from persistent storage.
+     * This constructor preserves the original {@code id} and all fields including
+     * the fur length, allowing exact round-trip restore from CSV data.
+     *
+     * @param id            the pre-existing unique identifier; must not be null or blank
+     * @param name          the rabbit's name; must not be null or blank
+     * @param breed         the rabbit's breed; must not be null or blank
+     * @param age           the rabbit's age in years; must be non-negative
+     * @param activityLevel the rabbit's activity level; must not be null
+     * @param vaccinated    whether the rabbit has been vaccinated
+     * @param adopterId     the ID of the adopter, or {@code null} if not adopted
+     * @param shelterId     the ID of the shelter, or {@code null} if unassigned
+     * @param furLength     the rabbit's fur length; must not be null
+     * @throws IllegalArgumentException if furLength is null or any {@link Animal} parameter is invalid
+     */
+    public Rabbit(String id, String name, String breed, int age, ActivityLevel activityLevel,
+                  boolean vaccinated, String adopterId, String shelterId, FurLength furLength) {
+        super(id, name, breed, age, activityLevel, vaccinated, adopterId, shelterId);
+        if (furLength == null) {
+            throw new IllegalArgumentException("Rabbit fur length must not be null.");
+        }
+        this.furLength = furLength;
+    }
+
+    /**
      * Constructs a new Rabbit with the given attributes.
      * All parameters are required and validated at construction time.
      *
@@ -46,8 +71,8 @@ public class Rabbit extends Animal {
      * {@inheritDoc}
      */
     @Override
-    public String getSpecies() {
-        return "Rabbit";
+    public Species getSpecies() {
+        return Species.RABBIT;
     }
 
     /**

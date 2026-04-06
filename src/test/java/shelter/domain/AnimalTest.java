@@ -24,7 +24,7 @@ class AnimalTest {
         assertTrue(dog.isVaccinated());
         assertEquals(Dog.Size.LARGE, dog.getSize());
         assertFalse(dog.isNeutered());
-        assertEquals("Dog", dog.getSpecies());
+        assertEquals(Species.DOG, dog.getSpecies());
         assertNotNull(dog.getId());
     }
 
@@ -102,7 +102,7 @@ class AnimalTest {
     @Test
     void cat_createsSuccessfully_withValidArguments() {
         Cat cat = new Cat("Miso", "Persian", 2, ActivityLevel.LOW, true, true, true);
-        assertEquals("Cat", cat.getSpecies());
+        assertEquals(Species.CAT, cat.getSpecies());
         assertEquals("Miso", cat.getName());
         assertTrue(cat.isIndoor());
         assertTrue(cat.isNeutered());
@@ -140,7 +140,7 @@ class AnimalTest {
     void rabbit_createsSuccessfully_withValidArguments() {
         Rabbit rabbit = new Rabbit("Bun", "Holland Lop", 1, ActivityLevel.MEDIUM,
                 false, Rabbit.FurLength.SHORT);
-        assertEquals("Rabbit", rabbit.getSpecies());
+        assertEquals(Species.RABBIT, rabbit.getSpecies());
         assertEquals("Bun", rabbit.getName());
         assertEquals(Rabbit.FurLength.SHORT, rabbit.getFurLength());
         assertNotNull(rabbit.getId());

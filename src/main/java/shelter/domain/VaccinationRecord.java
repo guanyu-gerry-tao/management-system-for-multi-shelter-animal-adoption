@@ -16,6 +16,36 @@ public class VaccinationRecord {
     private final LocalDate dateAdministered;
 
     /**
+     * Reconstruction constructor for deserializing a VaccinationRecord from persistent storage.
+     * This constructor accepts an explicit {@code id} so the original record identifier is
+     * preserved when reloading vaccination history from CSV data.
+     *
+     * @param id               the pre-existing unique identifier; must not be null or blank
+     * @param animalId         the ID of the animal that received the vaccine; must not be null or blank
+     * @param vaccineTypeId    the ID of the vaccine type administered; must not be null or blank
+     * @param dateAdministered the date the vaccine was given; must not be null
+     * @throws IllegalArgumentException if any parameter is null or blank
+     */
+    public VaccinationRecord(String id, String animalId, String vaccineTypeId, LocalDate dateAdministered) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("VaccinationRecord ID must not be null or blank.");
+        }
+        if (animalId == null || animalId.isBlank()) {
+            throw new IllegalArgumentException("Animal ID must not be null or blank.");
+        }
+        if (vaccineTypeId == null || vaccineTypeId.isBlank()) {
+            throw new IllegalArgumentException("Vaccine type ID must not be null or blank.");
+        }
+        if (dateAdministered == null) {
+            throw new IllegalArgumentException("Date administered must not be null.");
+        }
+        this.id = id;
+        this.animalId = animalId;
+        this.vaccineTypeId = vaccineTypeId;
+        this.dateAdministered = dateAdministered;
+    }
+
+    /**
      * Constructs a new VaccinationRecord for the given animal, vaccine type, and date.
      * A unique ID is generated automatically at construction time.
      *
