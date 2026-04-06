@@ -78,7 +78,7 @@ public class CsvTransferRequestRepository implements TransferRequestRepository {
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvTransferRequestRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvTransferRequestRepository: " + e.getMessage(), e);
         }
     }
 
@@ -100,7 +100,7 @@ public class CsvTransferRequestRepository implements TransferRequestRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load transfer requests from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load transfer requests from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -149,7 +149,7 @@ public class CsvTransferRequestRepository implements TransferRequestRepository {
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush transfer requests to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush transfer requests to CSV: " + e.getMessage(), e);
         }
     }
 

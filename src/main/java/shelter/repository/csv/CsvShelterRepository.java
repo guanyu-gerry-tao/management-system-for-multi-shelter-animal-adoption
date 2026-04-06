@@ -59,7 +59,7 @@ public class CsvShelterRepository implements ShelterRepository {
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvShelterRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvShelterRepository: " + e.getMessage(), e);
         }
     }
 
@@ -83,7 +83,7 @@ public class CsvShelterRepository implements ShelterRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load shelters from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load shelters from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -119,7 +119,7 @@ public class CsvShelterRepository implements ShelterRepository {
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush shelters to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush shelters to CSV: " + e.getMessage(), e);
         }
     }
 

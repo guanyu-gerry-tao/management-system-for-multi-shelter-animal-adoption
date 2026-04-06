@@ -66,7 +66,7 @@ public class CsvVaccinationRecordRepository implements VaccinationRecordReposito
                 loadAll();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize CsvVaccinationRecordRepository: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to initialize CsvVaccinationRecordRepository: " + e.getMessage(), e);
         }
     }
 
@@ -85,7 +85,7 @@ public class CsvVaccinationRecordRepository implements VaccinationRecordReposito
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load vaccination records from CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to load vaccination records from CSV: " + e.getMessage(), e);
         }
     }
 
@@ -118,7 +118,7 @@ public class CsvVaccinationRecordRepository implements VaccinationRecordReposito
             }
             Files.writeString(filePath, sb.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to flush vaccination records to CSV: " + e.getMessage(), e);
+            throw new shelter.exception.DataPersistenceException("Failed to flush vaccination records to CSV: " + e.getMessage(), e);
         }
     }
 
