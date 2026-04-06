@@ -19,6 +19,49 @@ public abstract class Animal {
     private String shelterId;
 
     /**
+     * Reconstruction constructor for deserializing an Animal from persistent storage.
+     * This constructor accepts an explicit {@code id} so that the original identifier
+     * is preserved when reloading from CSV or other external sources.
+     *
+     * @param id            the pre-existing unique identifier; must not be null or blank
+     * @param name          the animal's name; must not be null or blank
+     * @param breed         the animal's breed; must not be null or blank
+     * @param age           the animal's age in years; must be non-negative
+     * @param activityLevel the animal's activity level; must not be null
+     * @param vaccinated    whether the animal has been vaccinated
+     * @param adopterId     the ID of the adopter who adopted this animal, or {@code null} if available
+     * @param shelterId     the ID of the shelter this animal belongs to, or {@code null} if unassigned
+     * @throws IllegalArgumentException if any required parameter is null, blank, or invalid
+     */
+    protected Animal(String id, String name, String breed, int age,
+                     ActivityLevel activityLevel, boolean vaccinated,
+                     String adopterId, String shelterId) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Animal ID must not be null or blank.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Animal name must not be null or blank.");
+        }
+        if (breed == null || breed.isBlank()) {
+            throw new IllegalArgumentException("Animal breed must not be null or blank.");
+        }
+        if (age < 0) {
+            throw new IllegalArgumentException("Animal age must be non-negative.");
+        }
+        if (activityLevel == null) {
+            throw new IllegalArgumentException("Activity level must not be null.");
+        }
+        this.id = id;
+        this.name = name;
+        this.breed = breed;
+        this.age = age;
+        this.activityLevel = activityLevel;
+        this.vaccinated = vaccinated;
+        this.adopterId = adopterId;
+        this.shelterId = shelterId;
+    }
+
+    /**
      * Constructs a new Animal with the given core attributes.
      * All parameters are required and validated; age must be non-negative.
      * The animal is initialized as available for adoption ({@code adopterId} is null).

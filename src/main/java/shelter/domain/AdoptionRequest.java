@@ -18,6 +18,42 @@ public class AdoptionRequest {
     private RequestStatus status;
 
     /**
+     * Reconstruction constructor for deserializing an AdoptionRequest from persistent storage.
+     * This constructor accepts an explicit {@code id}, pre-existing status, and submission timestamp
+     * so that the full request state can be restored from CSV data without modification.
+     *
+     * @param id          the pre-existing unique identifier; must not be null or blank
+     * @param adopter     the adopter who submitted the request; must not be null
+     * @param animal      the animal the adopter wishes to adopt; must not be null
+     * @param status      the current status of the request; must not be null
+     * @param submittedAt the original timestamp when the request was submitted; must not be null
+     * @throws IllegalArgumentException if any parameter is null or {@code id} is blank
+     */
+    public AdoptionRequest(String id, Adopter adopter, Animal animal,
+                           RequestStatus status, LocalDateTime submittedAt) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("AdoptionRequest ID must not be null or blank.");
+        }
+        if (adopter == null) {
+            throw new IllegalArgumentException("Adopter must not be null.");
+        }
+        if (animal == null) {
+            throw new IllegalArgumentException("Animal must not be null.");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status must not be null.");
+        }
+        if (submittedAt == null) {
+            throw new IllegalArgumentException("SubmittedAt must not be null.");
+        }
+        this.id = id;
+        this.adopter = adopter;
+        this.animal = animal;
+        this.status = status;
+        this.submittedAt = submittedAt;
+    }
+
+    /**
      * Constructs a new AdoptionRequest in {@link RequestStatus#PENDING} status.
      * Both adopter and animal are required and must not be null.
      *

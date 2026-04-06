@@ -11,6 +11,30 @@ public class Cat extends Animal {
     private boolean neutered;
 
     /**
+     * Reconstruction constructor for deserializing a Cat from persistent storage.
+     * This constructor preserves the original {@code id} and all fields including
+     * the indoor flag and neutered status, allowing exact round-trip restore from CSV data.
+     *
+     * @param id            the pre-existing unique identifier; must not be null or blank
+     * @param name          the cat's name; must not be null or blank
+     * @param breed         the cat's breed; must not be null or blank
+     * @param age           the cat's age in years; must be non-negative
+     * @param activityLevel the cat's activity level; must not be null
+     * @param vaccinated    whether the cat has been vaccinated
+     * @param adopterId     the ID of the adopter, or {@code null} if not adopted
+     * @param shelterId     the ID of the shelter, or {@code null} if unassigned
+     * @param indoor        whether the cat is suited for indoor-only living
+     * @param neutered      whether the cat has been neutered
+     * @throws IllegalArgumentException if any {@link Animal} parameter is invalid
+     */
+    public Cat(String id, String name, String breed, int age, ActivityLevel activityLevel,
+               boolean vaccinated, String adopterId, String shelterId, boolean indoor, boolean neutered) {
+        super(id, name, breed, age, activityLevel, vaccinated, adopterId, shelterId);
+        this.indoor = indoor;
+        this.neutered = neutered;
+    }
+
+    /**
      * Constructs a new Cat with the given attributes.
      * All parameters are validated at construction time per {@link Animal} rules.
      *

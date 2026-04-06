@@ -15,6 +15,36 @@ public class VaccineType {
     private int validityDays;
 
     /**
+     * Reconstruction constructor for deserializing a VaccineType from persistent storage.
+     * This constructor accepts an explicit {@code id} so the original identifier is preserved
+     * when reloading the vaccine type catalog from CSV data.
+     *
+     * @param id                the pre-existing unique identifier; must not be null or blank
+     * @param name              the name of the vaccine (e.g., "Rabies", "FVRCP"); must not be null or blank
+     * @param applicableSpecies the species this vaccine applies to; must not be null
+     * @param validityDays      the number of days the vaccine remains valid; must be positive
+     * @throws IllegalArgumentException if any parameter is null, blank, or invalid
+     */
+    public VaccineType(String id, String name, Species applicableSpecies, int validityDays) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("VaccineType ID must not be null or blank.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Vaccine type name must not be null or blank.");
+        }
+        if (applicableSpecies == null) {
+            throw new IllegalArgumentException("Applicable species must not be null.");
+        }
+        if (validityDays <= 0) {
+            throw new IllegalArgumentException("Validity days must be positive.");
+        }
+        this.id = id;
+        this.name = name;
+        this.applicableSpecies = applicableSpecies;
+        this.validityDays = validityDays;
+    }
+
+    /**
      * Constructs a new VaccineType with the given name, applicable species, and validity period.
      * A unique ID is generated automatically at construction time.
      *

@@ -21,6 +21,46 @@ public class Adopter {
     private final List<String> adoptedAnimalIds;
 
     /**
+     * Reconstruction constructor for deserializing an Adopter from persistent storage.
+     * This constructor accepts an explicit {@code id} and a pre-populated list of adopted
+     * animal IDs so that the full adopter state can be restored from CSV data.
+     *
+     * @param id               the pre-existing unique identifier; must not be null or blank
+     * @param name             the adopter's full name; must not be null or blank
+     * @param livingSpace      the adopter's living space type; must not be null
+     * @param dailySchedule    the adopter's typical daily schedule; must not be null
+     * @param personalNotes    any additional context provided by the adopter; may be null
+     * @param preferences      the adopter's adoption preferences; must not be null
+     * @param adoptedAnimalIds the list of animal IDs this adopter has previously adopted; may be empty
+     * @throws IllegalArgumentException if any required parameter is null or {@code name} is blank
+     */
+    public Adopter(String id, String name, LivingSpace livingSpace, DailySchedule dailySchedule,
+                   String personalNotes, AdopterPreferences preferences, List<String> adoptedAnimalIds) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Adopter ID must not be null or blank.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Adopter name must not be null or blank.");
+        }
+        if (livingSpace == null) {
+            throw new IllegalArgumentException("Living space must not be null.");
+        }
+        if (dailySchedule == null) {
+            throw new IllegalArgumentException("Daily schedule must not be null.");
+        }
+        if (preferences == null) {
+            throw new IllegalArgumentException("Adopter preferences must not be null.");
+        }
+        this.id = id;
+        this.name = name;
+        this.livingSpace = livingSpace;
+        this.dailySchedule = dailySchedule;
+        this.personalNotes = personalNotes;
+        this.preferences = preferences;
+        this.adoptedAnimalIds = new ArrayList<>(adoptedAnimalIds != null ? adoptedAnimalIds : Collections.emptyList());
+    }
+
+    /**
      * Constructs a new Adopter with the given personal information and preferences.
      * {@code name}, {@code livingSpace}, {@code dailySchedule}, and {@code preferences} are
      * required; {@code personalNotes} may be {@code null} if the adopter provides no extra context.

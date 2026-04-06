@@ -1,9 +1,9 @@
 package shelter.repository;
 
-import shelter.domain.VaccinationRecord;
-
 import java.util.List;
 import java.util.Optional;
+
+import shelter.domain.VaccinationRecord;
 
 /**
  * Defines persistence operations for {@link VaccinationRecord} records.
@@ -45,6 +45,15 @@ public interface VaccinationRecordRepository {
      * @return a list of all vaccination records
      */
     List<VaccinationRecord> findAll();
+
+    /**
+     * Returns all vaccination records for the given shelter ID.
+     * Returns an empty list if the shelter has no vaccination history.
+     *
+     * @param shelterId the shelter ID to filter by; must not be null or blank
+     * @return a list of vaccination records for the specified shelter
+     */
+    List<VaccinationRecord> findByShelterId(String shelterId);
 
     /**
      * Removes the vaccination record with the given ID from the store.

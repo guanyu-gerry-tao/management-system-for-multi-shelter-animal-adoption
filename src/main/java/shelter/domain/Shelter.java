@@ -19,6 +19,37 @@ public class Shelter {
     private final List<Animal> animals;
 
     /**
+     * Reconstruction constructor for deserializing a Shelter from persistent storage.
+     * This constructor preserves the original {@code id} so that cross-references between
+     * animals and shelters remain consistent after a round-trip through CSV.
+     *
+     * @param id       the pre-existing unique identifier; must not be null or blank
+     * @param name     the shelter's name; must not be null or blank
+     * @param location the shelter's physical address or city; must not be null or blank
+     * @param capacity the maximum number of animals the shelter can hold; must be positive
+     * @throws IllegalArgumentException if any parameter is null, blank, or capacity is not positive
+     */
+    public Shelter(String id, String name, String location, int capacity) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Shelter ID must not be null or blank.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Shelter name must not be null or blank.");
+        }
+        if (location == null || location.isBlank()) {
+            throw new IllegalArgumentException("Shelter location must not be null or blank.");
+        }
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Shelter capacity must be a positive integer.");
+        }
+        this.id = id;
+        this.name = name;
+        this.location = location;
+        this.capacity = capacity;
+        this.animals = new ArrayList<>();
+    }
+
+    /**
      * Constructs a new Shelter with the given name, location, and capacity.
      * Name and location must be non-null and non-blank; capacity must be a positive integer.
      *
