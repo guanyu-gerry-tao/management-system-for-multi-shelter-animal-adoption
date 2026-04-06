@@ -62,13 +62,16 @@ public class AdoptionServiceImpl implements AdoptionService {
      */
     @Override
     public void submit(AdoptionRequest request) {
+        // Guard: reject null input at the service boundary
         if (request == null) {
             throw new IllegalArgumentException("AdoptionRequest must not be null.");
         }
+        // Business rule: an animal can only be adopted once
         if (!request.getAnimal().isAvailable()) {
             throw new AnimalNotAvailableException(
                     "Animal \"" + request.getAnimal().getName() + "\" is not available for adoption.");
         }
+        // Persist the new PENDING request
         requestRepository.save(request);
     }
 
@@ -82,14 +85,18 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (request == null) {
             throw new IllegalArgumentException("AdoptionRequest must not be null.");
         }
-        request.approve(); // enforces PENDING; throws InvalidRequestStatusException if not
+        // Delegate state transition to the domain object; it enforces PENDING-only rule
+        request.approve();
 
         Animal animal = request.getAnimal();
         Adopter adopter = request.getAdopter();
 
+        // Side effect 1: mark the animal as no longer available
         animal.setAdopterId(adopter.getId());
+        // Side effect 2: record this adoption on the adopter's history
         adopter.addAdoptedAnimalId(animal.getId());
 
+        // Persist all three changed records atomically across repositories
         animalRepository.save(animal);
         adopterRepository.save(adopter);
         requestRepository.save(request);
@@ -103,6 +110,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (request == null) {
             throw new IllegalArgumentException("AdoptionRequest must not be null.");
         }
+        // Domain enforces PENDING; animal record needs no update on rejection
         request.reject();
         requestRepository.save(request);
     }
@@ -115,6 +123,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (request == null) {
             throw new IllegalArgumentException("AdoptionRequest must not be null.");
         }
+        // Same pattern as reject: only the request status changes
         request.cancel();
         requestRepository.save(request);
     }
@@ -160,6 +169,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (date == null) {
             throw new IllegalArgumentException("Date must not be null.");
         }
+        // No repository-level date filter exists; load all and filter in memory
         return requestRepository.findAll().stream()
                 .filter(r -> r.getSubmittedAt().toLocalDate().isAfter(date))
                 .collect(Collectors.toList());
@@ -175,6 +185,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (date == null) {
             throw new IllegalArgumentException("Date must not be null.");
         }
+        // Pre-filter by status at the repository level, then narrow by date in memory
         return requestRepository.findByStatus(RequestStatus.APPROVED).stream()
                 .filter(r -> r.getSubmittedAt().toLocalDate().isAfter(date))
                 .collect(Collectors.toList());

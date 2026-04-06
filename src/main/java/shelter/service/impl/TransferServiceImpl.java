@@ -59,6 +59,7 @@ public class TransferServiceImpl implements TransferService {
      */
     @Override
     public TransferRequest requestTransfer(Animal animal, Shelter from, Shelter to) {
+        // Guard: reject null inputs at the service boundary
         if (animal == null) {
             throw new IllegalArgumentException("Animal must not be null.");
         }
@@ -68,14 +69,17 @@ public class TransferServiceImpl implements TransferService {
         if (to == null) {
             throw new IllegalArgumentException("Destination shelter must not be null.");
         }
+        // Business rule: the animal must actually be in the source shelter
         if (!from.containsAnimal(animal.getId())) {
             throw new AnimalNotInShelterException(
                     "Animal \"" + animal.getName() + "\" is not in shelter \"" + from.getName() + "\".");
         }
+        // Business rule: the destination must have room before committing the transfer
         if (!to.hasCapacity()) {
             throw new ShelterAtCapacityException(
                     "Destination shelter \"" + to.getName() + "\" is at full capacity.");
         }
+        // Create and persist the PENDING request
         TransferRequest request = new TransferRequest(animal, from, to);
         requestRepository.save(request);
         return request;
@@ -91,16 +95,20 @@ public class TransferServiceImpl implements TransferService {
         if (request == null) {
             throw new IllegalArgumentException("TransferRequest must not be null.");
         }
-        request.approve(); // enforces PENDING; throws InvalidRequestStatusException if not
+        // Delegate state transition to the domain object; it enforces PENDING-only rule
+        request.approve();
 
         Animal animal = request.getAnimal();
         Shelter from = request.getFrom();
         Shelter to = request.getTo();
 
+        // Update in-memory animal lists on both shelter objects
         from.removeAnimal(animal.getId());
         to.addAnimal(animal);
+        // Update the animal's authoritative shelter reference (this is what gets persisted)
         animal.setShelterId(to.getId());
 
+        // Persist all four changed records: animal, both shelters, and the request
         animalRepository.save(animal);
         shelterRepository.save(from);
         shelterRepository.save(to);
@@ -115,6 +123,7 @@ public class TransferServiceImpl implements TransferService {
         if (request == null) {
             throw new IllegalArgumentException("TransferRequest must not be null.");
         }
+        // Animal does not move; only the request status changes
         request.reject();
         requestRepository.save(request);
     }
@@ -128,6 +137,7 @@ public class TransferServiceImpl implements TransferService {
         if (request == null) {
             throw new IllegalArgumentException("TransferRequest must not be null.");
         }
+        // "dismiss" is the service-level term; "cancel" is the domain-level state name
         request.cancel();
         requestRepository.save(request);
     }
@@ -140,6 +150,7 @@ public class TransferServiceImpl implements TransferService {
         if (shelter == null) {
             throw new IllegalArgumentException("Shelter must not be null.");
         }
+        // The repository query covers both from-shelter and to-shelter in one call
         return requestRepository.findByShelterIdAndStatus(shelter.getId(), RequestStatus.PENDING);
     }
 }
