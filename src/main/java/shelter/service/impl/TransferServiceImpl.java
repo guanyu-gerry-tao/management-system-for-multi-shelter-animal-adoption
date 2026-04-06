@@ -7,6 +7,8 @@ import shelter.domain.TransferRequest;
 import shelter.repository.AnimalRepository;
 import shelter.repository.ShelterRepository;
 import shelter.repository.TransferRequestRepository;
+import shelter.exception.AnimalNotInShelterException;
+import shelter.exception.ShelterAtCapacityException;
 import shelter.service.TransferService;
 
 import java.util.List;
@@ -67,11 +69,11 @@ public class TransferServiceImpl implements TransferService {
             throw new IllegalArgumentException("Destination shelter must not be null.");
         }
         if (!from.containsAnimal(animal.getId())) {
-            throw new IllegalArgumentException(
+            throw new AnimalNotInShelterException(
                     "Animal \"" + animal.getName() + "\" is not in shelter \"" + from.getName() + "\".");
         }
         if (!to.hasCapacity()) {
-            throw new IllegalStateException(
+            throw new ShelterAtCapacityException(
                     "Destination shelter \"" + to.getName() + "\" is at full capacity.");
         }
         TransferRequest request = new TransferRequest(animal, from, to);
@@ -89,7 +91,7 @@ public class TransferServiceImpl implements TransferService {
         if (request == null) {
             throw new IllegalArgumentException("TransferRequest must not be null.");
         }
-        request.approve(); // enforces PENDING; throws IllegalStateException if not
+        request.approve(); // enforces PENDING; throws InvalidRequestStatusException if not
 
         Animal animal = request.getAnimal();
         Shelter from = request.getFrom();

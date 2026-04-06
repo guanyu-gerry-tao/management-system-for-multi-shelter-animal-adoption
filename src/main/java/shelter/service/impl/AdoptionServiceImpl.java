@@ -8,6 +8,7 @@ import shelter.domain.Shelter;
 import shelter.repository.AdopterRepository;
 import shelter.repository.AdoptionRequestRepository;
 import shelter.repository.AnimalRepository;
+import shelter.exception.AnimalNotAvailableException;
 import shelter.service.AdoptionService;
 
 import java.time.LocalDate;
@@ -57,7 +58,7 @@ public class AdoptionServiceImpl implements AdoptionService {
      * {@inheritDoc}
      * Validates that the animal is still available before persisting the request.
      *
-     * @throws IllegalStateException if the animal has already been adopted
+     * @throws AnimalNotAvailableException if the animal has already been adopted
      */
     @Override
     public void submit(AdoptionRequest request) {
@@ -65,7 +66,7 @@ public class AdoptionServiceImpl implements AdoptionService {
             throw new IllegalArgumentException("AdoptionRequest must not be null.");
         }
         if (!request.getAnimal().isAvailable()) {
-            throw new IllegalStateException(
+            throw new AnimalNotAvailableException(
                     "Animal \"" + request.getAnimal().getName() + "\" is not available for adoption.");
         }
         requestRepository.save(request);
@@ -81,7 +82,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (request == null) {
             throw new IllegalArgumentException("AdoptionRequest must not be null.");
         }
-        request.approve(); // enforces PENDING; throws IllegalStateException if not
+        request.approve(); // enforces PENDING; throws InvalidRequestStatusException if not
 
         Animal animal = request.getAnimal();
         Adopter adopter = request.getAdopter();
