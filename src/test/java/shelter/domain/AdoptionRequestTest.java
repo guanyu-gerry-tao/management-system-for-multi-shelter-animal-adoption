@@ -17,7 +17,7 @@ class AdoptionRequestTest {
 
     @BeforeEach
     void setUp() {
-        AdopterPreferences prefs = new AdopterPreferences("Dog", null, ActivityLevel.HIGH, 0, 10);
+        AdopterPreferences prefs = new AdopterPreferences(Species.DOG, null, ActivityLevel.HIGH, 0, 10);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null, prefs);
         animal = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);

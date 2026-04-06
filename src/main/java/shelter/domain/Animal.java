@@ -16,6 +16,7 @@ public abstract class Animal {
     private final ActivityLevel activityLevel;
     private boolean vaccinated;
     private String adopterId;
+    private String shelterId;
 
     /**
      * Constructs a new Animal with the given core attributes.
@@ -53,12 +54,12 @@ public abstract class Animal {
     }
 
     /**
-     * Returns the species name of this animal (e.g., "Dog", "Cat", "Rabbit").
-     * Each concrete subclass must provide its own immutable species identifier.
+     * Returns the species of this animal.
+     * Each concrete subclass must return its own immutable {@link Species} constant.
      *
-     * @return the species name as a non-null, non-blank string
+     * @return the {@link Species} of this animal
      */
-    public abstract String getSpecies();
+    public abstract Species getSpecies();
 
     /**
      * Returns the unique identifier of this animal.
@@ -142,6 +143,30 @@ public abstract class Animal {
      */
     public String getAdopterId() {
         return adopterId;
+    }
+
+    /**
+     * Returns the ID of the shelter this animal currently belongs to, or {@code null} if unassigned.
+     * This field is the persistent reference used to associate an animal with its shelter.
+     *
+     * @return the shelter's ID string, or {@code null}
+     */
+    public String getShelterId() {
+        return shelterId;
+    }
+
+    /**
+     * Assigns this animal to the shelter with the given ID.
+     * Typically called by {@code AnimalService} when an animal is admitted or transferred.
+     *
+     * @param shelterId the ID of the shelter; must not be null or blank
+     * @throws IllegalArgumentException if {@code shelterId} is null or blank
+     */
+    public void setShelterId(String shelterId) {
+        if (shelterId == null || shelterId.isBlank()) {
+            throw new IllegalArgumentException("Shelter ID must not be null or blank.");
+        }
+        this.shelterId = shelterId;
     }
 
     /**

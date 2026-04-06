@@ -34,8 +34,8 @@ public class Cat extends Animal {
      * {@inheritDoc}
      */
     @Override
-    public String getSpecies() {
-        return "Cat";
+    public Species getSpecies() {
+        return Species.CAT;
     }
 
     /**

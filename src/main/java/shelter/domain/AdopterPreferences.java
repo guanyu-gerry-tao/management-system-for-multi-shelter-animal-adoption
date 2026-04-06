@@ -8,7 +8,7 @@ package shelter.domain;
  */
 public class AdopterPreferences {
 
-    private final String preferredSpecies;
+    private final Species preferredSpecies;
     private final String preferredBreed;
     private final ActivityLevel preferredActivityLevel;
     private final int minAge;
@@ -19,14 +19,14 @@ public class AdopterPreferences {
      * {@code preferredSpecies}, {@code preferredBreed}, and {@code preferredActivityLevel}
      * may be {@code null} to express no preference; age bounds must be valid.
      *
-     * @param preferredSpecies        the desired species name (e.g., "Dog"), or {@code null}
+     * @param preferredSpecies        the desired {@link Species}, or {@code null} for no preference
      * @param preferredBreed          the desired breed, or {@code null} for no preference
      * @param preferredActivityLevel  the desired activity level, or {@code null} for no preference
      * @param minAge                  the minimum preferred age in years; must be non-negative
      * @param maxAge                  the maximum preferred age in years; must be &gt;= {@code minAge}
      * @throws IllegalArgumentException if {@code minAge} is negative or {@code maxAge} &lt; {@code minAge}
      */
-    public AdopterPreferences(String preferredSpecies, String preferredBreed,
+    public AdopterPreferences(Species preferredSpecies, String preferredBreed,
                                ActivityLevel preferredActivityLevel, int minAge, int maxAge) {
         if (minAge < 0) {
             throw new IllegalArgumentException("Minimum age must be non-negative.");
@@ -45,9 +45,9 @@ public class AdopterPreferences {
     /**
      * Returns the preferred species, or {@code null} if no species preference was set.
      *
-     * @return the preferred species name, or {@code null}
+     * @return the preferred {@link Species}, or {@code null}
      */
-    public String getPreferredSpecies() {
+    public Species getPreferredSpecies() {
         return preferredSpecies;
     }
 

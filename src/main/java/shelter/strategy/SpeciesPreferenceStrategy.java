@@ -2,6 +2,7 @@ package shelter.strategy;
 
 import shelter.domain.Adopter;
 import shelter.domain.Animal;
+import shelter.domain.Species;
 
 /**
  * A concrete matching strategy that evaluates whether an animal's species
@@ -38,12 +39,12 @@ public class SpeciesPreferenceStrategy implements IMatchingStrategy {
             throw new IllegalArgumentException("Animal must not be null.");
         }
 
-        String preferredSpecies = adopter.getPreferences().getPreferredSpecies();
-        if (preferredSpecies == null || preferredSpecies.isBlank()) {
+        Species preferredSpecies = adopter.getPreferences().getPreferredSpecies();
+        if (preferredSpecies == null) {
             return 0.0;
         }
 
-        return preferredSpecies.equalsIgnoreCase(animal.getSpecies()) ? 1.0 : 0.0;
+        return preferredSpecies == animal.getSpecies() ? 1.0 : 0.0;
     }
 
 }
