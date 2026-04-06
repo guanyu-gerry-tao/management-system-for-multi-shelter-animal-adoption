@@ -16,7 +16,9 @@ import shelter.domain.Species;
 import shelter.repository.AdopterRepository;
 import shelter.repository.AdoptionRequestRepository;
 import shelter.repository.AnimalRepository;
+import shelter.service.AuditService;
 import shelter.service.impl.AdoptionServiceImpl;
+import shelter.service.model.AuditEntry;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ class AdoptionServiceImplTest {
         requestRepo = new StubAdoptionRequestRepository();
         animalRepo = new StubAnimalRepository();
         adopterRepo = new StubAdopterRepository();
-        service = new AdoptionServiceImpl(requestRepo, animalRepo, adopterRepo);
+        service = new AdoptionServiceImpl(requestRepo, animalRepo, adopterRepo, new NoOpAuditService<>());
 
         AdopterPreferences prefs = new AdopterPreferences(Species.DOG, null, null, 0, 10);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
@@ -277,6 +279,66 @@ class AdoptionServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> service.getApprovedAfter(null));
     }
 
+    // ── audit logging ─────────────────────────────────────────────────────────
+
+    /**
+     * Verifies that submit logs an audit entry with the expected action string.
+     */
+    @Test
+    void submit_logsAuditEntry() {
+        SpyAuditService<AdoptionRequest> spy = new SpyAuditService<>();
+        service = new AdoptionServiceImpl(requestRepo, animalRepo, adopterRepo, spy);
+
+        service.submit(new AdoptionRequest(adopter, dog));
+
+        assertTrue(spy.loggedActions.contains("submitted adoption request"));
+    }
+
+    /**
+     * Verifies that approve logs an audit entry with the expected action string.
+     */
+    @Test
+    void approve_logsAuditEntry() {
+        SpyAuditService<AdoptionRequest> spy = new SpyAuditService<>();
+        service = new AdoptionServiceImpl(requestRepo, animalRepo, adopterRepo, spy);
+        AdoptionRequest req = new AdoptionRequest(adopter, dog);
+        requestRepo.save(req);
+
+        service.approve(req);
+
+        assertTrue(spy.loggedActions.contains("approved adoption request"));
+    }
+
+    /**
+     * Verifies that reject logs an audit entry with the expected action string.
+     */
+    @Test
+    void reject_logsAuditEntry() {
+        SpyAuditService<AdoptionRequest> spy = new SpyAuditService<>();
+        service = new AdoptionServiceImpl(requestRepo, animalRepo, adopterRepo, spy);
+        AdoptionRequest req = new AdoptionRequest(adopter, dog);
+        requestRepo.save(req);
+
+        service.reject(req);
+
+        assertTrue(spy.loggedActions.contains("rejected adoption request"));
+    }
+
+    /**
+     * Verifies that cancel logs an audit entry with the expected action string.
+     */
+    @Test
+    void cancel_logsAuditEntry() {
+        SpyAuditService<AdoptionRequest> spy = new SpyAuditService<>();
+        service = new AdoptionServiceImpl(requestRepo, animalRepo, adopterRepo, spy);
+        AdoptionRequest req = new AdoptionRequest(adopter, dog);
+        requestRepo.save(req);
+
+        service.cancel(req);
+
+        assertTrue(spy.loggedActions.contains("cancelled adoption request"));
+    }
+
     // ── in-memory stubs ───────────────────────────────────────────────────────
 
     private static class StubAdoptionRequestRepository implements AdoptionRequestRepository {
@@ -329,5 +391,18 @@ class AdoptionServiceImplTest {
         @Override public Optional<Adopter> findById(String id) { return Optional.ofNullable(store.get(id)); }
         @Override public List<Adopter> findAll() { return new ArrayList<>(store.values()); }
         @Override public void delete(String id) { store.remove(id); }
+    }
+
+    /** No-op audit stub that silently discards all log calls during tests. */
+    private static class NoOpAuditService<T> implements AuditService<T> {
+        @Override public void log(String action, T target) { }
+        @Override public List<AuditEntry<T>> getLog() { return new ArrayList<>(); }
+    }
+
+    /** Spy audit stub that records action strings so tests can assert on them. */
+    private static class SpyAuditService<T> implements AuditService<T> {
+        final List<String> loggedActions = new ArrayList<>();
+        @Override public void log(String action, T target) { loggedActions.add(action); }
+        @Override public List<AuditEntry<T>> getLog() { return new ArrayList<>(); }
     }
 }

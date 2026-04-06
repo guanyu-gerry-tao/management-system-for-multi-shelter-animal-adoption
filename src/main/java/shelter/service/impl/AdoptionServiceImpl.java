@@ -10,6 +10,7 @@ import shelter.repository.AdoptionRequestRepository;
 import shelter.repository.AnimalRepository;
 import shelter.exception.AnimalNotAvailableException;
 import shelter.service.AdoptionService;
+import shelter.service.AuditService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,20 +27,24 @@ public class AdoptionServiceImpl implements AdoptionService {
     private final AdoptionRequestRepository requestRepository;
     private final AnimalRepository animalRepository;
     private final AdopterRepository adopterRepository;
+    private final AuditService<AdoptionRequest> auditService;
 
     /**
-     * Constructs a new {@code AdoptionServiceImpl} with the required repositories.
-     * All three repositories are needed for the full adoption lifecycle: the request
-     * must be persisted, and both the animal and adopter records updated on approval.
+     * Constructs a new {@code AdoptionServiceImpl} with the required repositories and audit service.
+     * All three repositories are needed for the full adoption lifecycle: the request must be
+     * persisted, and both the animal and adopter records updated on approval. The audit service
+     * records every state-changing operation for traceability.
      *
      * @param requestRepository the repository for adoption request persistence; must not be null
      * @param animalRepository  the repository for animal record persistence; must not be null
      * @param adopterRepository the repository for adopter record persistence; must not be null
-     * @throws IllegalArgumentException if any repository is null
+     * @param auditService      the service used to log adoption operations; must not be null
+     * @throws IllegalArgumentException if any argument is null
      */
     public AdoptionServiceImpl(AdoptionRequestRepository requestRepository,
                                AnimalRepository animalRepository,
-                               AdopterRepository adopterRepository) {
+                               AdopterRepository adopterRepository,
+                               AuditService<AdoptionRequest> auditService) {
         if (requestRepository == null) {
             throw new IllegalArgumentException("AdoptionRequestRepository must not be null.");
         }
@@ -49,9 +54,13 @@ public class AdoptionServiceImpl implements AdoptionService {
         if (adopterRepository == null) {
             throw new IllegalArgumentException("AdopterRepository must not be null.");
         }
+        if (auditService == null) {
+            throw new IllegalArgumentException("AuditService must not be null.");
+        }
         this.requestRepository = requestRepository;
         this.animalRepository = animalRepository;
         this.adopterRepository = adopterRepository;
+        this.auditService = auditService;
     }
 
     /**
@@ -73,6 +82,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         }
         // Persist the new PENDING request
         requestRepository.save(request);
+        auditService.log("submitted adoption request", request);
     }
 
     /**
@@ -100,6 +110,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         animalRepository.save(animal);
         adopterRepository.save(adopter);
         requestRepository.save(request);
+        auditService.log("approved adoption request", request);
     }
 
     /**
@@ -113,6 +124,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         // Domain enforces PENDING; animal record needs no update on rejection
         request.reject();
         requestRepository.save(request);
+        auditService.log("rejected adoption request", request);
     }
 
     /**
@@ -126,6 +138,7 @@ public class AdoptionServiceImpl implements AdoptionService {
         // Same pattern as reject: only the request status changes
         request.cancel();
         requestRepository.save(request);
+        auditService.log("cancelled adoption request", request);
     }
 
     /**
