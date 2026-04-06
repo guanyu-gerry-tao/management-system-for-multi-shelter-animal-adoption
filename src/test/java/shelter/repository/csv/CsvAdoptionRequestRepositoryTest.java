@@ -198,6 +198,23 @@ class CsvAdoptionRequestRepositoryTest {
     }
 
     /**
+     * Verifies that findByAnimalId returns only requests for the specified animal,
+     * and returns an empty list for an animal with no requests.
+     */
+    @Test
+    void findByAnimalId_returnsMatchingRequests() {
+        AdoptionRequest req = new AdoptionRequest(adopter, dog);
+        repo.save(req);
+
+        List<AdoptionRequest> found = repo.findByAnimalId(dog.getId());
+        assertEquals(1, found.size());
+        assertEquals(dog.getId(), found.get(0).getAnimal().getId());
+
+        List<AdoptionRequest> none = repo.findByAnimalId("no-such-animal");
+        assertTrue(none.isEmpty());
+    }
+
+    /**
      * Verifies CSV round-trip: requests saved in one instance are readable in a new instance
      * with the original status and timestamp preserved.
      */

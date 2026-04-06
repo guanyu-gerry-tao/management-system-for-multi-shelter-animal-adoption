@@ -204,6 +204,25 @@ public class CsvAdoptionRequestRepository implements AdoptionRequestRepository {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if {@code animalId} is null or blank
+     */
+    @Override
+    public List<AdoptionRequest> findByAnimalId(String animalId) {
+        if (animalId == null || animalId.isBlank()) {
+            throw new IllegalArgumentException("Animal ID must not be null or blank.");
+        }
+        List<AdoptionRequest> result = new ArrayList<>();
+        for (AdoptionRequest req : store.values()) {
+            if (animalId.equals(req.getAnimal().getId())) {
+                result.add(req);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * {@inheritDoc}
      * Shelter membership is determined by comparing the given {@code shelterId} to
      * each request's {@code animal.getShelterId()}.
      *
