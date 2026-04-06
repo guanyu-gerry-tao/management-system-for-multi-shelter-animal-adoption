@@ -51,6 +51,15 @@ public interface AdoptionRequestRepository {
     List<AdoptionRequest> findByAdopterId(String adopterId);
 
     /**
+     * Returns all adoption requests targeting the given animal ID.
+     * Returns an empty list if no requests exist for that animal.
+     *
+     * @param animalId the animal ID to filter by; must not be null or blank
+     * @return a list of adoption requests for the specified animal
+     */
+    List<AdoptionRequest> findByAnimalId(String animalId);
+
+    /**
      * Returns all adoption requests for animals currently housed in the given
      * shelter. Shelter membership is determined by the animal's
      * {@code shelterId} field. Returns an empty list if no requests exist for
