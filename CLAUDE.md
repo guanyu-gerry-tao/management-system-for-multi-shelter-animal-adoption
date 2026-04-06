@@ -119,7 +119,11 @@ For demo purposes, Claude Code is used as the AI agent: the user speaks natural 
 
 - **Language**: Java (must be predominantly Java)
 - **Naming**: Java conventions — `camelCase` for methods/variables, `PascalCase` for classes
-- **Comments**: Javadoc on all public classes and methods; inline comments for complex logic
+- **Comments**: Javadoc on all public classes and methods; inline comments for non-trivial logic blocks
+  - Comments go on the line **before** the code block they describe, never at the end of a code line
+  - Group code into logical blocks and add one comment per block (not per line)
+  - Explain **why** or **what the block achieves**, not just what the code literally does
+  - Example blocks to comment: guard checks, business rule validations, domain delegation, side effects, persistence calls
 - **Testing**: JUnit unit tests covering normal paths and edge cases; use `MockExplanationService` for AI module tests
 - **Build**: Gradle with `application` plugin; main class is `shelter.cli.Main`; CLI dependency is Picocli
 
