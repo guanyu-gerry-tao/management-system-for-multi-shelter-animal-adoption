@@ -39,6 +39,18 @@ public class OverdueVaccination implements Comparable<OverdueVaccination> {
     }
 
     /**
+     * Constructs a copy of the given overdue vaccination, preserving all field values.
+     * This copy constructor creates an independent snapshot of an existing record.
+     *
+     * @param other the overdue vaccination to copy; must not be null
+     */
+    public OverdueVaccination(OverdueVaccination other) {
+        this.vaccineType = other.vaccineType;
+        this.lastAdministered = other.lastAdministered;
+        this.dueDate = other.dueDate;
+    }
+
+    /**
      * Returns the vaccine type that is overdue.
      * Never null for a validly constructed record.
      *

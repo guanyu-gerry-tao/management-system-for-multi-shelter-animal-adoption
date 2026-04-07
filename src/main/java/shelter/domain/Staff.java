@@ -9,7 +9,7 @@ import java.util.UUID;
  * The staff member is associated with audit log entries and notification records to track
  * who performed each action.
  */
-public class Staff {
+public class Staff implements Comparable<Staff> {
 
     private final String id;
     private String name;
@@ -146,5 +146,29 @@ public class Staff {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    /**
+     * Constructs a copy of the given staff member, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing staff instance.
+     *
+     * @param other the staff member to copy; must not be null
+     */
+    public Staff(Staff other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.role = other.role;
+    }
+
+    /**
+     * Compares this staff member to another by name in alphabetical order.
+     * This natural ordering is useful for displaying staff in sorted lists.
+     *
+     * @param other the other staff member to compare to
+     * @return a negative number if this name comes first, positive if after, zero if equal
+     */
+    @Override
+    public int compareTo(Staff other) {
+        return String.valueOf(this.name).compareTo(String.valueOf(other.name));
     }
 }

@@ -3,6 +3,7 @@ package shelter.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -10,7 +11,7 @@ import java.util.UUID;
  * A shelter enforces a maximum capacity and provides operations to add, remove, query,
  * and list the animals it currently holds.
  */
-public class Shelter {
+public class Shelter implements Comparable<Shelter> {
 
     private final String id;
     private final String name;
@@ -42,6 +43,20 @@ public class Shelter {
         this.location = location;
         this.capacity = capacity;
         this.animals = new ArrayList<>();
+    }
+
+    /**
+     * Constructs a copy of the given shelter, preserving the same ID and all field values.
+     * The animal list is defensively copied so modifications to the copy do not affect the original.
+     *
+     * @param other the shelter to copy; must not be null
+     */
+    public Shelter(Shelter other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.location = other.location;
+        this.capacity = other.capacity;
+        this.animals = new ArrayList<>(other.animals);
     }
 
     /**
@@ -162,5 +177,54 @@ public class Shelter {
      */
     public int getCurrentCount() {
         return animals.size();
+    }
+
+    /**
+     * Returns a string representation of this shelter including its ID, name, location, and occupancy.
+     *
+     * @return a human-readable description of this shelter
+     */
+    @Override
+    public String toString() {
+        return "Shelter[id=" + id + ", name=" + name + ", location=" + location
+                + ", capacity=" + capacity + ", currentCount=" + animals.size() + "]";
+    }
+
+    /**
+     * Returns true if the given object is a Shelter with the same unique ID.
+     * Shelter identity is determined solely by its UUID, consistent with entity semantics.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a Shelter with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Shelter)) return false;
+        Shelter other = (Shelter) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this shelter's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Compares this shelter to another by name in alphabetical order.
+     * This natural ordering is useful for displaying shelters in sorted lists.
+     *
+     * @param other the other shelter to compare to
+     * @return a negative number if this name comes first, positive if after, zero if equal
+     */
+    @Override
+    public int compareTo(Shelter other) {
+        return this.name.compareTo(other.name);
     }
 }

@@ -3,6 +3,7 @@ package shelter.service.model;
 import shelter.domain.Staff;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Represents a single audit log entry recording who performed an action, what was affected, and when.
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
  *
  * @param <T> the type of the target object that was acted upon
  */
-public class AuditEntry<T> {
+public class AuditEntry<T> implements Comparable<AuditEntry<T>> {
 
     private final Staff staff;
     private final String action;
@@ -44,6 +45,19 @@ public class AuditEntry<T> {
         this.action = action;
         this.target = target;
         this.timestamp = timestamp;
+    }
+
+    /**
+     * Constructs a copy of the given audit entry, preserving all field values.
+     * This copy constructor creates an independent snapshot of an existing entry.
+     *
+     * @param other the audit entry to copy; must not be null
+     */
+    public AuditEntry(AuditEntry<T> other) {
+        this.staff = other.staff;
+        this.action = other.action;
+        this.target = other.target;
+        this.timestamp = other.timestamp;
     }
 
     /**
@@ -99,4 +113,44 @@ public class AuditEntry<T> {
                 + ", timestamp=" + timestamp + "]";
     }
 
+    /**
+     * Returns true if the given object is an AuditEntry with identical field values.
+     * As a value object, equality is based on all fields rather than a unique identifier.
+     *
+     * @param o the object to compare
+     * @return true if all fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AuditEntry)) return false;
+        AuditEntry<?> other = (AuditEntry<?>) o;
+        return Objects.equals(staff, other.staff)
+                && Objects.equals(action, other.action)
+                && Objects.equals(target, other.target)
+                && Objects.equals(timestamp, other.timestamp);
+    }
+
+    /**
+     * Returns a hash code based on all fields of this audit entry.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(staff, action, target, timestamp);
+    }
+
+    /**
+     * Compares this audit entry to another by timestamp in ascending order.
+     * Earlier entries are ordered first, providing a chronological audit trail.
+     *
+     * @param other the other audit entry to compare to
+     * @return a negative number if this timestamp is earlier, positive if later, zero if same
+     */
+    @Override
+    public int compareTo(AuditEntry<T> other) {
+        return this.timestamp.compareTo(other.timestamp);
+    }
 }

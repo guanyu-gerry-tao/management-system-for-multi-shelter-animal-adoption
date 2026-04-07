@@ -1,5 +1,6 @@
 package shelter.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -7,7 +8,7 @@ import java.util.UUID;
  * Each vaccine type defines which species it applies to and how long it remains valid
  * before a booster is required. Instances are managed through the vaccine type catalog.
  */
-public class VaccineType {
+public class VaccineType implements Comparable<VaccineType> {
 
     private final String id;
     private String name;
@@ -125,5 +126,56 @@ public class VaccineType {
     public String toString() {
         return "VaccineType[id=" + id + ", name=" + name
                 + ", species=" + applicableSpecies + ", validityDays=" + validityDays + "]";
+    }
+
+    /**
+     * Constructs a copy of the given vaccine type, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing vaccine type instance.
+     *
+     * @param other the vaccine type to copy; must not be null
+     */
+    public VaccineType(VaccineType other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.applicableSpecies = other.applicableSpecies;
+        this.validityDays = other.validityDays;
+    }
+
+    /**
+     * Returns true if the given object is a VaccineType with the same unique ID.
+     * VaccineType identity is determined solely by its UUID, consistent with entity semantics.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a VaccineType with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VaccineType)) return false;
+        VaccineType other = (VaccineType) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this vaccine type's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Compares this vaccine type to another by name in alphabetical order.
+     * This natural ordering is useful for displaying vaccine types in sorted lists.
+     *
+     * @param other the other vaccine type to compare to
+     * @return a negative number if this name comes first, positive if after, zero if equal
+     */
+    @Override
+    public int compareTo(VaccineType other) {
+        return this.name.compareTo(other.name);
     }
 }

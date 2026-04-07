@@ -39,6 +39,18 @@ public class MatchResult implements Comparable<MatchResult> {
     }
 
     /**
+     * Constructs a copy of the given match result, preserving all field values.
+     * This copy constructor creates an independent snapshot of an existing result.
+     *
+     * @param other the match result to copy; must not be null
+     */
+    public MatchResult(MatchResult other) {
+        this.animal = other.animal;
+        this.adopter = other.adopter;
+        this.score = other.score;
+    }
+
+    /**
      * Returns the animal associated with this match result.
      * Never null for a validly constructed result.
      *

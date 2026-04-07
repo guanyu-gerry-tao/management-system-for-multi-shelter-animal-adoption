@@ -1,5 +1,7 @@
 package shelter.service.model;
 
+import java.util.Objects;
+
 /**
  * Represents the structured output of an ExplanationService call for a set of match results.
  * Encapsulates multiple aspects of the AI-generated explanation, allowing callers to use
@@ -24,6 +26,18 @@ public class ExplanationResult {
         this.matchRationale = matchRationale;
         this.confidenceAssessment = confidenceAssessment;
         this.personalizedAdvice = personalizedAdvice;
+    }
+
+    /**
+     * Constructs a copy of the given explanation result, preserving all field values.
+     * This copy constructor creates an independent snapshot of an existing result.
+     *
+     * @param other the explanation result to copy; must not be null
+     */
+    public ExplanationResult(ExplanationResult other) {
+        this.matchRationale = other.matchRationale;
+        this.confidenceAssessment = other.confidenceAssessment;
+        this.personalizedAdvice = other.personalizedAdvice;
     }
 
     /**
@@ -68,4 +82,31 @@ public class ExplanationResult {
                 + ", advice=" + personalizedAdvice + "]";
     }
 
+    /**
+     * Returns true if the given object is an ExplanationResult with identical field values.
+     * As a value object, equality is based on all fields rather than a unique identifier.
+     *
+     * @param o the object to compare
+     * @return true if all fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExplanationResult)) return false;
+        ExplanationResult other = (ExplanationResult) o;
+        return Objects.equals(matchRationale, other.matchRationale)
+                && Objects.equals(confidenceAssessment, other.confidenceAssessment)
+                && Objects.equals(personalizedAdvice, other.personalizedAdvice);
+    }
+
+    /**
+     * Returns a hash code based on all fields of this explanation result.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(matchRationale, confidenceAssessment, personalizedAdvice);
+    }
 }

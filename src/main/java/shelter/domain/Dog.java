@@ -82,4 +82,26 @@ public class Dog extends Animal {
     public void setNeutered(boolean neutered) {
         this.neutered = neutered;
     }
+
+    /**
+     * Constructs a copy of the given dog, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing dog instance.
+     *
+     * @param other the dog to copy; must not be null
+     */
+    public Dog(Dog other) {
+        super(other);
+        this.size = other.size;
+        this.neutered = other.neutered;
+    }
+
+    /**
+     * Returns a string representation of this dog including all animal and dog-specific attributes.
+     *
+     * @return a human-readable description of this dog
+     */
+    @Override
+    public String toString() {
+        return super.toString().replace("]", ", size=" + size + ", neutered=" + neutered + "]");
+    }
 }

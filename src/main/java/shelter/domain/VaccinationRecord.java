@@ -1,6 +1,7 @@
 package shelter.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -8,7 +9,7 @@ import java.util.UUID;
  * Each record captures which animal received which vaccine and on what date,
  * allowing the system to determine whether vaccinations are current or overdue.
  */
-public class VaccinationRecord {
+public class VaccinationRecord implements Comparable<VaccinationRecord> {
 
     private final String id;
     private final String animalId;
@@ -38,6 +39,19 @@ public class VaccinationRecord {
         this.animalId = animalId;
         this.vaccineTypeId = vaccineTypeId;
         this.dateAdministered = dateAdministered;
+    }
+
+    /**
+     * Constructs a copy of the given vaccination record, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing record.
+     *
+     * @param other the vaccination record to copy; must not be null
+     */
+    public VaccinationRecord(VaccinationRecord other) {
+        this.id = other.id;
+        this.animalId = other.animalId;
+        this.vaccineTypeId = other.vaccineTypeId;
+        this.dateAdministered = other.dateAdministered;
     }
 
     /**
@@ -86,5 +100,43 @@ public class VaccinationRecord {
     public String toString() {
         return "VaccinationRecord[id=" + id + ", animalId=" + animalId
                 + ", vaccineTypeId=" + vaccineTypeId + ", date=" + dateAdministered + "]";
+    }
+
+    /**
+     * Returns true if the given object is a VaccinationRecord with the same unique ID.
+     * Record identity is determined solely by its UUID, consistent with entity semantics.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a VaccinationRecord with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VaccinationRecord)) return false;
+        VaccinationRecord other = (VaccinationRecord) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this record's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Compares this vaccination record to another by date administered in ascending order.
+     * Earlier dates are ordered first, providing a chronological view of vaccination history.
+     *
+     * @param other the other vaccination record to compare to
+     * @return a negative number if this date is earlier, positive if later, zero if same date
+     */
+    @Override
+    public int compareTo(VaccinationRecord other) {
+        return this.dateAdministered.compareTo(other.dateAdministered);
     }
 }

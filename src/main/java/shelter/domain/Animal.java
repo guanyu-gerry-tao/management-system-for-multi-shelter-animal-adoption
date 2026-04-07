@@ -1,5 +1,6 @@
 package shelter.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -7,7 +8,7 @@ import java.util.UUID;
  * Concrete subclasses (e.g., {@link Dog}, {@link Cat}, {@link Rabbit}) must implement
  * {@link #getSpecies()} to identify their species and may add species-specific attributes.
  */
-public abstract class Animal {
+public abstract class Animal implements Comparable<Animal> {
 
     private final String id;
     private final String name;
@@ -50,6 +51,22 @@ public abstract class Animal {
         this.activityLevel = activityLevel;
         this.vaccinated = vaccinated;
         this.adopterId = null;
+    }
+
+    /**
+     * Constructs a copy of the given animal, preserving the same ID and all field values.
+     * This copy constructor is used to create an independent snapshot of an existing animal.
+     *
+     * @param other the animal to copy; must not be null
+     */
+    protected Animal(Animal other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.breed = other.breed;
+        this.age = other.age;
+        this.activityLevel = other.activityLevel;
+        this.vaccinated = other.vaccinated;
+        this.adopterId = other.adopterId;
     }
 
     /**
@@ -169,5 +186,43 @@ public abstract class Animal {
                 + ", age=" + age + ", activity=" + activityLevel
                 + ", vaccinated=" + vaccinated
                 + ", adopterId=" + (adopterId != null ? adopterId : "none") + "]";
+    }
+
+    /**
+     * Returns true if the given object is an Animal with the same unique ID.
+     * Animal identity is determined solely by its UUID, consistent with entity semantics.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is an Animal with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Animal)) return false;
+        Animal other = (Animal) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this animal's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Compares this animal to another by name in alphabetical order.
+     * This natural ordering is useful for displaying animals in sorted lists.
+     *
+     * @param other the other animal to compare to
+     * @return a negative number if this name comes first, positive if after, zero if equal
+     */
+    @Override
+    public int compareTo(Animal other) {
+        return this.name.compareTo(other.name);
     }
 }

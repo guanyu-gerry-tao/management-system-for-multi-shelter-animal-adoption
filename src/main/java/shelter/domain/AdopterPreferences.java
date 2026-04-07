@@ -1,5 +1,7 @@
 package shelter.domain;
 
+import java.util.Objects;
+
 /**
  * Represents the adoption preferences of a prospective adopter.
  * Preferences include desired species, breed, activity level, and age range;
@@ -40,6 +42,20 @@ public class AdopterPreferences {
         this.preferredActivityLevel = preferredActivityLevel;
         this.minAge = minAge;
         this.maxAge = maxAge;
+    }
+
+    /**
+     * Constructs a copy of the given preferences, preserving all field values.
+     * This copy constructor creates an independent snapshot of existing preferences.
+     *
+     * @param other the preferences to copy; must not be null
+     */
+    public AdopterPreferences(AdopterPreferences other) {
+        this.preferredSpecies = other.preferredSpecies;
+        this.preferredBreed = other.preferredBreed;
+        this.preferredActivityLevel = other.preferredActivityLevel;
+        this.minAge = other.minAge;
+        this.maxAge = other.maxAge;
     }
 
     /**
@@ -85,5 +101,48 @@ public class AdopterPreferences {
      */
     public int getMaxAge() {
         return maxAge;
+    }
+
+    /**
+     * Returns a string representation of these preferences including all criteria fields.
+     *
+     * @return a human-readable description of these adoption preferences
+     */
+    @Override
+    public String toString() {
+        return "AdopterPreferences[species=" + preferredSpecies
+                + ", breed=" + preferredBreed
+                + ", activity=" + preferredActivityLevel
+                + ", ageRange=" + minAge + "-" + maxAge + "]";
+    }
+
+    /**
+     * Returns true if the given object is an AdopterPreferences with identical field values.
+     * As a value object, equality is based on all fields rather than a unique identifier.
+     *
+     * @param o the object to compare
+     * @return true if all fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdopterPreferences)) return false;
+        AdopterPreferences other = (AdopterPreferences) o;
+        return minAge == other.minAge
+                && maxAge == other.maxAge
+                && Objects.equals(preferredSpecies, other.preferredSpecies)
+                && Objects.equals(preferredBreed, other.preferredBreed)
+                && preferredActivityLevel == other.preferredActivityLevel;
+    }
+
+    /**
+     * Returns a hash code based on all fields of these preferences.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(preferredSpecies, preferredBreed, preferredActivityLevel, minAge, maxAge);
     }
 }

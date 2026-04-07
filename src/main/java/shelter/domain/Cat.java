@@ -66,4 +66,26 @@ public class Cat extends Animal {
     public void setNeutered(boolean neutered) {
         this.neutered = neutered;
     }
+
+    /**
+     * Constructs a copy of the given cat, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing cat instance.
+     *
+     * @param other the cat to copy; must not be null
+     */
+    public Cat(Cat other) {
+        super(other);
+        this.indoor = other.indoor;
+        this.neutered = other.neutered;
+    }
+
+    /**
+     * Returns a string representation of this cat including all animal and cat-specific attributes.
+     *
+     * @return a human-readable description of this cat
+     */
+    @Override
+    public String toString() {
+        return super.toString().replace("]", ", indoor=" + indoor + ", neutered=" + neutered + "]");
+    }
 }

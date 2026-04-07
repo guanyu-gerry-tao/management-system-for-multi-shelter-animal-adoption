@@ -58,4 +58,25 @@ public class Rabbit extends Animal {
     public FurLength getFurLength() {
         return furLength;
     }
+
+    /**
+     * Constructs a copy of the given rabbit, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing rabbit instance.
+     *
+     * @param other the rabbit to copy; must not be null
+     */
+    public Rabbit(Rabbit other) {
+        super(other);
+        this.furLength = other.furLength;
+    }
+
+    /**
+     * Returns a string representation of this rabbit including all animal and rabbit-specific attributes.
+     *
+     * @return a human-readable description of this rabbit
+     */
+    @Override
+    public String toString() {
+        return super.toString().replace("]", ", furLength=" + furLength + "]");
+    }
 }

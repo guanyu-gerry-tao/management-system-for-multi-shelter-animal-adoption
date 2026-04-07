@@ -1,6 +1,7 @@
 package shelter.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,7 @@ import java.util.UUID;
  * {@link RequestStatus#APPROVED}, {@link RequestStatus#REJECTED}, or
  * {@link RequestStatus#CANCELLED} based on administrative review.
  */
-public class TransferRequest {
+public class TransferRequest implements Comparable<TransferRequest> {
 
     private final String id;
     private final Animal animal;
@@ -48,6 +49,21 @@ public class TransferRequest {
         this.to = to;
         this.status = RequestStatus.PENDING;
         this.requestedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Constructs a copy of the given transfer request, preserving the same ID and all field values.
+     * This copy constructor creates an independent snapshot of an existing transfer request.
+     *
+     * @param other the transfer request to copy; must not be null
+     */
+    public TransferRequest(TransferRequest other) {
+        this.id = other.id;
+        this.animal = other.animal;
+        this.from = other.from;
+        this.to = other.to;
+        this.status = other.status;
+        this.requestedAt = other.requestedAt;
     }
 
     /**
@@ -148,5 +164,55 @@ public class TransferRequest {
      */
     public LocalDateTime getRequestedAt() {
         return requestedAt;
+    }
+
+    /**
+     * Returns a string representation of this transfer request including its ID, status, and shelters.
+     *
+     * @return a human-readable description of this transfer request
+     */
+    @Override
+    public String toString() {
+        return "TransferRequest[id=" + id + ", animal=" + animal.getName()
+                + ", from=" + from.getName() + ", to=" + to.getName()
+                + ", status=" + status + ", requestedAt=" + requestedAt + "]";
+    }
+
+    /**
+     * Returns true if the given object is a TransferRequest with the same unique ID.
+     * Request identity is determined solely by its UUID, consistent with entity semantics.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a TransferRequest with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TransferRequest)) return false;
+        TransferRequest other = (TransferRequest) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this request's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Compares this transfer request to another by request timestamp in ascending order.
+     * Earlier requests are ordered first, reflecting a first-come-first-served processing order.
+     *
+     * @param other the other transfer request to compare to
+     * @return a negative number if this was requested earlier, positive if later, zero if same time
+     */
+    @Override
+    public int compareTo(TransferRequest other) {
+        return this.requestedAt.compareTo(other.requestedAt);
     }
 }

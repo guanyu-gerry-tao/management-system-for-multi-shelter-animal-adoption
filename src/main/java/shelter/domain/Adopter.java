@@ -3,6 +3,7 @@ package shelter.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -10,7 +11,7 @@ import java.util.UUID;
  * An adopter holds personal information, lifestyle context (living space and daily schedule),
  * and explicit adoption preferences that are used during the animal matching process.
  */
-public class Adopter {
+public class Adopter implements Comparable<Adopter> {
 
     private final String id;
     private final String name;
@@ -53,6 +54,22 @@ public class Adopter {
         this.personalNotes = personalNotes;
         this.preferences = preferences;
         this.adoptedAnimalIds = new ArrayList<>();
+    }
+
+    /**
+     * Constructs a copy of the given adopter, preserving the same ID and all field values.
+     * The adopted animal IDs list and preferences are defensively copied.
+     *
+     * @param other the adopter to copy; must not be null
+     */
+    public Adopter(Adopter other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.livingSpace = other.livingSpace;
+        this.dailySchedule = other.dailySchedule;
+        this.personalNotes = other.personalNotes;
+        this.preferences = new AdopterPreferences(other.preferences);
+        this.adoptedAnimalIds = new ArrayList<>(other.adoptedAnimalIds);
     }
 
     /**
@@ -135,5 +152,54 @@ public class Adopter {
             throw new IllegalArgumentException("Animal ID must not be null or blank.");
         }
         adoptedAnimalIds.add(animalId);
+    }
+
+    /**
+     * Returns a string representation of this adopter including their ID, name, and lifestyle context.
+     *
+     * @return a human-readable description of this adopter
+     */
+    @Override
+    public String toString() {
+        return "Adopter[id=" + id + ", name=" + name + ", livingSpace=" + livingSpace
+                + ", dailySchedule=" + dailySchedule + ", adoptedAnimals=" + adoptedAnimalIds.size() + "]";
+    }
+
+    /**
+     * Returns true if the given object is an Adopter with the same unique ID.
+     * Adopter identity is determined solely by its UUID, consistent with entity semantics.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is an Adopter with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Adopter)) return false;
+        Adopter other = (Adopter) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this adopter's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Compares this adopter to another by name in alphabetical order.
+     * This natural ordering is useful for displaying adopters in sorted lists.
+     *
+     * @param other the other adopter to compare to
+     * @return a negative number if this name comes first, positive if after, zero if equal
+     */
+    @Override
+    public int compareTo(Adopter other) {
+        return this.name.compareTo(other.name);
     }
 }
