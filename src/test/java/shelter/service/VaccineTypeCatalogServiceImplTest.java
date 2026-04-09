@@ -21,7 +21,7 @@ class VaccineTypeCatalogServiceImplTest {
     private static class StubVaccineTypeRepository implements VaccineTypeRepository {
         private final Map<String, VaccineType> store = new HashMap<>();
 
-        @Override public void save(VaccineType v) { store.put(v.getId(), v); }
+        @Override public void save(VaccineType v) { store.put(v.getId(), new VaccineType(v)); }
         @Override public Optional<VaccineType> findById(String id) { return Optional.ofNullable(store.get(id)); }
         @Override public Optional<VaccineType> findByName(String name) {
             return store.values().stream().filter(v -> v.getName().equals(name)).findFirst();
@@ -81,8 +81,9 @@ class VaccineTypeCatalogServiceImplTest {
         repo.save(rabies);
         VaccineType other = new VaccineType("Distemper", Species.DOG, 365);
         repo.save(other);
-        other.setName("Rabies"); // collide with rabies
-        assertThrows(IllegalArgumentException.class, () -> service.update(other));
+        // Pass a new object with the same ID as other but a name that collides with rabies
+        VaccineType conflicting = new VaccineType(other.getId(), "Rabies", Species.DOG, 365);
+        assertThrows(IllegalArgumentException.class, () -> service.update(conflicting));
     }
 
     @Test

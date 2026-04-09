@@ -9,6 +9,7 @@ import shelter.service.model.MatchResult;
 import shelter.strategy.IMatchingStrategy;
 import shelter.strategy.MatchingCriterion;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,8 +50,8 @@ class MatchingServiceImplTest {
     void setUp() {
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD, DailySchedule.HOME_MOST_OF_DAY,
                 null, new AdopterPreferences(Species.DOG, null, ActivityLevel.MEDIUM, 0, 10));
-        rex   = new Dog("Rex",   "Labrador", 3, ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
-        buddy = new Dog("Buddy", "Poodle",   2, ActivityLevel.LOW,    false, Dog.Size.SMALL, false);
+        rex   = new Dog("Rex",   "Labrador", LocalDate.now().minusYears(3), ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
+        buddy = new Dog("Buddy", "Poodle",   LocalDate.now().minusYears(2), ActivityLevel.LOW,    false, Dog.Size.SMALL, false);
     }
 
     // === AdopterBasedMatchingServiceImpl ===

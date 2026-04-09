@@ -23,7 +23,7 @@ class AnimalServiceImplTest {
     private static class StubAnimalRepository implements AnimalRepository {
         private final Map<String, Animal> store = new HashMap<>();
 
-        @Override public void save(Animal a) { store.put(a.getId(), a); }
+        @Override public void save(Animal a) { store.put(a.getId(), a); } // Animal is abstract; copy handled by subtype constructors
         @Override public Optional<Animal> findById(String id) { return Optional.ofNullable(store.get(id)); }
         @Override public List<Animal> findAll() { return new ArrayList<>(store.values()); }
         @Override public List<Animal> findByShelterId(String sid) {
@@ -49,7 +49,7 @@ class AnimalServiceImplTest {
         repo = new StubAnimalRepository();
         service = new AnimalServiceImpl(repo);
         shelter = new Shelter("Test Shelter", "Boston", 10);
-        dog = new Dog("Rex", "Labrador", 3, ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
+        dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
     }
 
     @Test
@@ -142,7 +142,7 @@ class AnimalServiceImplTest {
     @Test
     void adoptedAfter_returnsOnlyAdoptedAnimals() {
         repo.save(dog);
-        Dog adopted = new Dog("Buddy", "Poodle", 2, ActivityLevel.LOW, true, Dog.Size.SMALL, true);
+        Dog adopted = new Dog("Buddy", "Poodle", LocalDate.now().minusYears(2), ActivityLevel.LOW, true, Dog.Size.SMALL, true);
         adopted.setAdopterId("some-adopter-id");
         repo.save(adopted);
         List<Animal> result = service.adoptedAfter(LocalDate.now().minusDays(1));

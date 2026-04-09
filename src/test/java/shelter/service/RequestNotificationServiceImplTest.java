@@ -21,6 +21,7 @@ import shelter.service.model.NotificationRecord;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ class RequestNotificationServiceImplTest {
         AdopterPreferences prefs = new AdopterPreferences(Species.DOG, null, null, 0, 10);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null, prefs);
-        dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
+        dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
         adoptionRequest = new AdoptionRequest(adopter, dog);
 
         // Seed a transfer request

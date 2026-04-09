@@ -2,6 +2,8 @@ package shelter.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -16,7 +18,7 @@ class AnimalTest {
 
     @Test
     void dog_createsSuccessfully_withValidArguments() {
-        Dog dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        Dog dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
         assertEquals("Rex", dog.getName());
         assertEquals("Labrador", dog.getBreed());
         assertEquals(3, dog.getAge());
@@ -30,28 +32,28 @@ class AnimalTest {
 
     @Test
     void dog_ageZeroIsValid() {
-        Dog puppy = new Dog("Puppy", "Mixed", 0, ActivityLevel.HIGH, false, Dog.Size.SMALL, false);
+        Dog puppy = new Dog("Puppy", "Mixed", LocalDate.now(), ActivityLevel.HIGH, false, Dog.Size.SMALL, false);
         assertEquals(0, puppy.getAge());
     }
 
     @Test
     void dog_setVaccinated_updatesStatus() {
-        Dog dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
+        Dog dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
         dog.setVaccinated(true);
         assertTrue(dog.isVaccinated());
     }
 
     @Test
     void dog_setNeutered_updatesStatus() {
-        Dog dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        Dog dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
         dog.setNeutered(true);
         assertTrue(dog.isNeutered());
     }
 
     @Test
     void dog_eachInstance_hasUniqueId() {
-        Dog d1 = new Dog("A", "Breed", 1, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
-        Dog d2 = new Dog("B", "Breed", 1, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog d1 = new Dog("A", "Breed", LocalDate.now().minusYears(1), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog d2 = new Dog("B", "Breed", LocalDate.now().minusYears(1), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         assertNotEquals(d1.getId(), d2.getId());
     }
 
@@ -62,37 +64,37 @@ class AnimalTest {
     @Test
     void dog_throwsIllegalArgumentException_whenNameIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Dog(null, "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
+                new Dog(null, "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
     }
 
     @Test
     void dog_throwsIllegalArgumentException_whenNameIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Dog("   ", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
+                new Dog("   ", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
     }
 
     @Test
     void dog_throwsIllegalArgumentException_whenBreedIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Dog("Rex", null, 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
+                new Dog("Rex", null, LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
     }
 
     @Test
     void dog_throwsIllegalArgumentException_whenAgeIsNegative() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Dog("Rex", "Labrador", -1, ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
+                new Dog("Rex", "Labrador", null, ActivityLevel.HIGH, true, Dog.Size.LARGE, false));
     }
 
     @Test
     void dog_throwsIllegalArgumentException_whenActivityLevelIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Dog("Rex", "Labrador", 3, null, true, Dog.Size.LARGE, false));
+                new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), null, true, Dog.Size.LARGE, false));
     }
 
     @Test
     void dog_throwsIllegalArgumentException_whenSizeIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, null, false));
+                new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, null, false));
     }
 
     // -------------------------------------------------------------------------
@@ -101,7 +103,7 @@ class AnimalTest {
 
     @Test
     void cat_createsSuccessfully_withValidArguments() {
-        Cat cat = new Cat("Miso", "Persian", 2, ActivityLevel.LOW, true, true, true);
+        Cat cat = new Cat("Miso", "Persian", LocalDate.now().minusYears(2), ActivityLevel.LOW, true, true, true);
         assertEquals(Species.CAT, cat.getSpecies());
         assertEquals("Miso", cat.getName());
         assertTrue(cat.isIndoor());
@@ -111,7 +113,7 @@ class AnimalTest {
 
     @Test
     void cat_setNeutered_updatesStatus() {
-        Cat cat = new Cat("Miso", "Persian", 2, ActivityLevel.LOW, true, true, false);
+        Cat cat = new Cat("Miso", "Persian", LocalDate.now().minusYears(2), ActivityLevel.LOW, true, true, false);
         cat.setNeutered(true);
         assertTrue(cat.isNeutered());
     }
@@ -123,13 +125,13 @@ class AnimalTest {
     @Test
     void cat_throwsIllegalArgumentException_whenBreedIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Cat("Miso", null, 2, ActivityLevel.LOW, true, true, true));
+                new Cat("Miso", null, LocalDate.now().minusYears(2), ActivityLevel.LOW, true, true, true));
     }
 
     @Test
     void cat_throwsIllegalArgumentException_whenAgeIsNegative() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Cat("Miso", "Persian", -3, ActivityLevel.LOW, true, true, true));
+                new Cat("Miso", "Persian", null, ActivityLevel.LOW, true, true, true));
     }
 
     // -------------------------------------------------------------------------
@@ -138,7 +140,7 @@ class AnimalTest {
 
     @Test
     void rabbit_createsSuccessfully_withValidArguments() {
-        Rabbit rabbit = new Rabbit("Bun", "Holland Lop", 1, ActivityLevel.MEDIUM,
+        Rabbit rabbit = new Rabbit("Bun", "Holland Lop", LocalDate.now().minusYears(1), ActivityLevel.MEDIUM,
                 false, Rabbit.FurLength.SHORT);
         assertEquals(Species.RABBIT, rabbit.getSpecies());
         assertEquals("Bun", rabbit.getName());
@@ -148,7 +150,7 @@ class AnimalTest {
 
     @Test
     void rabbit_longFurLength_storedCorrectly() {
-        Rabbit rabbit = new Rabbit("Fluffy", "Angora", 2, ActivityLevel.LOW,
+        Rabbit rabbit = new Rabbit("Fluffy", "Angora", LocalDate.now().minusYears(2), ActivityLevel.LOW,
                 true, Rabbit.FurLength.LONG);
         assertEquals(Rabbit.FurLength.LONG, rabbit.getFurLength());
     }
@@ -160,12 +162,12 @@ class AnimalTest {
     @Test
     void rabbit_throwsIllegalArgumentException_whenFurLengthIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Rabbit("Bun", "Holland Lop", 1, ActivityLevel.MEDIUM, false, null));
+                new Rabbit("Bun", "Holland Lop", LocalDate.now().minusYears(1), ActivityLevel.MEDIUM, false, null));
     }
 
     @Test
     void rabbit_throwsIllegalArgumentException_whenNameIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Rabbit("", "Holland Lop", 1, ActivityLevel.MEDIUM, false, Rabbit.FurLength.SHORT));
+                new Rabbit("", "Holland Lop", LocalDate.now().minusYears(1), ActivityLevel.MEDIUM, false, Rabbit.FurLength.SHORT));
     }
 }

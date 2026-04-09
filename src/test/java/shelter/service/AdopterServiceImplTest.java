@@ -21,7 +21,7 @@ class AdopterServiceImplTest {
     private static class StubAdopterRepository implements AdopterRepository {
         private final Map<String, Adopter> store = new HashMap<>();
 
-        @Override public void save(Adopter a) { store.put(a.getId(), a); }
+        @Override public void save(Adopter a) { store.put(a.getId(), new Adopter(a)); }
         @Override public Optional<Adopter> findById(String id) { return Optional.ofNullable(store.get(id)); }
         @Override public List<Adopter> findAll() { return new ArrayList<>(store.values()); }
         @Override public void delete(String id) { store.remove(id); }
@@ -109,7 +109,7 @@ class AdopterServiceImplTest {
     void adoptedAnimal_returnsMatchingAdopters() {
         adopter.addAdoptedAnimalId("animal-001");
         repo.save(adopter);
-        Dog dog = new Dog("animal-001", "Rex", "Lab", 2, ActivityLevel.MEDIUM, false, null, null, Dog.Size.LARGE, false);
+        Dog dog = new Dog("animal-001", "Rex", "Lab", LocalDate.now().minusYears(2), ActivityLevel.MEDIUM, false, null, null, Dog.Size.LARGE, false);
         List<Adopter> result = service.adoptedAnimal(dog);
         assertEquals(1, result.size());
         assertEquals(adopter.getId(), result.get(0).getId());

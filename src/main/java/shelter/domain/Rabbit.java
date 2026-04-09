@@ -1,5 +1,7 @@
 package shelter.domain;
 
+import java.time.LocalDate;
+
 /**
  * Represents a rabbit available for adoption at a shelter.
  * In addition to the base {@link Animal} attributes, a rabbit has a fur length
@@ -29,7 +31,7 @@ public class Rabbit extends Animal {
      * @param id            the pre-existing unique identifier; must not be null or blank
      * @param name          the rabbit's name; must not be null or blank
      * @param breed         the rabbit's breed; must not be null or blank
-     * @param age           the rabbit's age in years; must be non-negative
+     * @param birthday      the rabbit's date of birth; must not be null
      * @param activityLevel the rabbit's activity level; must not be null
      * @param vaccinated    whether the rabbit has been vaccinated
      * @param adopterId     the ID of the adopter, or {@code null} if not adopted
@@ -37,9 +39,9 @@ public class Rabbit extends Animal {
      * @param furLength     the rabbit's fur length; must not be null
      * @throws IllegalArgumentException if furLength is null or any {@link Animal} parameter is invalid
      */
-    public Rabbit(String id, String name, String breed, int age, ActivityLevel activityLevel,
+    public Rabbit(String id, String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
                   boolean vaccinated, String adopterId, String shelterId, FurLength furLength) {
-        super(id, name, breed, age, activityLevel, vaccinated, adopterId, shelterId);
+        super(id, name, breed, birthday, activityLevel, vaccinated, adopterId, shelterId);
         if (furLength == null) {
             throw new IllegalArgumentException("Rabbit fur length must not be null.");
         }
@@ -52,15 +54,15 @@ public class Rabbit extends Animal {
      *
      * @param name          the rabbit's name; must not be null or blank
      * @param breed         the rabbit's breed; must not be null or blank
-     * @param age           the rabbit's age in years; must be non-negative
+     * @param birthday      the rabbit's date of birth; must not be null
      * @param activityLevel the rabbit's activity level; must not be null
      * @param vaccinated    whether the rabbit has been vaccinated
      * @param furLength     the rabbit's fur length; must not be null
      * @throws IllegalArgumentException if furLength is null or any {@link Animal} parameter is invalid
      */
-    public Rabbit(String name, String breed, int age, ActivityLevel activityLevel,
+    public Rabbit(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
                   boolean vaccinated, FurLength furLength) {
-        super(name, breed, age, activityLevel, vaccinated);
+        super(name, breed, birthday, activityLevel, vaccinated);
         if (furLength == null) {
             throw new IllegalArgumentException("Rabbit fur length must not be null.");
         }

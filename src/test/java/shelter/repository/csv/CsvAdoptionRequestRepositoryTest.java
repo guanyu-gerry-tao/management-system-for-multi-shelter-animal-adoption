@@ -13,6 +13,7 @@ import shelter.domain.LivingSpace;
 import shelter.domain.RequestStatus;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ class CsvAdoptionRequestRepositoryTest {
                 DailySchedule.HOME_MOST_OF_DAY, null, prefs);
         adopterRepo.save(adopter);
 
-        dog = new Dog("Rex", "Lab", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        dog = new Dog("Rex", "Lab", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
         dog.setShelterId("shelter-1");
         animalRepo.save(dog);
     }
@@ -81,7 +82,7 @@ class CsvAdoptionRequestRepositoryTest {
     @Test
     void findAll_returnsAllSaved() {
         repo.save(new AdoptionRequest(adopter, dog));
-        Dog dog2 = new Dog("Buddy", "Poodle", 2, ActivityLevel.LOW, false, Dog.Size.SMALL, true);
+        Dog dog2 = new Dog("Buddy", "Poodle", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, Dog.Size.SMALL, true);
         dog2.setShelterId("shelter-1");
         animalRepo.save(dog2);
         repo.save(new AdoptionRequest(adopter, dog2));
@@ -129,7 +130,7 @@ class CsvAdoptionRequestRepositoryTest {
         repo.save(new AdoptionRequest(adopter, dog)); // dog is in shelter-1
 
         // Dog in a different shelter
-        Dog dog2 = new Dog("Other", "Mutt", 1, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog2 = new Dog("Other", "Mutt", LocalDate.now().minusYears(1), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog2.setShelterId("shelter-2");
         animalRepo.save(dog2);
         repo.save(new AdoptionRequest(adopter, dog2));
@@ -147,7 +148,7 @@ class CsvAdoptionRequestRepositoryTest {
         AdoptionRequest pending = new AdoptionRequest(adopter, dog);
         repo.save(pending);
 
-        Dog dog2 = new Dog("Buddy2", "Beagle", 2, ActivityLevel.MEDIUM, true, Dog.Size.MEDIUM, false);
+        Dog dog2 = new Dog("Buddy2", "Beagle", LocalDate.now().minusYears(2), ActivityLevel.MEDIUM, true, Dog.Size.MEDIUM, false);
         dog2.setShelterId("shelter-1");
         animalRepo.save(dog2);
         AdoptionRequest approved = new AdoptionRequest(adopter, dog2);

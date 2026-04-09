@@ -1,5 +1,7 @@
 package shelter.domain;
 
+import java.time.LocalDate;
+
 /**
  * Represents a cat available for adoption at a shelter.
  * In addition to the base {@link Animal} attributes, a cat carries an indoor-only flag
@@ -18,7 +20,7 @@ public class Cat extends Animal {
      * @param id            the pre-existing unique identifier; must not be null or blank
      * @param name          the cat's name; must not be null or blank
      * @param breed         the cat's breed; must not be null or blank
-     * @param age           the cat's age in years; must be non-negative
+     * @param birthday      the cat's date of birth; must not be null
      * @param activityLevel the cat's activity level; must not be null
      * @param vaccinated    whether the cat has been vaccinated
      * @param adopterId     the ID of the adopter, or {@code null} if not adopted
@@ -27,9 +29,9 @@ public class Cat extends Animal {
      * @param neutered      whether the cat has been neutered
      * @throws IllegalArgumentException if any {@link Animal} parameter is invalid
      */
-    public Cat(String id, String name, String breed, int age, ActivityLevel activityLevel,
+    public Cat(String id, String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
                boolean vaccinated, String adopterId, String shelterId, boolean indoor, boolean neutered) {
-        super(id, name, breed, age, activityLevel, vaccinated, adopterId, shelterId);
+        super(id, name, breed, birthday, activityLevel, vaccinated, adopterId, shelterId);
         this.indoor = indoor;
         this.neutered = neutered;
     }
@@ -40,16 +42,16 @@ public class Cat extends Animal {
      *
      * @param name          the cat's name; must not be null or blank
      * @param breed         the cat's breed; must not be null or blank
-     * @param age           the cat's age in years; must be non-negative
+     * @param birthday      the cat's date of birth; must not be null
      * @param activityLevel the cat's activity level; must not be null
      * @param vaccinated    whether the cat has been vaccinated
      * @param indoor        whether the cat is suited for indoor-only living
      * @param neutered      whether the cat has been neutered
      * @throws IllegalArgumentException if any {@link Animal} parameter is invalid
      */
-    public Cat(String name, String breed, int age, ActivityLevel activityLevel,
+    public Cat(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
                boolean vaccinated, boolean indoor, boolean neutered) {
-        super(name, breed, age, activityLevel, vaccinated);
+        super(name, breed, birthday, activityLevel, vaccinated);
         this.indoor = indoor;
         this.neutered = neutered;
     }

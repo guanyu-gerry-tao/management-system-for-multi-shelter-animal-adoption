@@ -10,6 +10,7 @@ import shelter.domain.Dog;
 import shelter.domain.Rabbit;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void saveAndFindById_dog_returnsCorrectFields() {
-        Dog dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, true);
+        Dog dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, true);
         dog.setShelterId("shelter-1");
         repo.save(dog);
 
@@ -51,7 +52,7 @@ class CsvAnimalRepositoryTest {
         assertEquals(dog.getId(), loaded.getId());
         assertEquals("Rex", loaded.getName());
         assertEquals("Labrador", loaded.getBreed());
-        assertEquals(3, loaded.getAge());
+        assertEquals(LocalDate.now().minusYears(3), loaded.getBirthday());
         assertEquals(ActivityLevel.HIGH, loaded.getActivityLevel());
         assertTrue(loaded.isVaccinated());
         assertEquals(Dog.Size.LARGE, loaded.getSize());
@@ -64,7 +65,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void saveAndFindById_cat_returnsCorrectFields() {
-        Cat cat = new Cat("Whiskers", "Siamese", 2, ActivityLevel.LOW, false, true, false);
+        Cat cat = new Cat("Whiskers", "Siamese", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, true, false);
         cat.setShelterId("shelter-2");
         repo.save(cat);
 
@@ -80,7 +81,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void saveAndFindById_rabbit_returnsCorrectFields() {
-        Rabbit rabbit = new Rabbit("Fluffy", "Holland Lop", 1, ActivityLevel.MEDIUM, true, Rabbit.FurLength.LONG);
+        Rabbit rabbit = new Rabbit("Fluffy", "Holland Lop", LocalDate.now().minusYears(1), ActivityLevel.MEDIUM, true, Rabbit.FurLength.LONG);
         rabbit.setShelterId("shelter-3");
         repo.save(rabbit);
 
@@ -94,9 +95,9 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void findAll_returnsAllSavedAnimals() {
-        repo.save(new Dog("Dog1", "Breed", 1, ActivityLevel.LOW, false, Dog.Size.SMALL, false));
-        repo.save(new Cat("Cat1", "Breed", 2, ActivityLevel.MEDIUM, true, false, true));
-        repo.save(new Rabbit("Rabbit1", "Breed", 3, ActivityLevel.HIGH, false, Rabbit.FurLength.SHORT));
+        repo.save(new Dog("Dog1", "Breed", LocalDate.now().minusYears(1), ActivityLevel.LOW, false, Dog.Size.SMALL, false));
+        repo.save(new Cat("Cat1", "Breed", LocalDate.now().minusYears(2), ActivityLevel.MEDIUM, true, false, true));
+        repo.save(new Rabbit("Rabbit1", "Breed", LocalDate.now().minusYears(3), ActivityLevel.HIGH, false, Rabbit.FurLength.SHORT));
 
         assertEquals(3, repo.findAll().size());
     }
@@ -106,7 +107,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void delete_removesAnimal() {
-        Dog dog = new Dog("ToDelete", "Breed", 2, ActivityLevel.MEDIUM, false, Dog.Size.MEDIUM, false);
+        Dog dog = new Dog("ToDelete", "Breed", LocalDate.now().minusYears(2), ActivityLevel.MEDIUM, false, Dog.Size.MEDIUM, false);
         repo.save(dog);
         repo.delete(dog.getId());
 
@@ -127,9 +128,9 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void findByShelterId_filtersCorrectly() {
-        Dog dog1 = new Dog("D1", "Breed", 1, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog1 = new Dog("D1", "Breed", LocalDate.now().minusYears(1), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog1.setShelterId("shelter-A");
-        Dog dog2 = new Dog("D2", "Breed", 2, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog2 = new Dog("D2", "Breed", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog2.setShelterId("shelter-B");
         repo.save(dog1);
         repo.save(dog2);
@@ -144,7 +145,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void findByAdopterId_filtersCorrectly() {
-        Dog dog = new Dog("Buddy", "Breed", 4, ActivityLevel.MEDIUM, true, Dog.Size.MEDIUM, true);
+        Dog dog = new Dog("Buddy", "Breed", LocalDate.now().minusYears(4), ActivityLevel.MEDIUM, true, Dog.Size.MEDIUM, true);
         dog.setShelterId("shelter-X");
         dog.setAdopterId("adopter-99");
         repo.save(dog);
@@ -159,7 +160,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void findByAdopterId_availableAnimal_notReturned() {
-        Dog dog = new Dog("Available", "Breed", 2, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog = new Dog("Available", "Breed", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog.setShelterId("shelter-X");
         repo.save(dog);
 
@@ -171,7 +172,7 @@ class CsvAnimalRepositoryTest {
      */
     @Test
     void persistence_roundTrip() {
-        Dog dog = new Dog("Persistent", "Beagle", 5, ActivityLevel.MEDIUM, true, Dog.Size.SMALL, false);
+        Dog dog = new Dog("Persistent", "Beagle", LocalDate.now().minusYears(5), ActivityLevel.MEDIUM, true, Dog.Size.SMALL, false);
         dog.setShelterId("s1");
         repo.save(dog);
 

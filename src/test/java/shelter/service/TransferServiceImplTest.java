@@ -15,6 +15,7 @@ import shelter.service.AuditService;
 import shelter.service.impl.TransferServiceImpl;
 import shelter.service.model.AuditEntry;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ class TransferServiceImplTest {
         shelterA = new Shelter("Shelter A", "Boston", 10);
         shelterB = new Shelter("Shelter B", "Cambridge", 10);
 
-        dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
+        dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
         dog.setShelterId(shelterA.getId());
         shelterA.addAnimal(dog);
 
@@ -93,7 +94,7 @@ class TransferServiceImplTest {
     @Test
     void requestTransfer_destinationFull_throws() {
         Shelter tiny = new Shelter("Tiny", "Waltham", 1);
-        Dog blocker = new Dog("Blocker", "Poodle", 2, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog blocker = new Dog("Blocker", "Poodle", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         tiny.addAnimal(blocker);
         assertThrows(IllegalStateException.class,
                 () -> service.requestTransfer(dog, shelterA, tiny));

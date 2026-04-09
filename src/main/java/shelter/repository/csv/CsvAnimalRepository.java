@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -30,11 +31,11 @@ public class CsvAnimalRepository implements AnimalRepository {
 
     private static final String FILE_NAME = "animals.csv";
     /**
-     * Column layout: id, species, name, breed, age, activityLevel, vaccinated,
+     * Column layout: id, species, name, breed, birthday, activityLevel, vaccinated,
      * adopterId, shelterId, size(dog only), neutered(dog/cat), indoor(cat only), furLength(rabbit only)
      */
     private static final String HEADER =
-            "id,species,name,breed,age,activityLevel,vaccinated,adopterId,shelterId,size,neutered,indoor,furLength";
+            "id,species,name,breed,birthday,activityLevel,vaccinated,adopterId,shelterId,size,neutered,indoor,furLength";
 
     private final Path filePath;
     private final Map<String, Animal> store;
@@ -93,7 +94,7 @@ public class CsvAnimalRepository implements AnimalRepository {
 
     /**
      * Parses a single CSV row into the appropriate Animal subclass based on the species column.
-     * Fields are in order: id, species, name, breed, age, activityLevel, vaccinated,
+     * Fields are in order: id, species, name, breed, birthday, activityLevel, vaccinated,
      * adopterId, shelterId, size, neutered, indoor, furLength.
      * Species-specific columns that do not apply are stored as empty strings.
      *
@@ -107,7 +108,7 @@ public class CsvAnimalRepository implements AnimalRepository {
         Species species      = Species.valueOf(p[1].trim());
         String name          = CsvUtils.unescapeCsv(p[2]);
         String breed         = CsvUtils.unescapeCsv(p[3]);
-        int age              = Integer.parseInt(p[4].trim());
+        LocalDate birthday   = LocalDate.parse(p[4].trim());
         ActivityLevel act    = ActivityLevel.valueOf(p[5].trim());
         boolean vaccinated   = Boolean.parseBoolean(p[6].trim());
         String adopterId     = CsvUtils.unescapeCsv(p[7]);  // null if empty
@@ -123,16 +124,16 @@ public class CsvAnimalRepository implements AnimalRepository {
             case DOG: {
                 Dog.Size size = sizeRaw.isEmpty() ? Dog.Size.MEDIUM : Dog.Size.valueOf(sizeRaw);
                 boolean neutered = !neuteredRaw.isEmpty() && Boolean.parseBoolean(neuteredRaw);
-                return new Dog(id, name, breed, age, act, vaccinated, adopterId, shelterId, size, neutered);
+                return new Dog(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, size, neutered);
             }
             case CAT: {
                 boolean indoor   = !indoorRaw.isEmpty() && Boolean.parseBoolean(indoorRaw);
                 boolean neutered = !neuteredRaw.isEmpty() && Boolean.parseBoolean(neuteredRaw);
-                return new Cat(id, name, breed, age, act, vaccinated, adopterId, shelterId, indoor, neutered);
+                return new Cat(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, indoor, neutered);
             }
             case RABBIT: {
                 Rabbit.FurLength fur = furRaw.isEmpty() ? Rabbit.FurLength.SHORT : Rabbit.FurLength.valueOf(furRaw);
-                return new Rabbit(id, name, breed, age, act, vaccinated, adopterId, shelterId, fur);
+                return new Rabbit(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, fur);
             }
             default:
                 throw new IllegalArgumentException("Unsupported species in CSV: " + species);
@@ -163,7 +164,7 @@ public class CsvAnimalRepository implements AnimalRepository {
              + a.getSpecies().name() + ','
              + CsvUtils.escapeCsv(a.getName()) + ','
              + CsvUtils.escapeCsv(a.getBreed()) + ','
-             + a.getAge() + ','
+             + a.getBirthday().toString() + ','
              + a.getActivityLevel().name() + ','
              + a.isVaccinated() + ','
              + CsvUtils.escapeCsv(a.getAdopterId()) + ','

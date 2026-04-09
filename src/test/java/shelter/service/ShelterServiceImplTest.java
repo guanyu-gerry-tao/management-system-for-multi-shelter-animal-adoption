@@ -20,7 +20,7 @@ class ShelterServiceImplTest {
     private static class StubShelterRepository implements ShelterRepository {
         private final Map<String, Shelter> store = new HashMap<>();
 
-        @Override public void save(Shelter s) { store.put(s.getId(), s); }
+        @Override public void save(Shelter s) { store.put(s.getId(), new Shelter(s)); }
         @Override public Optional<Shelter> findById(String id) { return Optional.ofNullable(store.get(id)); }
         @Override public List<Shelter> findAll() { return new ArrayList<>(store.values()); }
         @Override public void delete(String id) { store.remove(id); }

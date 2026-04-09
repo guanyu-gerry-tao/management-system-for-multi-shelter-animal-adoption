@@ -1,5 +1,7 @@
 package shelter.domain;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -11,10 +13,10 @@ import java.util.UUID;
 public abstract class Animal implements Comparable<Animal> {
 
     private final String id;
-    private final String name;
+    private String name;
     private final String breed;
-    private final int age;
-    private final ActivityLevel activityLevel;
+    private final LocalDate birthday;
+    private ActivityLevel activityLevel;
     private boolean vaccinated;
     private String adopterId;
     private String shelterId;
@@ -27,14 +29,14 @@ public abstract class Animal implements Comparable<Animal> {
      * @param id            the pre-existing unique identifier; must not be null or blank
      * @param name          the animal's name; must not be null or blank
      * @param breed         the animal's breed; must not be null or blank
-     * @param age           the animal's age in years; must be non-negative
+     * @param birthday      the animal's date of birth; must not be null
      * @param activityLevel the animal's activity level; must not be null
      * @param vaccinated    whether the animal has been vaccinated
      * @param adopterId     the ID of the adopter who adopted this animal, or {@code null} if available
      * @param shelterId     the ID of the shelter this animal belongs to, or {@code null} if unassigned
      * @throws IllegalArgumentException if any required parameter is null, blank, or invalid
      */
-    protected Animal(String id, String name, String breed, int age,
+    protected Animal(String id, String name, String breed, LocalDate birthday,
                      ActivityLevel activityLevel, boolean vaccinated,
                      String adopterId, String shelterId) {
         if (id == null || id.isBlank()) {
@@ -46,8 +48,8 @@ public abstract class Animal implements Comparable<Animal> {
         if (breed == null || breed.isBlank()) {
             throw new IllegalArgumentException("Animal breed must not be null or blank.");
         }
-        if (age < 0) {
-            throw new IllegalArgumentException("Animal age must be non-negative.");
+        if (birthday == null) {
+            throw new IllegalArgumentException("Animal birthday must not be null.");
         }
         if (activityLevel == null) {
             throw new IllegalArgumentException("Activity level must not be null.");
@@ -55,7 +57,7 @@ public abstract class Animal implements Comparable<Animal> {
         this.id = id;
         this.name = name;
         this.breed = breed;
-        this.age = age;
+        this.birthday = birthday;
         this.activityLevel = activityLevel;
         this.vaccinated = vaccinated;
         this.adopterId = adopterId;
@@ -71,23 +73,23 @@ public abstract class Animal implements Comparable<Animal> {
      * @throws IllegalArgumentException if {@code other} is null
      */
     protected Animal(Animal other) {
-        this(other.id, other.name, other.breed, other.age, other.activityLevel,
+        this(other.id, other.name, other.breed, other.birthday, other.activityLevel,
                 other.vaccinated, other.adopterId, other.shelterId);
     }
 
     /**
      * Constructs a new Animal with the given core attributes.
-     * All parameters are required and validated; age must be non-negative.
+     * All parameters are required and validated; birthday must not be null.
      * The animal is initialized as available for adoption ({@code adopterId} is null).
      *
      * @param name          the animal's name; must not be null or blank
      * @param breed         the animal's breed; must not be null or blank
-     * @param age           the animal's age in years; must be non-negative
+     * @param birthday      the animal's date of birth; must not be null
      * @param activityLevel the animal's activity level; must not be null
      * @param vaccinated    whether the animal has been vaccinated
      * @throws IllegalArgumentException if any parameter is null, blank, or invalid
      */
-    protected Animal(String name, String breed, int age,
+    protected Animal(String name, String breed, LocalDate birthday,
                      ActivityLevel activityLevel, boolean vaccinated) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Animal name must not be null or blank.");
@@ -95,8 +97,8 @@ public abstract class Animal implements Comparable<Animal> {
         if (breed == null || breed.isBlank()) {
             throw new IllegalArgumentException("Animal breed must not be null or blank.");
         }
-        if (age < 0) {
-            throw new IllegalArgumentException("Animal age must be non-negative.");
+        if (birthday == null) {
+            throw new IllegalArgumentException("Animal birthday must not be null.");
         }
         if (activityLevel == null) {
             throw new IllegalArgumentException("Activity level must not be null.");
@@ -104,7 +106,7 @@ public abstract class Animal implements Comparable<Animal> {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.breed = breed;
-        this.age = age;
+        this.birthday = birthday;
         this.activityLevel = activityLevel;
         this.vaccinated = vaccinated;
         this.adopterId = null;
@@ -117,6 +119,17 @@ public abstract class Animal implements Comparable<Animal> {
      * @return the {@link Species} of this animal
      */
     public abstract Species getSpecies();
+
+    /**
+     * Returns whether this animal is eligible for the matching system.
+     * Returns {@code true} by default; subclasses that cannot be matched (e.g., {@code Other})
+     * should override this to return {@code false}.
+     *
+     * @return {@code true} if this animal can be matched with adopters
+     */
+    public boolean isMatchable() {
+        return true;
+    }
 
     /**
      * Returns the unique identifier of this animal.
@@ -138,6 +151,20 @@ public abstract class Animal implements Comparable<Animal> {
     }
 
     /**
+     * Updates the name of this animal.
+     * The new name must not be null or blank.
+     *
+     * @param name the new name; must not be null or blank
+     * @throws IllegalArgumentException if {@code name} is null or blank
+     */
+    public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Animal name must not be null or blank.");
+        }
+        this.name = name;
+    }
+
+    /**
      * Returns the breed of this animal.
      *
      * @return the animal's breed
@@ -147,12 +174,23 @@ public abstract class Animal implements Comparable<Animal> {
     }
 
     /**
-     * Returns the age of this animal in years.
+     * Returns the date of birth of this animal.
+     * The birthday is immutable and set at construction time.
      *
-     * @return the animal's age, always non-negative
+     * @return the animal's birthday as a {@link LocalDate}
+     */
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    /**
+     * Returns the age of this animal in whole years, calculated from birthday to today.
+     * The result is always non-negative and reflects the current date.
+     *
+     * @return the animal's age in years
      */
     public int getAge() {
-        return age;
+        return Period.between(birthday, LocalDate.now()).getYears();
     }
 
     /**
@@ -162,6 +200,20 @@ public abstract class Animal implements Comparable<Animal> {
      */
     public ActivityLevel getActivityLevel() {
         return activityLevel;
+    }
+
+    /**
+     * Updates the activity level of this animal.
+     * The new activity level must not be null.
+     *
+     * @param activityLevel the new activity level; must not be null
+     * @throws IllegalArgumentException if {@code activityLevel} is null
+     */
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        if (activityLevel == null) {
+            throw new IllegalArgumentException("Activity level must not be null.");
+        }
+        this.activityLevel = activityLevel;
     }
 
     /**
@@ -279,14 +331,14 @@ public abstract class Animal implements Comparable<Animal> {
     }
 
     /**
-     * Returns a string representation of this animal including its species, name, breed, and age.
+     * Returns a string representation of this animal including its species, name, breed, and birthday.
      *
      * @return a human-readable description of this animal
      */
     @Override
     public String toString() {
         return getSpecies() + "[id=" + id + ", name=" + name + ", breed=" + breed
-                + ", age=" + age + ", activity=" + activityLevel
+                + ", birthday=" + birthday + ", activity=" + activityLevel
                 + ", vaccinated=" + vaccinated
                 + ", adopterId=" + (adopterId != null ? adopterId : "none") + "]";
     }

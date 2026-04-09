@@ -49,7 +49,7 @@ class VaccinationServiceImplTest {
         typeRepo = new StubVaccineTypeRepository();
         service = new VaccinationServiceImpl(recordRepo, typeRepo, new NoOpAuditService<>());
 
-        dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
+        dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, false, Dog.Size.LARGE, false);
         dog.setShelterId("shelter-1");
 
         rabies = new VaccineType("Rabies", Species.DOG, 365);
