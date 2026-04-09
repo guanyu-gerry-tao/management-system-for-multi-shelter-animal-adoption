@@ -7,7 +7,6 @@ import shelter.domain.ActivityLevel;
 import shelter.domain.Adopter;
 import shelter.domain.AdopterPreferences;
 import shelter.domain.AdoptionRequest;
-import shelter.domain.Animal;
 import shelter.domain.DailySchedule;
 import shelter.domain.Dog;
 import shelter.domain.LivingSpace;
