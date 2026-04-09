@@ -7,26 +7,27 @@ import shelter.service.model.MatchResult;
 import java.util.List;
 
 /**
- * A deterministic, non-AI implementation of {@link ExplanationService} for use in unit tests.
- * Returns fixed, predictable explanation components that do not depend on any external AI service,
- * ensuring tests remain fast, isolated, and reproducible regardless of network or API availability.
+ * A deterministic, non-AI implementation of {@link ExplanationService} used as the default
+ * placeholder until {@code AIExplanationService} is integrated.
+ * Returns a fixed "not connected" message for every field instead of an AI-generated explanation,
+ * making it clear to demo viewers that no real AI output is being produced.
  */
 public class MockExplanationService implements ExplanationService {
 
+    /** Placeholder message shown in every explanation field when no AI service is connected. */
+    private static final String NOT_CONNECTED_MESSAGE =
+            "AI explanation service is not connected — no explanation available.";
+
     /**
-     * Returns a fixed ExplanationResult containing placeholder values for each explanation component.
-     * The result is derived purely from the size of the input list so tests can assert on stable output
-     * without any AI call or random behavior.
+     * Returns an ExplanationResult whose every field is the fixed "not connected" placeholder.
+     * This method ignores the input {@code results} entirely and never calls any external service,
+     * keeping tests deterministic and making the absence of a real AI explanation obvious in demo output.
      *
      * @param results the ranked list of match results to explain; may be empty but must not be null
-     * @return a deterministic ExplanationResult with fixed placeholder strings
+     * @return an ExplanationResult with the "not connected" placeholder in every field
      */
     @Override
     public ExplanationResult explain(List<MatchResult> results) {
-        // Build a stable rationale that mentions the number of results for minimal test assertability
-        String rationale = "Mock rationale: " + results.size() + " match(es) evaluated.";
-        String confidence = "Mock confidence: scores are deterministic in test mode.";
-        String advice = "Mock advice: review all candidates before deciding.";
-        return new ExplanationResult(rationale, confidence, advice);
+        return new ExplanationResult(NOT_CONNECTED_MESSAGE, NOT_CONNECTED_MESSAGE, NOT_CONNECTED_MESSAGE);
     }
 }
