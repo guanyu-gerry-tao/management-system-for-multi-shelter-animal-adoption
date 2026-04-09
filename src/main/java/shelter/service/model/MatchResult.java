@@ -69,6 +69,16 @@ public class MatchResult implements Comparable<MatchResult> {
     }
 
     /**
+     * Copy constructor that creates a new MatchResult with all field values copied from {@code other}.
+     * The copy preserves the same animal reference, adopter reference, and score.
+     *
+     * @param other the MatchResult instance to copy; must not be null
+     */
+    public MatchResult(MatchResult other) {
+        this(other.animal, other.adopter, other.score);
+    }
+
+    /**
      * Compares this result to another by score in descending order.
      * A result with a higher score is ordered before one with a lower score,
      * so that sorting a list of MatchResults places the best matches first.

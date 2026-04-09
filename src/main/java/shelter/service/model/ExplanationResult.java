@@ -1,5 +1,7 @@
 package shelter.service.model;
 
+import java.util.Objects;
+
 /**
  * Represents the structured output of an ExplanationService call for a set of match results.
  * Encapsulates multiple aspects of the AI-generated explanation, allowing callers to use
@@ -54,6 +56,44 @@ public class ExplanationResult {
      */
     public String getPersonalizedAdvice() {
         return personalizedAdvice;
+    }
+
+    /**
+     * Copy constructor that creates a new ExplanationResult with all field values copied from {@code other}.
+     * The copy preserves the same rationale, confidence assessment, and personalized advice.
+     *
+     * @param other the ExplanationResult instance to copy; must not be null
+     */
+    public ExplanationResult(ExplanationResult other) {
+        this(other.matchRationale, other.confidenceAssessment, other.personalizedAdvice);
+    }
+
+    /**
+     * Returns true if the given object is an ExplanationResult with equal rationale, confidence, and advice.
+     * Equality is value-based since explanation results have no unique ID.
+     *
+     * @param o the object to compare
+     * @return true if all fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExplanationResult)) return false;
+        ExplanationResult other = (ExplanationResult) o;
+        return Objects.equals(matchRationale, other.matchRationale)
+                && Objects.equals(confidenceAssessment, other.confidenceAssessment)
+                && Objects.equals(personalizedAdvice, other.personalizedAdvice);
+    }
+
+    /**
+     * Returns a hash code based on all fields.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(matchRationale, confidenceAssessment, personalizedAdvice);
     }
 
     /**
