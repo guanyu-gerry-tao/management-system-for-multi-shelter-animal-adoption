@@ -68,6 +68,17 @@ public class Rabbit extends Animal {
     }
 
     /**
+     * Copy constructor that creates a new Rabbit with all field values copied from {@code other}.
+     * Inherits base Animal fields via {@link Animal#Animal(Animal)} and copies Rabbit-specific fields.
+     *
+     * @param other the Rabbit instance to copy; must not be null
+     */
+    public Rabbit(Rabbit other) {
+        super(other);
+        this.furLength = other.furLength;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

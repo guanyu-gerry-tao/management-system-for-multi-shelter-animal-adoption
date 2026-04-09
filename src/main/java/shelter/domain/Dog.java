@@ -75,6 +75,18 @@ public class Dog extends Animal {
     }
 
     /**
+     * Copy constructor that creates a new Dog with all field values copied from {@code other}.
+     * Inherits base Animal fields via {@link Animal#Animal(Animal)} and copies Dog-specific fields.
+     *
+     * @param other the Dog instance to copy; must not be null
+     */
+    public Dog(Dog other) {
+        super(other);
+        this.size = other.size;
+        this.neutered = other.neutered;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

@@ -1,6 +1,7 @@
 package shelter.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,7 @@ import java.util.UUID;
  * {@link RequestStatus#APPROVED}, {@link RequestStatus#REJECTED}, or
  * {@link RequestStatus#CANCELLED} through the corresponding lifecycle methods.
  */
-public class AdoptionRequest {
+public class AdoptionRequest implements Comparable<AdoptionRequest> {
 
     private final String id;
     private final Adopter adopter;
@@ -164,5 +165,63 @@ public class AdoptionRequest {
      */
     public LocalDateTime getSubmittedAt() {
         return submittedAt;
+    }
+
+    /**
+     * Copy constructor that creates a new AdoptionRequest with all field values copied from {@code other}.
+     * The copy preserves the same ID, adopter, animal, status, and submission timestamp.
+     *
+     * @param other the AdoptionRequest instance to copy; must not be null
+     */
+    public AdoptionRequest(AdoptionRequest other) {
+        this(other.id, other.adopter, other.animal, other.status, other.submittedAt);
+    }
+
+    /**
+     * Compares this request to another by submission timestamp ascending.
+     * Earlier requests are ordered first, reflecting the natural queue order.
+     *
+     * @param other the other AdoptionRequest to compare to
+     * @return a negative number if this request was submitted earlier, positive if later, zero if equal
+     */
+    @Override
+    public int compareTo(AdoptionRequest other) {
+        return this.submittedAt.compareTo(other.submittedAt);
+    }
+
+    /**
+     * Returns true if the given object is an AdoptionRequest with the same ID.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is an AdoptionRequest with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdoptionRequest)) return false;
+        AdoptionRequest other = (AdoptionRequest) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this request's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Returns a string representation of this request including ID, adopter, animal, and status.
+     *
+     * @return a human-readable description of this request
+     */
+    @Override
+    public String toString() {
+        return "AdoptionRequest[id=" + id + ", adopter=" + adopter.getName()
+                + ", animal=" + animal.getName() + ", status=" + status + "]";
     }
 }

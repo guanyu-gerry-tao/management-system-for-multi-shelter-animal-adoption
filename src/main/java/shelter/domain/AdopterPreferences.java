@@ -1,5 +1,7 @@
 package shelter.domain;
 
+import java.util.Objects;
+
 /**
  * Represents the adoption preferences of a prospective adopter.
  * Preferences include desired species, breed, activity level, and age range;
@@ -85,5 +87,58 @@ public class AdopterPreferences {
      */
     public int getMaxAge() {
         return maxAge;
+    }
+
+    /**
+     * Copy constructor that creates a new AdopterPreferences with all field values copied from {@code other}.
+     * Since all fields are final and immutable (enums, primitives, String), a shallow copy is sufficient.
+     *
+     * @param other the AdopterPreferences instance to copy; must not be null
+     */
+    public AdopterPreferences(AdopterPreferences other) {
+        this(other.preferredSpecies, other.preferredBreed, other.preferredActivityLevel,
+                other.minAge, other.maxAge);
+    }
+
+    /**
+     * Returns true if the given object is an AdopterPreferences with equal field values.
+     * Equality is based on all fields since this is a value object with no unique ID.
+     *
+     * @param o the object to compare
+     * @return true if all preference fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdopterPreferences)) return false;
+        AdopterPreferences other = (AdopterPreferences) o;
+        return minAge == other.minAge
+                && maxAge == other.maxAge
+                && preferredSpecies == other.preferredSpecies
+                && preferredActivityLevel == other.preferredActivityLevel
+                && Objects.equals(preferredBreed, other.preferredBreed);
+    }
+
+    /**
+     * Returns a hash code based on all preference fields.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(preferredSpecies, preferredBreed, preferredActivityLevel, minAge, maxAge);
+    }
+
+    /**
+     * Returns a string representation of these preferences including species, breed, activity level, and age range.
+     *
+     * @return a human-readable description of these preferences
+     */
+    @Override
+    public String toString() {
+        return "AdopterPreferences[species=" + preferredSpecies + ", breed=" + preferredBreed
+                + ", activity=" + preferredActivityLevel
+                + ", age=" + minAge + "-" + maxAge + "]";
     }
 }

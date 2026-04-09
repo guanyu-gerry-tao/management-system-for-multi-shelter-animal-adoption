@@ -3,6 +3,7 @@ package shelter.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -10,7 +11,7 @@ import java.util.UUID;
  * A shelter enforces a maximum capacity and provides operations to add, remove, query,
  * and list the animals it currently holds.
  */
-public class Shelter {
+public class Shelter implements Comparable<Shelter> {
 
     private final String id;
     private final String name;
@@ -193,5 +194,64 @@ public class Shelter {
      */
     public int getCurrentCount() {
         return animals.size();
+    }
+
+    /**
+     * Copy constructor that creates a new Shelter with all field values copied from {@code other}.
+     * The animal list is shallow-copied so the new shelter holds references to the same Animal objects.
+     *
+     * @param other the Shelter instance to copy; must not be null
+     */
+    public Shelter(Shelter other) {
+        this(other.id, other.name, other.location, other.capacity);
+        this.animals.addAll(other.animals);
+    }
+
+    /**
+     * Compares this shelter to another by name alphabetically.
+     *
+     * @param other the other Shelter to compare to
+     * @return a negative number if this name comes first, positive if later, zero if equal
+     */
+    @Override
+    public int compareTo(Shelter other) {
+        return this.name.compareTo(other.name);
+    }
+
+    /**
+     * Returns true if the given object is a Shelter with the same ID.
+     * Shelter identity is determined solely by UUID.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a Shelter with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Shelter)) return false;
+        Shelter other = (Shelter) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this shelter's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Returns a string representation of this shelter including its ID, name, location, and capacity.
+     *
+     * @return a human-readable description of this shelter
+     */
+    @Override
+    public String toString() {
+        return "Shelter[id=" + id + ", name=" + name + ", location=" + location
+                + ", capacity=" + capacity + ", current=" + animals.size() + "]";
     }
 }
