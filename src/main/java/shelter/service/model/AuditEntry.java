@@ -3,6 +3,7 @@ package shelter.service.model;
 import shelter.domain.Staff;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Represents a single audit log entry recording who performed an action, what was affected, and when.
@@ -84,6 +85,45 @@ public class AuditEntry<T> {
      */
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    /**
+     * Copy constructor that creates a new AuditEntry with all field values copied from {@code other}.
+     * The copy preserves the same staff, action, target reference, and timestamp.
+     *
+     * @param other the AuditEntry instance to copy; must not be null
+     */
+    public AuditEntry(AuditEntry<T> other) {
+        this(other.staff, other.action, other.target, other.timestamp);
+    }
+
+    /**
+     * Returns true if the given object is an AuditEntry with equal staff, action, target, and timestamp.
+     * Equality is value-based since audit entries have no unique ID.
+     *
+     * @param o the object to compare
+     * @return true if all fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AuditEntry)) return false;
+        AuditEntry<?> other = (AuditEntry<?>) o;
+        return Objects.equals(staff, other.staff)
+                && Objects.equals(action, other.action)
+                && Objects.equals(target, other.target)
+                && Objects.equals(timestamp, other.timestamp);
+    }
+
+    /**
+     * Returns a hash code based on all fields.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(staff, action, target, timestamp);
     }
 
     /**

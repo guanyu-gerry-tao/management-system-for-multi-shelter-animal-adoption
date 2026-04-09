@@ -1,5 +1,6 @@
 package shelter.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -7,7 +8,7 @@ import java.util.UUID;
  * Concrete subclasses (e.g., {@link Dog}, {@link Cat}, {@link Rabbit}) must implement
  * {@link #getSpecies()} to identify their species and may add species-specific attributes.
  */
-public abstract class Animal {
+public abstract class Animal implements Comparable<Animal> {
 
     private final String id;
     private final String name;
@@ -59,6 +60,19 @@ public abstract class Animal {
         this.vaccinated = vaccinated;
         this.adopterId = adopterId;
         this.shelterId = shelterId;
+    }
+
+    /**
+     * Copy constructor that creates a new Animal with all field values copied from {@code other}.
+     * The copy shares the same {@code id} so it represents the same entity in persistent storage.
+     * Mutable fields ({@code vaccinated}, {@code adopterId}, {@code shelterId}) are copied by value.
+     *
+     * @param other the Animal instance to copy; must not be null
+     * @throws IllegalArgumentException if {@code other} is null
+     */
+    protected Animal(Animal other) {
+        this(other.id, other.name, other.breed, other.age, other.activityLevel,
+                other.vaccinated, other.adopterId, other.shelterId);
     }
 
     /**
@@ -224,6 +238,44 @@ public abstract class Animal {
             throw new IllegalArgumentException("Adopter ID must not be null or blank.");
         }
         this.adopterId = adopterId;
+    }
+
+    /**
+     * Compares this animal to another by name alphabetically.
+     * Animals with the same name are considered equal for ordering purposes.
+     *
+     * @param other the other Animal to compare to
+     * @return a negative number if this name comes first, positive if later, zero if equal
+     */
+    @Override
+    public int compareTo(Animal other) {
+        return this.name.compareTo(other.name);
+    }
+
+    /**
+     * Returns true if the given object is an Animal with the same ID.
+     * Animal identity is determined solely by UUID since names and other attributes are mutable.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is an Animal with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Animal)) return false;
+        Animal other = (Animal) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this animal's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     /**

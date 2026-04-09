@@ -55,6 +55,18 @@ public class Cat extends Animal {
     }
 
     /**
+     * Copy constructor that creates a new Cat with all field values copied from {@code other}.
+     * Inherits base Animal fields via {@link Animal#Animal(Animal)} and copies Cat-specific fields.
+     *
+     * @param other the Cat instance to copy; must not be null
+     */
+    public Cat(Cat other) {
+        super(other);
+        this.indoor = other.indoor;
+        this.neutered = other.neutered;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

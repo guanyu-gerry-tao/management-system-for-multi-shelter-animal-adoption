@@ -69,6 +69,16 @@ public class OverdueVaccination implements Comparable<OverdueVaccination> {
     }
 
     /**
+     * Copy constructor that creates a new OverdueVaccination with all field values copied from {@code other}.
+     * The copy preserves the same vaccine type, last administered date, and due date.
+     *
+     * @param other the OverdueVaccination instance to copy; must not be null
+     */
+    public OverdueVaccination(OverdueVaccination other) {
+        this(other.vaccineType, other.lastAdministered, other.dueDate);
+    }
+
+    /**
      * Compares this overdue vaccination to another by due date ascending.
      * Earlier due dates are ordered first, placing the most overdue items at the top of a sorted list.
      *

@@ -1,6 +1,7 @@
 package shelter.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -8,7 +9,7 @@ import java.util.UUID;
  * Each record captures which animal received which vaccine and on what date,
  * allowing the system to determine whether vaccinations are current or overdue.
  */
-public class VaccinationRecord {
+public class VaccinationRecord implements Comparable<VaccinationRecord> {
 
     private final String id;
     private final String animalId;
@@ -105,6 +106,53 @@ public class VaccinationRecord {
      */
     public LocalDate getDateAdministered() {
         return dateAdministered;
+    }
+
+    /**
+     * Copy constructor that creates a new VaccinationRecord with all field values copied from {@code other}.
+     * The copy preserves the same ID, animal, vaccine type, and administration date.
+     *
+     * @param other the VaccinationRecord instance to copy; must not be null
+     */
+    public VaccinationRecord(VaccinationRecord other) {
+        this(other.id, other.animalId, other.vaccineTypeId, other.dateAdministered);
+    }
+
+    /**
+     * Compares this record to another by date administered ascending.
+     * Earlier records are ordered first, reflecting chronological vaccination history.
+     *
+     * @param other the other VaccinationRecord to compare to
+     * @return a negative number if this record was administered earlier, positive if later, zero if equal
+     */
+    @Override
+    public int compareTo(VaccinationRecord other) {
+        return this.dateAdministered.compareTo(other.dateAdministered);
+    }
+
+    /**
+     * Returns true if the given object is a VaccinationRecord with the same ID.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a VaccinationRecord with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VaccinationRecord)) return false;
+        VaccinationRecord other = (VaccinationRecord) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this record's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     /**

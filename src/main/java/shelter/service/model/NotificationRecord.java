@@ -3,6 +3,7 @@ package shelter.service.model;
 import shelter.domain.Staff;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Represents a record of a notification that was dispatched by a staff member.
@@ -83,6 +84,45 @@ public class NotificationRecord {
      */
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    /**
+     * Copy constructor that creates a new NotificationRecord with all field values copied from {@code other}.
+     * The copy preserves the same staff, action, target ID, and timestamp.
+     *
+     * @param other the NotificationRecord instance to copy; must not be null
+     */
+    public NotificationRecord(NotificationRecord other) {
+        this(other.staff, other.action, other.targetId, other.timestamp);
+    }
+
+    /**
+     * Returns true if the given object is a NotificationRecord with equal staff, action, target ID, and timestamp.
+     * Equality is value-based since notification records have no unique ID.
+     *
+     * @param o the object to compare
+     * @return true if all fields are equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NotificationRecord)) return false;
+        NotificationRecord other = (NotificationRecord) o;
+        return Objects.equals(staff, other.staff)
+                && Objects.equals(action, other.action)
+                && Objects.equals(targetId, other.targetId)
+                && Objects.equals(timestamp, other.timestamp);
+    }
+
+    /**
+     * Returns a hash code based on all fields.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(staff, action, targetId, timestamp);
     }
 
     /**

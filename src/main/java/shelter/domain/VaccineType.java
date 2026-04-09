@@ -1,5 +1,6 @@
 package shelter.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -7,7 +8,7 @@ import java.util.UUID;
  * Each vaccine type defines which species it applies to and how long it remains valid
  * before a booster is required. Instances are managed through the vaccine type catalog.
  */
-public class VaccineType {
+public class VaccineType implements Comparable<VaccineType> {
 
     private final String id;
     private String name;
@@ -144,6 +145,52 @@ public class VaccineType {
             throw new IllegalArgumentException("Validity days must be positive.");
         }
         this.validityDays = validityDays;
+    }
+
+    /**
+     * Copy constructor that creates a new VaccineType with all field values copied from {@code other}.
+     * The copy shares the same ID, so it represents the same vaccine type definition.
+     *
+     * @param other the VaccineType instance to copy; must not be null
+     */
+    public VaccineType(VaccineType other) {
+        this(other.id, other.name, other.applicableSpecies, other.validityDays);
+    }
+
+    /**
+     * Compares this vaccine type to another by name alphabetically.
+     *
+     * @param other the other VaccineType to compare to
+     * @return a negative number if this name comes first, positive if later, zero if equal
+     */
+    @Override
+    public int compareTo(VaccineType other) {
+        return this.name.compareTo(other.name);
+    }
+
+    /**
+     * Returns true if the given object is a VaccineType with the same ID.
+     *
+     * @param o the object to compare
+     * @return true if {@code o} is a VaccineType with the same ID
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VaccineType)) return false;
+        VaccineType other = (VaccineType) o;
+        return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Returns a hash code based on this vaccine type's unique ID.
+     * Consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     /**
