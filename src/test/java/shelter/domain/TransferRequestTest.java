@@ -3,6 +3,8 @@ package shelter.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -18,7 +20,7 @@ class TransferRequestTest {
 
     @BeforeEach
     void setUp() {
-        animal = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        animal = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
         shelterA = new Shelter("Shelter A", "Boston, MA", 10);
         shelterB = new Shelter("Shelter B", "Cambridge, MA", 10);
         shelterA.addAnimal(animal);

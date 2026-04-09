@@ -1,8 +1,13 @@
 package shelter.application;
 
-import shelter.domain.Animal;
 import shelter.domain.ActivityLevel;
+import shelter.domain.Animal;
+import shelter.domain.Cat;
+import shelter.domain.Dog;
+import shelter.domain.Other;
+import shelter.domain.Rabbit;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -13,19 +18,67 @@ import java.util.List;
 public interface AnimalApplicationService {
 
     /**
-     * Admits a new animal into the specified shelter.
+     * Admits a new dog into the specified shelter with dog-specific attributes.
      * Throws an exception if the shelter is not found or is at full capacity.
      *
-     * @param species       the species of the animal (e.g., "dog", "cat", "rabbit"); must not be null or blank
+     * @param name          the dog's name; must not be null or blank
+     * @param breed         the dog's breed; must not be null or blank
+     * @param birthday      the dog's date of birth; must not be null
+     * @param activityLevel the dog's activity level; must not be null
+     * @param shelterId     the ID of the shelter to admit the dog into; must not be null or blank
+     * @param size          the dog's size; must not be null
+     * @param neutered      whether the dog is neutered
+     * @return the newly created {@link Dog}
+     */
+    Dog admitDog(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
+                 String shelterId, Dog.Size size, boolean neutered);
+
+    /**
+     * Admits a new cat into the specified shelter with cat-specific attributes.
+     * Throws an exception if the shelter is not found or is at full capacity.
+     *
+     * @param name          the cat's name; must not be null or blank
+     * @param breed         the cat's breed; must not be null or blank
+     * @param birthday      the cat's date of birth; must not be null
+     * @param activityLevel the cat's activity level; must not be null
+     * @param shelterId     the ID of the shelter to admit the cat into; must not be null or blank
+     * @param indoor        whether the cat is an indoor cat
+     * @param neutered      whether the cat is neutered
+     * @return the newly created {@link Cat}
+     */
+    Cat admitCat(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
+                 String shelterId, boolean indoor, boolean neutered);
+
+    /**
+     * Admits a new rabbit into the specified shelter with rabbit-specific attributes.
+     * Throws an exception if the shelter is not found or is at full capacity.
+     *
+     * @param name          the rabbit's name; must not be null or blank
+     * @param breed         the rabbit's breed; must not be null or blank
+     * @param birthday      the rabbit's date of birth; must not be null
+     * @param activityLevel the rabbit's activity level; must not be null
+     * @param shelterId     the ID of the shelter to admit the rabbit into; must not be null or blank
+     * @param furLength     the rabbit's fur length; must not be null
+     * @return the newly created {@link Rabbit}
+     */
+    Rabbit admitRabbit(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
+                       String shelterId, Rabbit.FurLength furLength);
+
+    /**
+     * Admits a new animal of an unclassified species into the specified shelter.
+     * Use this method for animals that do not have a dedicated subclass (e.g., fish, parrot, iguana).
+     * Throws an exception if the shelter is not found or is at full capacity.
+     *
      * @param name          the animal's name; must not be null or blank
-     * @param breed         the animal's breed; must not be null or blank
-     * @param age           the animal's age in years; must be non-negative
+     * @param breed         the animal's breed or description; must not be null or blank
+     * @param birthday      the animal's date of birth; must not be null
      * @param activityLevel the animal's activity level; must not be null
      * @param shelterId     the ID of the shelter to admit the animal into; must not be null or blank
-     * @return the newly created {@link Animal}
+     * @param speciesName   a free-form species description (e.g., "fish"); must not be null or blank
+     * @return the newly created {@link Other}
      */
-    Animal admitAnimal(String species, String name, String breed, int age,
-                       ActivityLevel activityLevel, String shelterId);
+    Other admitOther(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
+                     String shelterId, String speciesName);
 
     /**
      * Returns a list of animals, optionally filtered by shelter.
@@ -38,19 +91,17 @@ public interface AnimalApplicationService {
     List<Animal> listAnimals(String shelterId);
 
     /**
-     * Updates an existing animal's information with the provided values.
+     * Updates an existing animal's mutable fields with the provided values.
      * Only non-null parameters are applied; omitted (null) fields retain their current values.
+     * Breed and birthday are immutable and cannot be changed after admission.
      * Throws an exception if the animal is not found.
      *
      * @param animalId      the ID of the animal to update; must not be null or blank
      * @param name          the new name, or {@code null} to keep the current value
-     * @param breed         the new breed, or {@code null} to keep the current value
-     * @param age           the new age, or {@code null} to keep the current value
      * @param activityLevel the new activity level, or {@code null} to keep the current value
      * @return the updated {@link Animal}
      */
-    Animal updateAnimal(String animalId, String name, String breed,
-                        Integer age, ActivityLevel activityLevel);
+    Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel);
 
     /**
      * Removes an animal from the system by ID.

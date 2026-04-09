@@ -3,6 +3,8 @@ package shelter.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -20,7 +22,7 @@ class AdoptionRequestTest {
         AdopterPreferences prefs = new AdopterPreferences(Species.DOG, null, ActivityLevel.HIGH, 0, 10);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null, prefs);
-        animal = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        animal = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
     }
 
     // -------------------------------------------------------------------------

@@ -10,6 +10,7 @@ import shelter.domain.Shelter;
 import shelter.domain.TransferRequest;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ class CsvTransferRequestRepositoryTest {
         shelterRepo.save(shelterA);
         shelterRepo.save(shelterB);
 
-        dog = new Dog("Rex", "Lab", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        dog = new Dog("Rex", "Lab", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
         dog.setShelterId(shelterA.getId());
         animalRepo.save(dog);
     }
@@ -79,7 +80,7 @@ class CsvTransferRequestRepositoryTest {
     @Test
     void findAll_returnsAllSaved() {
         repo.save(new TransferRequest(dog, shelterA, shelterB));
-        Dog dog2 = new Dog("Buddy", "Poodle", 2, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog2 = new Dog("Buddy", "Poodle", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog2.setShelterId(shelterB.getId());
         animalRepo.save(dog2);
         repo.save(new TransferRequest(dog2, shelterB, shelterA));
@@ -149,7 +150,7 @@ class CsvTransferRequestRepositoryTest {
         TransferRequest pending = new TransferRequest(dog, shelterA, shelterB);
         repo.save(pending);
 
-        Dog dog2 = new Dog("Dog2", "Mutt", 1, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog2 = new Dog("Dog2", "Mutt", LocalDate.now().minusYears(1), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog2.setShelterId(shelterB.getId());
         animalRepo.save(dog2);
         TransferRequest approved = new TransferRequest(dog2, shelterB, shelterA);
@@ -170,7 +171,7 @@ class CsvTransferRequestRepositoryTest {
         repo.save(fromA);
 
         // shelterA is the destination
-        Dog dog2 = new Dog("Dog2", "Breed", 2, ActivityLevel.LOW, false, Dog.Size.SMALL, false);
+        Dog dog2 = new Dog("Dog2", "Breed", LocalDate.now().minusYears(2), ActivityLevel.LOW, false, Dog.Size.SMALL, false);
         dog2.setShelterId(shelterB.getId());
         animalRepo.save(dog2);
         TransferRequest toA = new TransferRequest(dog2, shelterB, shelterA);

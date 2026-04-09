@@ -1,5 +1,7 @@
 package shelter.domain;
 
+import java.time.LocalDate;
+
 /**
  * Represents a dog available for adoption at a shelter.
  * In addition to the base {@link Animal} attributes, a dog has a physical size
@@ -32,7 +34,7 @@ public class Dog extends Animal {
      * @param id            the pre-existing unique identifier; must not be null or blank
      * @param name          the dog's name; must not be null or blank
      * @param breed         the dog's breed; must not be null or blank
-     * @param age           the dog's age in years; must be non-negative
+     * @param birthday      the dog's date of birth; must not be null
      * @param activityLevel the dog's activity level; must not be null
      * @param vaccinated    whether the dog has been vaccinated
      * @param adopterId     the ID of the adopter, or {@code null} if not adopted
@@ -41,9 +43,9 @@ public class Dog extends Animal {
      * @param neutered      whether the dog has been neutered
      * @throws IllegalArgumentException if size is null or any {@link Animal} parameter is invalid
      */
-    public Dog(String id, String name, String breed, int age, ActivityLevel activityLevel,
+    public Dog(String id, String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
                boolean vaccinated, String adopterId, String shelterId, Size size, boolean neutered) {
-        super(id, name, breed, age, activityLevel, vaccinated, adopterId, shelterId);
+        super(id, name, breed, birthday, activityLevel, vaccinated, adopterId, shelterId);
         if (size == null) {
             throw new IllegalArgumentException("Dog size must not be null.");
         }
@@ -57,16 +59,16 @@ public class Dog extends Animal {
      *
      * @param name          the dog's name; must not be null or blank
      * @param breed         the dog's breed; must not be null or blank
-     * @param age           the dog's age in years; must be non-negative
+     * @param birthday      the dog's date of birth; must not be null
      * @param activityLevel the dog's activity level; must not be null
      * @param vaccinated    whether the dog has been vaccinated
      * @param size          the dog's size classification; must not be null
      * @param neutered      whether the dog has been neutered
      * @throws IllegalArgumentException if size is null or any {@link Animal} parameter is invalid
      */
-    public Dog(String name, String breed, int age, ActivityLevel activityLevel,
+    public Dog(String name, String breed, LocalDate birthday, ActivityLevel activityLevel,
                boolean vaccinated, Size size, boolean neutered) {
-        super(name, breed, age, activityLevel, vaccinated);
+        super(name, breed, birthday, activityLevel, vaccinated);
         if (size == null) {
             throw new IllegalArgumentException("Dog size must not be null.");
         }

@@ -109,7 +109,7 @@ class CsvVaccinationRecordRepositoryTest {
      */
     @Test
     void findByShelterId_returnsRecordsForAnimalsInShelter() {
-        Dog dog = new Dog("Rex", "Lab", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        Dog dog = new Dog("Rex", "Lab", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
         dog.setShelterId("shelter-X");
         animalRepo.save(dog);
 

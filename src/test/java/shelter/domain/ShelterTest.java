@@ -3,6 +3,7 @@ package shelter.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,8 +22,8 @@ class ShelterTest {
     @BeforeEach
     void setUp() {
         shelter = new Shelter("Happy Paws", "Boston, MA", 2);
-        dog = new Dog("Rex", "Labrador", 3, ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
-        cat = new Cat("Miso", "Persian", 2, ActivityLevel.LOW, true, true, true);
+        dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, true, Dog.Size.LARGE, false);
+        cat = new Cat("Miso", "Persian", LocalDate.now().minusYears(2), ActivityLevel.LOW, true, true, true);
     }
 
     // -------------------------------------------------------------------------
@@ -95,7 +96,7 @@ class ShelterTest {
     void addAnimal_throwsIllegalStateException_whenAtCapacity() {
         shelter.addAnimal(dog);
         shelter.addAnimal(cat);
-        Rabbit rabbit = new Rabbit("Bun", "Holland Lop", 1,
+        Rabbit rabbit = new Rabbit("Bun", "Holland Lop", LocalDate.now().minusYears(1),
                 ActivityLevel.MEDIUM, false, Rabbit.FurLength.SHORT);
         assertThrows(IllegalStateException.class, () -> shelter.addAnimal(rabbit));
     }
