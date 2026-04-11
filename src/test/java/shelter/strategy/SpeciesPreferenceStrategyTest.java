@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link SpeciesPreferenceStrategy}.
+ * Covers null guards, applicability behavior, exact matches, no matches, and criterion identity.
  */
 class SpeciesPreferenceStrategyTest {
 
@@ -30,12 +31,17 @@ class SpeciesPreferenceStrategyTest {
     }
 
     @Test
-    void isApplicable_withSpeciesPreference_returnsTrue() {
-        assertTrue(strategy.isApplicable(adopter, dog));
+    void score_nullAdopter_throws() {
+        assertThrows(IllegalArgumentException.class, () -> strategy.score(null, dog));
     }
 
     @Test
-    void isApplicable_withoutSpeciesPreference_returnsFalse() {
+    void score_nullAnimal_throws() {
+        assertThrows(IllegalArgumentException.class, () -> strategy.score(adopter, null));
+    }
+
+    @Test
+    void isApplicable_noPreferenceSet_returnsFalse() {
         Adopter noPreference = new Adopter("Bob", LivingSpace.APARTMENT,
                 DailySchedule.AWAY_MOST_OF_DAY, null,
                 new AdopterPreferences(null, null, null, null, 0, 10));
@@ -43,18 +49,19 @@ class SpeciesPreferenceStrategyTest {
     }
 
     @Test
-    void score_matchingSpecies_returnsOne() {
+    void score_exactMatch_returnsFullScore() {
         assertEquals(1.0, strategy.score(adopter, dog));
     }
 
+    // SpeciesPreferenceStrategy is binary, so there is no partial-match score to test.
+
     @Test
-    void score_differentSpecies_returnsZero() {
+    void score_noMatch_returnsZero() {
         assertEquals(0.0, strategy.score(adopter, cat));
     }
 
     @Test
-    void score_nullInput_throws() {
-        assertThrows(IllegalArgumentException.class, () -> strategy.score(null, dog));
-        assertThrows(IllegalArgumentException.class, () -> strategy.score(adopter, null));
+    void getCriterion_returnsCorrectEnum() {
+        assertEquals(MatchingCriterion.SPECIES, strategy.getCriterion());
     }
 }

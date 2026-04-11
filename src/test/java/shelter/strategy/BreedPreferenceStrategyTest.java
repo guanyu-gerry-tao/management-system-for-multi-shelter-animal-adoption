@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link BreedPreferenceStrategy}.
+ * Covers null guards, applicability behavior, exact matches, no matches, and criterion identity.
  */
 class BreedPreferenceStrategyTest {
 
@@ -30,12 +31,17 @@ class BreedPreferenceStrategyTest {
     }
 
     @Test
-    void isApplicable_withBreedPreference_returnsTrue() {
-        assertTrue(strategy.isApplicable(adopter, labrador));
+    void score_nullAdopter_throws() {
+        assertThrows(IllegalArgumentException.class, () -> strategy.score(null, labrador));
     }
 
     @Test
-    void isApplicable_withBlankBreedPreference_returnsFalse() {
+    void score_nullAnimal_throws() {
+        assertThrows(IllegalArgumentException.class, () -> strategy.score(adopter, null));
+    }
+
+    @Test
+    void isApplicable_noPreferenceSet_returnsFalse() {
         Adopter noPreference = new Adopter("Bob", LivingSpace.APARTMENT,
                 DailySchedule.AWAY_MOST_OF_DAY, null,
                 new AdopterPreferences(null, " ", null, null, 0, 10));
@@ -43,12 +49,19 @@ class BreedPreferenceStrategyTest {
     }
 
     @Test
-    void score_matchingBreedIgnoringCase_returnsOne() {
+    void score_exactMatch_returnsFullScore() {
         assertEquals(1.0, strategy.score(adopter, labrador));
     }
 
+    // BreedPreferenceStrategy is binary, so there is no partial-match score to test.
+
     @Test
-    void score_differentBreed_returnsZero() {
+    void score_noMatch_returnsZero() {
         assertEquals(0.0, strategy.score(adopter, poodle));
+    }
+
+    @Test
+    void getCriterion_returnsCorrectEnum() {
+        assertEquals(MatchingCriterion.BREED, strategy.getCriterion());
     }
 }

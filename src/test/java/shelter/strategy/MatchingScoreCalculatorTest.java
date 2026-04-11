@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import shelter.domain.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,6 +80,14 @@ class MatchingScoreCalculatorTest {
     void constructor_emptyStrategies_throws() {
         assertThrows(IllegalArgumentException.class,
                 () -> new MatchingScoreCalculator(List.of(), null));
+    }
+
+    @Test
+    void constructor_nullStrategyEntry_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new MatchingScoreCalculator(
+                        Arrays.asList(new SpeciesPreferenceStrategy(), null),
+                        null));
     }
 
 }

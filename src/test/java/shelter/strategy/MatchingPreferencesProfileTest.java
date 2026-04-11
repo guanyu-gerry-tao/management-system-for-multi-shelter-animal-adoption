@@ -2,6 +2,7 @@ package shelter.strategy;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,6 +11,20 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for {@link MatchingPreferencesProfile}.
  */
 class MatchingPreferencesProfileTest {
+
+    @Test
+    void constructor_nullPriorities_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new MatchingPreferencesProfile(null));
+    }
+
+    @Test
+    void constructor_nullPriorityEntry_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new MatchingPreferencesProfile(Arrays.asList(
+                        new MatchingPreferencesPriority(MatchingCriterion.SPECIES, 1),
+                        null)));
+    }
 
     @Test
     void constructor_validPriorities_storesUnmodifiableList() {
@@ -43,6 +58,15 @@ class MatchingPreferencesProfileTest {
     }
 
     @Test
+    void getRank_nullCriterion_throws() {
+        MatchingPreferencesProfile profile = new MatchingPreferencesProfile(List.of(
+                new MatchingPreferencesPriority(MatchingCriterion.SPECIES, 1)
+        ));
+
+        assertThrows(IllegalArgumentException.class, () -> profile.getRank(null));
+    }
+
+    @Test
     void getLargestRank_returnsLargestRank() {
         MatchingPreferencesProfile profile = new MatchingPreferencesProfile(List.of(
                 new MatchingPreferencesPriority(MatchingCriterion.SPECIES, 1),
@@ -50,6 +74,13 @@ class MatchingPreferencesProfileTest {
         ));
 
         assertEquals(3, profile.getLargestRank());
+    }
+
+    @Test
+    void getLargestRank_emptyProfile_returnsZero() {
+        MatchingPreferencesProfile profile = new MatchingPreferencesProfile(List.of());
+
+        assertEquals(0, profile.getLargestRank());
     }
 
     @Test

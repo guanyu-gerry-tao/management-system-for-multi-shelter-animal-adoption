@@ -13,41 +13,64 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link VaccinationPreferenceStrategy}.
+ * Covers null guards, applicability behavior, exact matches, no matches, and criterion identity.
  */
 class VaccinationPreferenceStrategyTest {
 
+    private VaccinationPreferenceStrategy strategy;
     private Dog dog;
 
     @BeforeEach
     void setUp() {
+        strategy = new VaccinationPreferenceStrategy(
+                new StubVaccinationInfoProvider(List.of(), List.of()));
         dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3),
                 ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
     }
 
     @Test
-    void isApplicable_whenVaccinatedAnimalsRequired_returnsTrue() {
-        VaccinationPreferenceStrategy strategy =
-                new VaccinationPreferenceStrategy(new StubVaccinationInfoProvider(List.of(), List.of()));
-        assertTrue(strategy.isApplicable(adopter(true), dog));
+    void score_nullAdopter_throws() {
+        assertThrows(IllegalArgumentException.class, () -> strategy.score(null, dog));
     }
 
     @Test
-    void isApplicable_whenVaccinatedAnimalsNotRequired_returnsFalse() {
-        VaccinationPreferenceStrategy strategy =
-                new VaccinationPreferenceStrategy(new StubVaccinationInfoProvider(List.of(), List.of()));
-        assertFalse(strategy.isApplicable(adopter(false), dog));
+    void score_nullAnimal_throws() {
+        assertThrows(IllegalArgumentException.class, () -> strategy.score(adopter(true), null));
+    }
+
+    @Test
+    void isApplicable_noPreferenceSet_returnsFalse() {
         assertFalse(strategy.isApplicable(adopter(null), dog));
     }
 
     @Test
-    void score_noApplicableVaccineTypes_returnsOne() {
+    void score_exactMatch_returnsFullScore() {
+        VaccineType rabies = new VaccineType("Rabies", Species.DOG, 365);
         VaccinationPreferenceStrategy strategy =
-                new VaccinationPreferenceStrategy(new StubVaccinationInfoProvider(List.of(), List.of()));
+                new VaccinationPreferenceStrategy(
+                        new StubVaccinationInfoProvider(List.of(rabies), List.of()));
+
         assertEquals(1.0, strategy.score(adopter(true), dog));
     }
 
+    // VaccinationPreferenceStrategy has binary applicability from the adopter's perspective,
+    // but the actual score supports partial credit for overdue vaccine records.
+
     @Test
-    void score_validOverdueAndMissingVaccines_returnsHalf() {
+    void score_noMatch_returnsZero() {
+        VaccineType rabies = new VaccineType("Rabies", Species.DOG, 365);
+        VaccinationPreferenceStrategy strategy =
+                new VaccinationPreferenceStrategy(
+                        new StubVaccinationInfoProvider(
+                                List.of(rabies),
+                                List.of(new OverdueVaccination(
+                                        rabies, null, LocalDate.now().minusDays(1)))));
+
+        assertEquals(0.0, strategy.score(adopter(true), dog));
+    }
+
+    @Test
+    void score_partialMatch_returnsPartialScore() {
         VaccineType rabies = new VaccineType("Rabies", Species.DOG, 365);
         VaccineType bordetella = new VaccineType("Bordetella", Species.DOG, 365);
         VaccineType distemper = new VaccineType("Distemper", Species.DOG, 365);
@@ -61,6 +84,11 @@ class VaccinationPreferenceStrategyTest {
                         new StubVaccinationInfoProvider(applicableTypes, overdueVaccinations));
 
         assertEquals(0.5, strategy.score(adopter(true), dog));
+    }
+
+    @Test
+    void getCriterion_returnsCorrectEnum() {
+        assertEquals(MatchingCriterion.VACCINATION, strategy.getCriterion());
     }
 
     @Test

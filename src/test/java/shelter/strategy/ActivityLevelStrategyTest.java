@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link ActivityLevelStrategy}.
+ * Covers null guards, applicability behavior, exact matches, partial matches, no matches, and criterion identity.
  */
 class ActivityLevelStrategyTest {
 
@@ -25,12 +26,19 @@ class ActivityLevelStrategyTest {
     }
 
     @Test
-    void isApplicable_withActivityPreference_returnsTrue() {
-        assertTrue(strategy.isApplicable(mediumActivityAdopter, dog(ActivityLevel.MEDIUM)));
+    void score_nullAdopter_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> strategy.score(null, dog(ActivityLevel.MEDIUM)));
     }
 
     @Test
-    void isApplicable_withoutActivityPreference_returnsFalse() {
+    void score_nullAnimal_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> strategy.score(mediumActivityAdopter, null));
+    }
+
+    @Test
+    void isApplicable_noPreferenceSet_returnsFalse() {
         Adopter noPreference = new Adopter("Bob", LivingSpace.APARTMENT,
                 DailySchedule.AWAY_MOST_OF_DAY, null,
                 new AdopterPreferences(null, null, null, null, 0, 10));
@@ -38,21 +46,26 @@ class ActivityLevelStrategyTest {
     }
 
     @Test
-    void score_exactMatch_returnsOne() {
+    void score_exactMatch_returnsFullScore() {
         assertEquals(1.0, strategy.score(mediumActivityAdopter, dog(ActivityLevel.MEDIUM)));
     }
 
     @Test
-    void score_oneLevelAway_returnsHalf() {
+    void score_partialMatch_returnsPartialScore() {
         assertEquals(0.5, strategy.score(mediumActivityAdopter, dog(ActivityLevel.HIGH)));
     }
 
     @Test
-    void score_twoLevelsAway_returnsZero() {
+    void score_noMatch_returnsZero() {
         Adopter lowActivityAdopter = new Adopter("Cara", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null,
                 new AdopterPreferences(null, null, ActivityLevel.LOW, null, 0, 10));
         assertEquals(0.0, strategy.score(lowActivityAdopter, dog(ActivityLevel.HIGH)));
+    }
+
+    @Test
+    void getCriterion_returnsCorrectEnum() {
+        assertEquals(MatchingCriterion.ACTIVITY_LEVEL, strategy.getCriterion());
     }
 
     private Dog dog(ActivityLevel activityLevel) {

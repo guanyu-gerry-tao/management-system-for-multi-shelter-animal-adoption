@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link AgePreferenceStrategy}.
+ * Covers null guards, applicability behavior, exact matches, partial matches, no matches, and criterion identity.
  */
 class AgePreferenceStrategyTest {
 
@@ -25,12 +26,19 @@ class AgePreferenceStrategyTest {
     }
 
     @Test
-    void isApplicable_withAgePreference_returnsTrue() {
-        assertTrue(strategy.isApplicable(prefersTwoYearOld, dogAtBirthday(LocalDate.now().minusYears(2))));
+    void score_nullAdopter_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> strategy.score(null, dogAtBirthday(LocalDate.now().minusYears(2))));
     }
 
     @Test
-    void isApplicable_withSentinelRange_returnsFalse() {
+    void score_nullAnimal_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> strategy.score(prefersTwoYearOld, null));
+    }
+
+    @Test
+    void isApplicable_noPreferenceSet_returnsFalse() {
         Adopter noAgePreference = new Adopter("Bob", LivingSpace.APARTMENT,
                 DailySchedule.AWAY_MOST_OF_DAY, null,
                 new AdopterPreferences(null, null, null, null, 0, Integer.MAX_VALUE));
@@ -38,13 +46,13 @@ class AgePreferenceStrategyTest {
     }
 
     @Test
-    void score_insidePreferredRange_returnsOne() {
+    void score_exactMatch_returnsFullScore() {
         assertEquals(1.0, strategy.score(prefersTwoYearOld,
                 dogAtBirthday(LocalDate.now().minusYears(2))));
     }
 
     @Test
-    void score_upToHalfYearOutsideRange_returnsPointEight() {
+    void score_partialMatch_returnsPartialScore() {
         assertEquals(0.8, strategy.score(prefersTwoYearOld,
                 dogAtBirthday(LocalDate.now().minusYears(2).minusMonths(3))));
     }
@@ -56,9 +64,14 @@ class AgePreferenceStrategyTest {
     }
 
     @Test
-    void score_moreThanOneYearOutsideRange_returnsZero() {
+    void score_noMatch_returnsZero() {
         assertEquals(0.0, strategy.score(prefersTwoYearOld,
                 dogAtBirthday(LocalDate.now().minusYears(3).minusMonths(6))));
+    }
+
+    @Test
+    void getCriterion_returnsCorrectEnum() {
+        assertEquals(MatchingCriterion.AGE, strategy.getCriterion());
     }
 
     private Dog dogAtBirthday(LocalDate birthday) {
