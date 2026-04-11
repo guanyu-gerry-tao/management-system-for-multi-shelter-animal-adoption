@@ -8,6 +8,7 @@ import shelter.exception.SpeciesMismatchException;
 import shelter.repository.VaccinationRecordRepository;
 import shelter.repository.VaccineTypeRepository;
 import shelter.service.AuditService;
+import shelter.service.VaccinationInfoProvider;
 import shelter.service.VaccinationService;
 import shelter.service.model.OverdueVaccination;
 
@@ -23,7 +24,7 @@ import java.util.Optional;
  * history by animal. All significant operations are forwarded to the {@link AuditService}
  * for traceability.
  */
-public class VaccinationServiceImpl implements VaccinationService {
+public class VaccinationServiceImpl implements VaccinationService, VaccinationInfoProvider {
 
     private final VaccinationRecordRepository recordRepository;
     private final VaccineTypeRepository vaccineTypeRepository;
@@ -111,8 +112,7 @@ public class VaccinationServiceImpl implements VaccinationService {
         }
 
         // Retrieve all vaccine types applicable to this animal's species
-        List<VaccineType> applicableTypes =
-                vaccineTypeRepository.findByApplicableSpecies(animal.getSpecies());
+        List<VaccineType> applicableTypes = getApplicableVaccineTypes(animal);
 
         // Build the full vaccination history for this animal once, to avoid repeated queries
         List<VaccinationRecord> history = recordRepository.findByAnimalId(animal.getId());
@@ -137,6 +137,21 @@ public class VaccinationServiceImpl implements VaccinationService {
 
         Collections.sort(overdue);
         return Collections.unmodifiableList(overdue);
+    }
+
+    /**
+     * Returns all vaccine types applicable to the given animal's species.
+     *
+     * @param animal the animal to query
+     * @return the list of vaccine types applicable to the animal
+     * @throws IllegalArgumentException if {@code animal} is null
+     */
+    @Override
+    public List<VaccineType> getApplicableVaccineTypes(Animal animal) {
+        if (animal == null) {
+            throw new IllegalArgumentException("Animal must not be null.");
+        }
+        return vaccineTypeRepository.findByApplicableSpecies(animal.getSpecies());
     }
 
     /**

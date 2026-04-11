@@ -48,7 +48,7 @@ class MatchingApplicationServiceImplTest {
                 animalService, adopterService, shelterService, explanationService);
 
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD, DailySchedule.HOME_MOST_OF_DAY,
-                null, new AdopterPreferences(null, null, null, 0, 20));
+                null, new AdopterPreferences(null, null, null, null, 0, 20));
         shelter = new Shelter("Test Shelter", "Boston", 20);
         dog     = new Dog("Rex", "Lab", LocalDate.now().minusYears(3), ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
         dog.setShelterId(shelter.getId());

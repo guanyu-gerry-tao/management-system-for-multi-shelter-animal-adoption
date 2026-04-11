@@ -42,7 +42,8 @@ class AdopterApplicationServiceImplTest {
     @Test
     void registerAdopter_createsAndPersists() {
         Adopter result = service.registerAdopter("Alice", LivingSpace.HOUSE_WITH_YARD,
-                DailySchedule.HOME_MOST_OF_DAY, Species.DOG, null, ActivityLevel.MEDIUM, 0, 10);
+                DailySchedule.HOME_MOST_OF_DAY, Species.DOG, null, ActivityLevel.MEDIUM,
+                null, 0, 10);
 
         assertNotNull(result);
         assertEquals("Alice", result.getName());
@@ -53,7 +54,7 @@ class AdopterApplicationServiceImplTest {
     @Test
     void listAdopters_returnsAll() {
         service.registerAdopter("Alice", LivingSpace.HOUSE_WITH_YARD,
-                DailySchedule.HOME_MOST_OF_DAY, null, null, null, 0, 20);
+                DailySchedule.HOME_MOST_OF_DAY, null, null, null, null, 0, 20);
 
         assertEquals(1, service.listAdopters().size());
     }
@@ -62,11 +63,11 @@ class AdopterApplicationServiceImplTest {
     void updateAdopter_mergesNameOnly() {
         Adopter adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null,
-                new AdopterPreferences(null, null, null, 0, 20));
+                new AdopterPreferences(null, null, null, null, 0, 20));
         adopterService.store.put(adopter.getId(), adopter);
 
         Adopter updated = service.updateAdopter(adopter.getId(), "Bob", null, null,
-                null, null, null, null, null);
+                null, null, null, null, null, null);
 
         assertEquals("Bob", updated.getName());
         assertEquals(LivingSpace.HOUSE_WITH_YARD, updated.getLivingSpace()); // unchanged
@@ -78,14 +79,14 @@ class AdopterApplicationServiceImplTest {
     void updateAdopter_notFound_throws() {
         assertThrows(EntityNotFoundException.class,
                 () -> service.updateAdopter("missing", "Bob", null, null,
-                        null, null, null, null, null));
+                        null, null, null, null, null, null));
     }
 
     @Test
     void removeAdopter_delegatesAndLogs() {
         Adopter adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null,
-                new AdopterPreferences(null, null, null, 0, 20));
+                new AdopterPreferences(null, null, null, null, 0, 20));
         adopterService.store.put(adopter.getId(), adopter);
 
         service.removeAdopter(adopter.getId());

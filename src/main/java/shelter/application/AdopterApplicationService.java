@@ -26,13 +26,16 @@ public interface AdopterApplicationService {
      * @param preferredSpecies       the preferred species, or {@code null} for no preference
      * @param preferredBreed         the preferred breed, or {@code null} for no preference
      * @param preferredActivityLevel the preferred activity level, or {@code null} for no preference
+     * @param requiresVaccinated     {@code true} if vaccinated animals are required,
+     *                               or {@code null} for no vaccination preference
      * @param minAge                 the minimum preferred animal age; must be non-negative
      * @param maxAge                 the maximum preferred animal age; must be &gt;= {@code minAge}
      * @return the newly created {@link Adopter}
      */
     Adopter registerAdopter(String name, LivingSpace livingSpace, DailySchedule dailySchedule,
                              Species preferredSpecies, String preferredBreed,
-                             ActivityLevel preferredActivityLevel, int minAge, int maxAge);
+                             ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
+                             int minAge, int maxAge);
 
     /**
      * Returns a list of all registered adopters in the system.
@@ -54,6 +57,7 @@ public interface AdopterApplicationService {
      * @param preferredSpecies       the new preferred species, or {@code null} to keep the current value
      * @param preferredBreed         the new preferred breed, or {@code null} to keep the current value
      * @param preferredActivityLevel the new preferred activity level, or {@code null} to keep the current value
+     * @param requiresVaccinated     the new vaccination requirement, or {@code null} to keep the current value
      * @param minAge                 the new minimum preferred age, or {@code null} to keep the current value
      * @param maxAge                 the new maximum preferred age, or {@code null} to keep the current value
      * @return the updated {@link Adopter}
@@ -61,7 +65,7 @@ public interface AdopterApplicationService {
     Adopter updateAdopter(String adopterId, String name, LivingSpace livingSpace,
                           DailySchedule dailySchedule, Species preferredSpecies,
                           String preferredBreed, ActivityLevel preferredActivityLevel,
-                          Integer minAge, Integer maxAge);
+                          Boolean requiresVaccinated, Integer minAge, Integer maxAge);
 
     /**
      * Removes an adopter from the system by ID.

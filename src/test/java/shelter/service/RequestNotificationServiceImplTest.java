@@ -65,7 +65,7 @@ class RequestNotificationServiceImplTest {
         service = new RequestNotificationServiceImpl(staff, auditRepo);
 
         // Seed an adoption request
-        AdopterPreferences prefs = new AdopterPreferences(Species.DOG, null, null, 0, 10);
+        AdopterPreferences prefs = new AdopterPreferences(Species.DOG, null, null, null, 0, 10);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null, prefs);
         dog = new Dog("Rex", "Labrador", LocalDate.now().minusYears(3), ActivityLevel.HIGH, false, Dog.Size.LARGE, false);

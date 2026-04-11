@@ -4,7 +4,8 @@ import java.util.Objects;
 
 /**
  * Represents the adoption preferences of a prospective adopter.
- * Preferences include desired species, breed, activity level, and age range;
+ * Preferences include desired species, breed, activity level, age range,
+ * and whether the adopter requires already-vaccinated animals;
  * these are consumed by matching strategies to score compatibility with available animals.
  * All fields except {@code minAge} and {@code maxAge} may be {@code null} to indicate no preference.
  */
@@ -13,6 +14,7 @@ public class AdopterPreferences {
     private final Species preferredSpecies;
     private final String preferredBreed;
     private final ActivityLevel preferredActivityLevel;
+    private final Boolean requiresVaccinated;
     private final int minAge;
     private final int maxAge;
 
@@ -24,12 +26,15 @@ public class AdopterPreferences {
      * @param preferredSpecies        the desired {@link Species}, or {@code null} for no preference
      * @param preferredBreed          the desired breed, or {@code null} for no preference
      * @param preferredActivityLevel  the desired activity level, or {@code null} for no preference
+     * @param requiresVaccinated      {@code true} if the adopter requires vaccinated animals,
+     *                                or {@code null} for no vaccination preference
      * @param minAge                  the minimum preferred age in years; must be non-negative
      * @param maxAge                  the maximum preferred age in years; must be &gt;= {@code minAge}
      * @throws IllegalArgumentException if {@code minAge} is negative or {@code maxAge} &lt; {@code minAge}
      */
     public AdopterPreferences(Species preferredSpecies, String preferredBreed,
-                               ActivityLevel preferredActivityLevel, int minAge, int maxAge) {
+                               ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
+                               int minAge, int maxAge) {
         if (minAge < 0) {
             throw new IllegalArgumentException("Minimum age must be non-negative.");
         }
@@ -40,6 +45,7 @@ public class AdopterPreferences {
         this.preferredSpecies = preferredSpecies;
         this.preferredBreed = preferredBreed;
         this.preferredActivityLevel = preferredActivityLevel;
+        this.requiresVaccinated = requiresVaccinated;
         this.minAge = minAge;
         this.maxAge = maxAge;
     }
@@ -72,6 +78,15 @@ public class AdopterPreferences {
     }
 
     /**
+     * Returns whether the adopter requires vaccinated animals.
+     *
+     * @return {@code true} if vaccinated animals are required, or {@code null} for no preference
+     */
+    public Boolean getRequiresVaccinated() {
+        return requiresVaccinated;
+    }
+
+    /**
      * Returns the minimum preferred age in years.
      *
      * @return the minimum preferred age, always non-negative
@@ -97,7 +112,7 @@ public class AdopterPreferences {
      */
     public AdopterPreferences(AdopterPreferences other) {
         this(other.preferredSpecies, other.preferredBreed, other.preferredActivityLevel,
-                other.minAge, other.maxAge);
+                other.requiresVaccinated, other.minAge, other.maxAge);
     }
 
     /**
@@ -116,6 +131,7 @@ public class AdopterPreferences {
                 && maxAge == other.maxAge
                 && preferredSpecies == other.preferredSpecies
                 && preferredActivityLevel == other.preferredActivityLevel
+                && Objects.equals(requiresVaccinated, other.requiresVaccinated)
                 && Objects.equals(preferredBreed, other.preferredBreed);
     }
 
@@ -127,7 +143,8 @@ public class AdopterPreferences {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(preferredSpecies, preferredBreed, preferredActivityLevel, minAge, maxAge);
+        return Objects.hash(preferredSpecies, preferredBreed, preferredActivityLevel,
+                requiresVaccinated, minAge, maxAge);
     }
 
     /**
@@ -139,6 +156,7 @@ public class AdopterPreferences {
     public String toString() {
         return "AdopterPreferences[species=" + preferredSpecies + ", breed=" + preferredBreed
                 + ", activity=" + preferredActivityLevel
+                + ", requiresVaccinated=" + requiresVaccinated
                 + ", age=" + minAge + "-" + maxAge + "]";
     }
 }

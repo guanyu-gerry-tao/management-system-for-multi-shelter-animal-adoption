@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AdopterTest {
 
     private AdopterPreferences defaultPrefs() {
-        return new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, 1, 5);
+        return new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, null, 1, 5);
     }
 
     // -------------------------------------------------------------------------
@@ -95,25 +95,27 @@ class AdopterTest {
     @Test
     void adopterPreferences_storesAllFields() {
         AdopterPreferences prefs = new AdopterPreferences(Species.CAT, "Persian",
-                ActivityLevel.LOW, 0, 8);
+                ActivityLevel.LOW, true, 0, 8);
         assertEquals(Species.CAT, prefs.getPreferredSpecies());
         assertEquals("Persian", prefs.getPreferredBreed());
         assertEquals(ActivityLevel.LOW, prefs.getPreferredActivityLevel());
+        assertEquals(true, prefs.getRequiresVaccinated());
         assertEquals(0, prefs.getMinAge());
         assertEquals(8, prefs.getMaxAge());
     }
 
     @Test
     void adopterPreferences_allowsNullSpeciesBreedAndActivity() {
-        AdopterPreferences prefs = new AdopterPreferences(null, null, null, 0, 10);
+        AdopterPreferences prefs = new AdopterPreferences(null, null, null, null, 0, 10);
         assertNull(prefs.getPreferredSpecies());
         assertNull(prefs.getPreferredBreed());
         assertNull(prefs.getPreferredActivityLevel());
+        assertNull(prefs.getRequiresVaccinated());
     }
 
     @Test
     void adopterPreferences_minEqualToMaxAgeIsValid() {
-        AdopterPreferences prefs = new AdopterPreferences(null, null, null, 3, 3);
+        AdopterPreferences prefs = new AdopterPreferences(null, null, null, null, 3, 3);
         assertEquals(3, prefs.getMinAge());
         assertEquals(3, prefs.getMaxAge());
     }
@@ -125,12 +127,12 @@ class AdopterTest {
     @Test
     void adopterPreferences_throwsIllegalArgumentException_whenMinAgeIsNegative() {
         assertThrows(IllegalArgumentException.class, () ->
-                new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, -1, 5));
+                new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, null, -1, 5));
     }
 
     @Test
     void adopterPreferences_throwsIllegalArgumentException_whenMaxAgeLessThanMinAge() {
         assertThrows(IllegalArgumentException.class, () ->
-                new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, 5, 3));
+                new AdopterPreferences(Species.DOG, "Labrador", ActivityLevel.HIGH, null, 5, 3));
     }
 }

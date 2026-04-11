@@ -8,7 +8,7 @@ import shelter.domain.Species;
  * A concrete matching strategy that evaluates whether an animal's species
  * matches the adopter's preferred species.
  */
-public class SpeciesPreferenceStrategy implements IMatchingStrategy {
+public class SpeciesPreferenceStrategy extends AbstractBinaryMatchingStrategy {
 
     /**
      * Returns the matching criterion handled by this strategy.
@@ -21,30 +21,31 @@ public class SpeciesPreferenceStrategy implements IMatchingStrategy {
     }
 
     /**
-     * Returns the score contributed by this strategy for the given adopter-animal pair.
-     * A full match returns {@code 1.0}; otherwise this strategy returns {@code 0.0}.
+     * Returns whether the adopter has set a species preference.
      *
      * @param adopter the adopter being evaluated
      * @param animal the animal being evaluated
-     * @return {@code 1.0} if the species matches the adopter's preference;
-     *         {@code 0.0} otherwise
+     * @return {@code true} if the adopter has a species preference; {@code false} otherwise
      * @throws IllegalArgumentException if {@code adopter} or {@code animal} is {@code null}
      */
     @Override
-    public double score(Adopter adopter, Animal animal) {
-        if (adopter == null) {
-            throw new IllegalArgumentException("Adopter must not be null.");
-        }
-        if (animal == null) {
-            throw new IllegalArgumentException("Animal must not be null.");
-        }
+    public boolean isApplicable(Adopter adopter, Animal animal) {
+        validateInputs(adopter, animal);
 
+        return adopter.getPreferences().getPreferredSpecies() != null;
+    }
+
+    /**
+     * Returns whether the animal's species matches the adopter's preferred species.
+     *
+     * @param adopter the adopter being evaluated
+     * @param animal the animal being evaluated
+     * @return {@code true} if the species matches the adopter's preference
+     */
+    @Override
+    protected boolean isMatch(Adopter adopter, Animal animal) {
         Species preferredSpecies = adopter.getPreferences().getPreferredSpecies();
-        if (preferredSpecies == null) {
-            return 0.0;
-        }
-
-        return preferredSpecies == animal.getSpecies() ? 1.0 : 0.0;
+        return preferredSpecies == animal.getSpecies();
     }
 
 }

@@ -38,7 +38,7 @@ class CsvAdopterRepositoryTest {
 
     /** Builds a simple Adopter with no species/breed/activity preference and age range 0–10. */
     private Adopter buildAdopter(String name) {
-        AdopterPreferences prefs = new AdopterPreferences(null, null, null, 0, 10);
+        AdopterPreferences prefs = new AdopterPreferences(null, null, null, null, 0, 10);
         return new Adopter(name, LivingSpace.APARTMENT, DailySchedule.HOME_MOST_OF_DAY, null, prefs);
     }
 
@@ -48,7 +48,7 @@ class CsvAdopterRepositoryTest {
     @Test
     void saveAndFindById_returnsCorrectAdopter() {
         AdopterPreferences prefs = new AdopterPreferences(
-                Species.DOG, "Labrador", ActivityLevel.HIGH, 1, 5);
+                Species.DOG, "Labrador", ActivityLevel.HIGH, null, 1, 5);
         Adopter a = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, "Loves dogs", prefs);
         repo.save(a);
@@ -107,7 +107,7 @@ class CsvAdopterRepositoryTest {
      */
     @Test
     void nullPreferences_roundTrip() {
-        AdopterPreferences prefs = new AdopterPreferences(null, null, null, 0, 15);
+        AdopterPreferences prefs = new AdopterPreferences(null, null, null, null, 0, 15);
         Adopter a = new Adopter("NoPrefs", LivingSpace.APARTMENT,
                 DailySchedule.AWAY_MOST_OF_DAY, null, prefs);
         repo.save(a);
@@ -171,7 +171,7 @@ class CsvAdopterRepositoryTest {
         Adopter updated = new Adopter(
                 a.getId(), "Updated", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.AWAY_PART_OF_DAY, "updated notes",
-                new AdopterPreferences(Species.CAT, null, null, 0, 10),
+                new AdopterPreferences(Species.CAT, null, null, null, 0, 10),
                 List.of());
         repo.save(updated);
 
