@@ -147,7 +147,7 @@ public class AppContext {
                 new ActivityLevelStrategy(),
                 new AgePreferenceStrategy(),
                 new LifestyleCompatibilityStrategy(),
-                new VaccinationPreferenceStrategy()
+                new VaccinationPreferenceStrategy(vaccinationService)
         );
         AdopterBasedMatchingService adopterMatchingService =
                 new AdopterBasedMatchingServiceImpl(strategies);

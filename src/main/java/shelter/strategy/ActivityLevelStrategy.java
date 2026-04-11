@@ -5,10 +5,13 @@ import shelter.domain.Adopter;
 import shelter.domain.Animal;
 
 /**
- * A concrete matching strategy that evaluates compatibility between the adopter's
- * preferred activity level and the animal's activity level.
+ * A concrete matching strategy that evaluates preference alignment between the
+ * adopter's desired activity level and the animal's activity level.
+ * This strategy answers the question: "Is this the kind of energy level the adopter wants?"
+ * It does not consider whether the adopter's daily life can realistically support that level;
+ * that practical fit is handled separately by {@link LifestyleCompatibilityStrategy}.
  */
-public class ActivityLevelStrategy implements IMatchingStrategy {
+public class ActivityLevelStrategy extends AbstractOrdinalMatchingStrategy {
 
     /**
      * Returns the matching criterion handled by this strategy.
@@ -21,42 +24,46 @@ public class ActivityLevelStrategy implements IMatchingStrategy {
     }
 
     /**
-     * Returns the score contributed by this strategy for the given adopter-animal pair.
-     * An exact activity match returns {@code 1.0}, a nearby match returns {@code 0.5},
-     * and a poor match returns {@code 0.0}.
+     * Returns whether the adopter has set an activity-level preference.
      *
      * @param adopter the adopter being evaluated
      * @param animal the animal being evaluated
-     * @return the compatibility score for activity level
+     * @return {@code true} if the adopter has an activity preference; {@code false} otherwise
      * @throws IllegalArgumentException if {@code adopter} or {@code animal} is {@code null}
      */
     @Override
-    public double score(Adopter adopter, Animal animal) {
-        if (adopter == null) {
-            throw new IllegalArgumentException("Adopter must not be null.");
-        }
-        if (animal == null) {
-            throw new IllegalArgumentException("Animal must not be null.");
-        }
+    public boolean isApplicable(Adopter adopter, Animal animal) {
+        validateInputs(adopter, animal);
 
+        return adopter.getPreferences().getPreferredActivityLevel() != null;
+    }
+
+    /**
+     * Returns the ordinal distance between the adopter's preferred activity level
+     * and the animal's actual activity level.
+     *
+     * @param adopter the adopter being evaluated
+     * @param animal the animal being evaluated
+     * @return the ordinal distance, where {@code 0} means exact match
+     */
+    @Override
+    protected int getOrdinalDistance(Adopter adopter, Animal animal) {
         ActivityLevel preferredActivity = adopter.getPreferences().getPreferredActivityLevel();
         ActivityLevel animalActivity = animal.getActivityLevel();
 
-        if (preferredActivity == null) {
-            return 0.0;
-        }
+        return Math.abs(getLevelRank(preferredActivity) - getLevelRank(animalActivity));
+    }
 
-        if (preferredActivity == animalActivity) {
-            return 1.0;
+    /**
+     * Returns a simple ordinal rank for each activity level.
+     */
+    private int getLevelRank(ActivityLevel activityLevel) {
+        if (activityLevel == ActivityLevel.LOW) {
+            return 0;
         }
-
-        if ((preferredActivity == ActivityLevel.LOW && animalActivity == ActivityLevel.MEDIUM)
-                || (preferredActivity == ActivityLevel.MEDIUM && animalActivity == ActivityLevel.LOW)
-                || (preferredActivity == ActivityLevel.MEDIUM && animalActivity == ActivityLevel.HIGH)
-                || (preferredActivity == ActivityLevel.HIGH && animalActivity == ActivityLevel.MEDIUM)) {
-            return 0.5;
+        if (activityLevel == ActivityLevel.MEDIUM) {
+            return 1;
         }
-
-        return 0.0;
+        return 2;
     }
 }

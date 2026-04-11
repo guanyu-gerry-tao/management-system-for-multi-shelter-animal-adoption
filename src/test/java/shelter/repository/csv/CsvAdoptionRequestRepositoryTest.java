@@ -48,7 +48,7 @@ class CsvAdoptionRequestRepositoryTest {
         adopterRepo = new CsvAdopterRepository(tempDir.toString());
         repo        = new CsvAdoptionRequestRepository(tempDir.toString(), animalRepo, adopterRepo);
 
-        AdopterPreferences prefs = new AdopterPreferences(null, null, null, 0, 20);
+        AdopterPreferences prefs = new AdopterPreferences(null, null, null, null, 0, 20);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null, prefs);
         adopterRepo.save(adopter);

@@ -36,7 +36,7 @@ class AdopterServiceImplTest {
         repo = new StubAdopterRepository();
         service = new AdopterServiceImpl(repo);
         adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD, DailySchedule.HOME_MOST_OF_DAY,
-                null, new AdopterPreferences(null, null, null, 0, 20));
+                null, new AdopterPreferences(null, null, null, null, 0, 20));
     }
 
     @Test
@@ -100,7 +100,7 @@ class AdopterServiceImplTest {
     void listAll_returnsAllAdopters() {
         repo.save(adopter);
         Adopter b = new Adopter("Bob", LivingSpace.APARTMENT, DailySchedule.AWAY_PART_OF_DAY,
-                null, new AdopterPreferences(null, null, null, 0, 10));
+                null, new AdopterPreferences(null, null, null, null, 0, 10));
         repo.save(b);
         assertEquals(2, service.listAll().size());
     }
@@ -120,7 +120,7 @@ class AdopterServiceImplTest {
         adopter.addAdoptedAnimalId("animal-001");
         repo.save(adopter);
         Adopter noAdoptions = new Adopter("Carol", LivingSpace.HOUSE_WITH_YARD, DailySchedule.HOME_MOST_OF_DAY,
-                null, new AdopterPreferences(null, null, null, 0, 10));
+                null, new AdopterPreferences(null, null, null, null, 0, 10));
         repo.save(noAdoptions);
         List<Adopter> result = service.adoptedAfter(LocalDate.now().minusDays(1));
         assertEquals(1, result.size());

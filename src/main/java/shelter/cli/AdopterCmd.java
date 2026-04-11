@@ -108,6 +108,11 @@ public class AdopterCmd implements Runnable {
                 description = "Preferred activity level (omit for no preference)")
         private ActivityLevel preferredActivityLevel;
 
+        /** Whether vaccinated animals are required; omit for no preference. */
+        @Option(names = "--requires-vaccinated",
+                description = "Whether vaccinated animals are required: true or false")
+        private Boolean requiresVaccinated;
+
         /** Minimum preferred animal age; defaults to 0. */
         @Option(names = "--min-age", description = "Minimum preferred animal age (default 0)")
         private int minAge = 0;
@@ -126,6 +131,7 @@ public class AdopterCmd implements Runnable {
                 Adopter a = AppContext.get().adopterApp().registerAdopter(
                         name, livingSpace, dailySchedule,
                         preferredSpecies, preferredBreed, preferredActivityLevel,
+                        requiresVaccinated,
                         minAge, maxAge);
                 System.out.printf("Registered adopter: %s (id=%s)%n", a.getName(), a.getId());
             } catch (Exception e) {
@@ -175,6 +181,11 @@ public class AdopterCmd implements Runnable {
                 description = "New preferred activity level (omit to keep current)")
         private ActivityLevel preferredActivityLevel;
 
+        /** New vaccination requirement; omit to keep current value. */
+        @Option(names = "--requires-vaccinated",
+                description = "New vaccination requirement: true or false (omit to keep current)")
+        private Boolean requiresVaccinated;
+
         /** New minimum preferred age; omit to keep current value. */
         @Option(names = "--min-age", description = "New minimum preferred age (omit to keep current)")
         private Integer minAge;
@@ -193,6 +204,7 @@ public class AdopterCmd implements Runnable {
                 Adopter a = AppContext.get().adopterApp().updateAdopter(
                         id, name, livingSpace, dailySchedule,
                         preferredSpecies, preferredBreed, preferredActivityLevel,
+                        requiresVaccinated,
                         minAge, maxAge);
                 System.out.printf("Updated adopter: %s (id=%s)%n", a.getName(), a.getId());
             } catch (Exception e) {

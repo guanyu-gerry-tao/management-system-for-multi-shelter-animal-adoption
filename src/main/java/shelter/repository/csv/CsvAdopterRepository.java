@@ -31,7 +31,7 @@ public class CsvAdopterRepository implements AdopterRepository {
     private static final String HEADER =
             "id,name,livingSpace,dailySchedule,personalNotes,"
             + "preferredSpecies,preferredBreed,preferredActivityLevel,"
-            + "minAge,maxAge,adoptedAnimalIds";
+            + "requiresVaccinated,minAge,maxAge,adoptedAnimalIds";
 
     private final Path filePath;
     private final Map<String, Adopter> store;
@@ -91,7 +91,8 @@ public class CsvAdopterRepository implements AdopterRepository {
     /**
      * Parses a single CSV row into an Adopter using the reconstruction constructor.
      * Fields are in order: id, name, livingSpace, dailySchedule, personalNotes,
-     * preferredSpecies, preferredBreed, preferredActivityLevel, minAge, maxAge, adoptedAnimalIds.
+     * preferredSpecies, preferredBreed, preferredActivityLevel, requiresVaccinated,
+     * minAge, maxAge, adoptedAnimalIds.
      *
      * @param line a non-empty CSV row
      * @return the reconstructed {@link Adopter}
@@ -111,12 +112,19 @@ public class CsvAdopterRepository implements AdopterRepository {
         String actRaw          = parts[7].trim();
         ActivityLevel prefAct  = actRaw.isEmpty() ? null : ActivityLevel.valueOf(actRaw);
 
-        int minAge             = Integer.parseInt(parts[8].trim());
-        int maxAge             = Integer.parseInt(parts[9].trim());
+        String requiresVaccinatedRaw = parts[8].trim();
+        Boolean requiresVaccinated = requiresVaccinatedRaw.isEmpty()
+                ? null
+                : Boolean.valueOf(requiresVaccinatedRaw);
 
-        List<String> adoptedIds = CsvUtils.decodeList(CsvUtils.unescapeCsv(parts[10]));
+        int minAge             = Integer.parseInt(parts[9].trim());
+        int maxAge             = Integer.parseInt(parts[10].trim());
 
-        AdopterPreferences prefs = new AdopterPreferences(prefSpecies, prefBreed, prefAct, minAge, maxAge);
+        List<String> adoptedIds = CsvUtils.decodeList(
+                CsvUtils.unescapeCsv(parts[11]));
+
+        AdopterPreferences prefs = new AdopterPreferences(
+                prefSpecies, prefBreed, prefAct, requiresVaccinated, minAge, maxAge);
         return new Adopter(id, name, living, schedule, notes, prefs, adoptedIds);
     }
 
@@ -134,6 +142,7 @@ public class CsvAdopterRepository implements AdopterRepository {
                   .append(p.getPreferredSpecies() != null ? p.getPreferredSpecies().name() : "").append(',')
                   .append(CsvUtils.escapeCsv(p.getPreferredBreed())).append(',')
                   .append(p.getPreferredActivityLevel() != null ? p.getPreferredActivityLevel().name() : "").append(',')
+                  .append(p.getRequiresVaccinated() != null ? p.getRequiresVaccinated() : "").append(',')
                   .append(p.getMinAge()).append(',')
                   .append(p.getMaxAge()).append(',')
                   .append(CsvUtils.escapeCsv(CsvUtils.encodeList(a.getAdoptedAnimalIds())))

@@ -121,7 +121,7 @@ class AnimalServiceImplTest {
     @Test
     void adoptedBy_returnsAnimalsWithMatchingAdopterId() {
         Adopter adopter = new Adopter("Alice", LivingSpace.HOUSE_WITH_YARD, DailySchedule.HOME_MOST_OF_DAY,
-                null, new AdopterPreferences(null, null, null, 0, 20));
+                null, new AdopterPreferences(null, null, null, null, 0, 20));
         dog.setAdopterId(adopter.getId());
         repo.save(dog);
         List<Animal> result = service.adoptedBy(adopter);

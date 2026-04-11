@@ -46,10 +46,12 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
     @Override
     public Adopter registerAdopter(String name, LivingSpace livingSpace, DailySchedule dailySchedule,
                                     Species preferredSpecies, String preferredBreed,
-                                    ActivityLevel preferredActivityLevel, int minAge, int maxAge) {
+                                    ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
+                                    int minAge, int maxAge) {
         // Build preferences object from individual fields
         AdopterPreferences preferences = new AdopterPreferences(
-                preferredSpecies, preferredBreed, preferredActivityLevel, minAge, maxAge);
+                preferredSpecies, preferredBreed, preferredActivityLevel,
+                requiresVaccinated, minAge, maxAge);
         Adopter adopter = new Adopter(name, livingSpace, dailySchedule, null, preferences);
         adopterService.register(adopter);
         auditService.log("registered adopter", adopter);
@@ -72,7 +74,7 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
     public Adopter updateAdopter(String adopterId, String name, LivingSpace livingSpace,
                                   DailySchedule dailySchedule, Species preferredSpecies,
                                   String preferredBreed, ActivityLevel preferredActivityLevel,
-                                  Integer minAge, Integer maxAge) {
+                                  Boolean requiresVaccinated, Integer minAge, Integer maxAge) {
         Adopter existing = adopterService.findById(adopterId);
 
         // Merge only provided (non-null) fields; fall back to current values
@@ -83,10 +85,13 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
         Species      newSpecies  = preferredSpecies       != null ? preferredSpecies       : oldPrefs.getPreferredSpecies();
         String       newBreed    = preferredBreed         != null ? preferredBreed         : oldPrefs.getPreferredBreed();
         ActivityLevel newActivity = preferredActivityLevel != null ? preferredActivityLevel : oldPrefs.getPreferredActivityLevel();
+        Boolean      newRequiresVaccinated =
+                requiresVaccinated != null ? requiresVaccinated : oldPrefs.getRequiresVaccinated();
         int          newMin      = minAge != null ? minAge : oldPrefs.getMinAge();
         int          newMax      = maxAge != null ? maxAge : oldPrefs.getMaxAge();
 
-        AdopterPreferences newPrefs = new AdopterPreferences(newSpecies, newBreed, newActivity, newMin, newMax);
+        AdopterPreferences newPrefs = new AdopterPreferences(
+                newSpecies, newBreed, newActivity, newRequiresVaccinated, newMin, newMax);
 
         // Reconstruct adopter with updated values, preserving ID and adopted animal list
         Adopter updated = new Adopter(existing.getId(), newName, newSpace, newSched,
