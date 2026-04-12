@@ -26,8 +26,8 @@ public class AgePreferenceStrategy extends AbstractRangeMatchingStrategy {
 
     /**
      * Returns whether the adopter has expressed an age preference.
-     * In the current design, an age range of {@code 0..Integer.MAX_VALUE}
-     * is treated as "no age preference".
+     * The age criterion is considered applicable when at least one of {@code minAge} or {@code maxAge}
+     * is non-null; a {@code null} value for both means the adopter has no age preference.
      *
      * @param adopter the adopter being evaluated
      * @param animal the animal being evaluated
@@ -38,13 +38,14 @@ public class AgePreferenceStrategy extends AbstractRangeMatchingStrategy {
     public boolean isApplicable(Adopter adopter, Animal animal) {
         validateInputs(adopter, animal);
 
-        int minAge = adopter.getPreferences().getMinAge();
-        int maxAge = adopter.getPreferences().getMaxAge();
-        return !(minAge == 0 && maxAge == Integer.MAX_VALUE);
+        Integer minAge = adopter.getPreferences().getMinAge();
+        Integer maxAge = adopter.getPreferences().getMaxAge();
+        return minAge != null || maxAge != null;
     }
 
     /**
      * Returns how far the animal's age is from the adopter's preferred age range.
+     * A {@code null} bound is treated as unbounded (0 for min, {@link Integer#MAX_VALUE} for max).
      * A value inside the range returns {@code 0.0}.
      *
      * @param adopter the adopter being evaluated
@@ -53,10 +54,12 @@ public class AgePreferenceStrategy extends AbstractRangeMatchingStrategy {
      */
     @Override
     protected double getDistanceFromPreferredRange(Adopter adopter, Animal animal) {
-        int minAge = adopter.getPreferences().getMinAge();
-        int maxAge = adopter.getPreferences().getMaxAge();
+        Integer minAge = adopter.getPreferences().getMinAge();
+        Integer maxAge = adopter.getPreferences().getMaxAge();
+        int effectiveMin = minAge != null ? minAge : 0;
+        int effectiveMax = maxAge != null ? maxAge : Integer.MAX_VALUE;
         double animalAge = calculatePreciseAgeInYears(animal.getBirthday());
-        return calculateDistanceFromRange(animalAge, minAge, maxAge);
+        return calculateDistanceFromRange(animalAge, effectiveMin, effectiveMax);
     }
 
     /**

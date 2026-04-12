@@ -7,7 +7,7 @@ import java.util.Objects;
  * Preferences include desired species, breed, activity level, age range,
  * and whether the adopter requires already-vaccinated animals;
  * these are consumed by matching strategies to score compatibility with available animals.
- * All fields except {@code minAge} and {@code maxAge} may be {@code null} to indicate no preference.
+ * All fields may be {@code null} to indicate no preference, including {@code minAge} and {@code maxAge}.
  */
 public class AdopterPreferences {
 
@@ -15,30 +15,30 @@ public class AdopterPreferences {
     private final String preferredBreed;
     private final ActivityLevel preferredActivityLevel;
     private final Boolean requiresVaccinated;
-    private final int minAge;
-    private final int maxAge;
+    private final Integer minAge;
+    private final Integer maxAge;
 
     /**
      * Constructs an AdopterPreferences instance with the given criteria.
-     * {@code preferredSpecies}, {@code preferredBreed}, and {@code preferredActivityLevel}
-     * may be {@code null} to express no preference; age bounds must be valid.
+     * Any field may be {@code null} to express no preference.
+     * When {@code minAge} or {@code maxAge} are {@code null}, the age criterion is not applied during matching.
      *
      * @param preferredSpecies        the desired {@link Species}, or {@code null} for no preference
      * @param preferredBreed          the desired breed, or {@code null} for no preference
      * @param preferredActivityLevel  the desired activity level, or {@code null} for no preference
      * @param requiresVaccinated      {@code true} if the adopter requires vaccinated animals,
      *                                or {@code null} for no vaccination preference
-     * @param minAge                  the minimum preferred age in years; must be non-negative
-     * @param maxAge                  the maximum preferred age in years; must be &gt;= {@code minAge}
+     * @param minAge                  the minimum preferred age in years; must be non-negative if provided
+     * @param maxAge                  the maximum preferred age in years; must be &gt;= {@code minAge} if both provided
      * @throws IllegalArgumentException if {@code minAge} is negative or {@code maxAge} &lt; {@code minAge}
      */
     public AdopterPreferences(Species preferredSpecies, String preferredBreed,
                                ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
-                               int minAge, int maxAge) {
-        if (minAge < 0) {
+                               Integer minAge, Integer maxAge) {
+        if (minAge != null && minAge < 0) {
             throw new IllegalArgumentException("Minimum age must be non-negative.");
         }
-        if (maxAge < minAge) {
+        if (minAge != null && maxAge != null && maxAge < minAge) {
             throw new IllegalArgumentException(
                     "Maximum age must be greater than or equal to minimum age.");
         }
@@ -87,20 +87,20 @@ public class AdopterPreferences {
     }
 
     /**
-     * Returns the minimum preferred age in years.
+     * Returns the minimum preferred age in years, or {@code null} if no minimum was set.
      *
-     * @return the minimum preferred age, always non-negative
+     * @return the minimum preferred age, or {@code null} for no preference
      */
-    public int getMinAge() {
+    public Integer getMinAge() {
         return minAge;
     }
 
     /**
-     * Returns the maximum preferred age in years.
+     * Returns the maximum preferred age in years, or {@code null} if no maximum was set.
      *
-     * @return the maximum preferred age, always &gt;= {@code minAge}
+     * @return the maximum preferred age, or {@code null} for no preference
      */
-    public int getMaxAge() {
+    public Integer getMaxAge() {
         return maxAge;
     }
 
@@ -127,8 +127,8 @@ public class AdopterPreferences {
         if (this == o) return true;
         if (!(o instanceof AdopterPreferences)) return false;
         AdopterPreferences other = (AdopterPreferences) o;
-        return minAge == other.minAge
-                && maxAge == other.maxAge
+        return Objects.equals(minAge, other.minAge)
+                && Objects.equals(maxAge, other.maxAge)
                 && preferredSpecies == other.preferredSpecies
                 && preferredActivityLevel == other.preferredActivityLevel
                 && Objects.equals(requiresVaccinated, other.requiresVaccinated)
@@ -157,6 +157,6 @@ public class AdopterPreferences {
         return "AdopterPreferences[species=" + preferredSpecies + ", breed=" + preferredBreed
                 + ", activity=" + preferredActivityLevel
                 + ", requiresVaccinated=" + requiresVaccinated
-                + ", age=" + minAge + "-" + maxAge + "]";
+                + ", age=" + (minAge != null ? minAge : "any") + "-" + (maxAge != null ? maxAge : "any") + "]";
     }
 }

@@ -47,7 +47,7 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
     public Adopter registerAdopter(String name, LivingSpace livingSpace, DailySchedule dailySchedule,
                                     Species preferredSpecies, String preferredBreed,
                                     ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
-                                    int minAge, int maxAge) {
+                                    Integer minAge, Integer maxAge) {
         // Build preferences object from individual fields
         AdopterPreferences preferences = new AdopterPreferences(
                 preferredSpecies, preferredBreed, preferredActivityLevel,

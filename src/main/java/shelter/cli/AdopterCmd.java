@@ -113,13 +113,13 @@ public class AdopterCmd implements Runnable {
                 description = "Whether vaccinated animals are required: true or false")
         private Boolean requiresVaccinated;
 
-        /** Minimum preferred animal age; defaults to 0. */
-        @Option(names = "--min-age", description = "Minimum preferred animal age (default 0)")
-        private int minAge = 0;
+        /** Minimum preferred animal age; omit for no preference. */
+        @Option(names = "--min-age", description = "Minimum preferred animal age (omit for no preference)")
+        private Integer minAge;
 
-        /** Maximum preferred animal age; defaults to 20. */
-        @Option(names = "--max-age", description = "Maximum preferred animal age (default 20)")
-        private int maxAge = 20;
+        /** Maximum preferred animal age; omit for no preference. */
+        @Option(names = "--max-age", description = "Maximum preferred animal age (omit for no preference)")
+        private Integer maxAge;
 
         /**
          * Executes the registration and prints the new adopter's ID and name.
