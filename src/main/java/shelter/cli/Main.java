@@ -2,12 +2,13 @@ package shelter.cli;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import shelter.startup.SystemStartupImpl;
 
 /**
  * Entry point for the {@code shelter} CLI tool.
  * Registers all top-level subcommand groups and delegates execution to Picocli.
- * On first invocation, {@link AppContext#get()} initializes all repositories and services
- * from {@code ~/shelter/data/}; subsequent calls reuse the same wired instance.
+ * On startup, {@link SystemStartupImpl} initializes all repositories and services
+ * from {@code ~/shelter/data/} before command dispatch.
  */
 @Command(
         name = "shelter",
@@ -45,6 +46,7 @@ public class Main implements Runnable {
      * @param args the CLI arguments passed from the operating system
      */
     public static void main(String[] args) {
+        new SystemStartupImpl().initialize();
         int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
     }
