@@ -4,6 +4,7 @@ import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
 import shelter.domain.Cat;
 import shelter.domain.Dog;
+import shelter.domain.Other;
 import shelter.domain.Rabbit;
 import shelter.domain.Species;
 import shelter.repository.AnimalRepository;
@@ -99,13 +100,11 @@ public class CsvAnimalRepository implements AnimalRepository {
      * Species-specific columns that do not apply are stored as empty strings.
      *
      * @param line a non-empty CSV row
-     * @return the reconstructed {@link Animal} (a {@link Dog}, {@link Cat}, or {@link Rabbit})
-     * @throws IllegalArgumentException if the species value is unrecognized
+     * @return the reconstructed {@link Animal} (a {@link Dog}, {@link Cat}, {@link Rabbit}, or {@link Other});
      */
     private Animal parseLine(String line) {
         String[] p = CsvUtils.splitCsv(line);
         String id            = CsvUtils.unescapeCsv(p[0]);
-        Species species      = Species.valueOf(p[1].trim());
         String name          = CsvUtils.unescapeCsv(p[2]);
         String breed         = CsvUtils.unescapeCsv(p[3]);
         LocalDate birthday   = LocalDate.parse(p[4].trim());
@@ -120,23 +119,21 @@ public class CsvAnimalRepository implements AnimalRepository {
         String indoorRaw    = p.length > 11 ? p[11].trim() : "";
         String furRaw       = p.length > 12 ? p[12].trim() : "";
 
-        switch (species) {
-            case DOG: {
-                Dog.Size size = sizeRaw.isEmpty() ? Dog.Size.MEDIUM : Dog.Size.valueOf(sizeRaw);
-                boolean neutered = !neuteredRaw.isEmpty() && Boolean.parseBoolean(neuteredRaw);
-                return new Dog(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, size, neutered);
-            }
-            case CAT: {
-                boolean indoor   = !indoorRaw.isEmpty() && Boolean.parseBoolean(indoorRaw);
-                boolean neutered = !neuteredRaw.isEmpty() && Boolean.parseBoolean(neuteredRaw);
-                return new Cat(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, indoor, neutered);
-            }
-            case RABBIT: {
-                Rabbit.FurLength fur = furRaw.isEmpty() ? Rabbit.FurLength.SHORT : Rabbit.FurLength.valueOf(furRaw);
-                return new Rabbit(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, fur);
-            }
-            default:
-                throw new IllegalArgumentException("Unsupported species in CSV: " + species);
+        String speciesRaw = CsvUtils.unescapeCsv(p[1]);
+        if (speciesRaw.equals("DOG")) {
+            Dog.Size size = sizeRaw.isEmpty() ? Dog.Size.MEDIUM : Dog.Size.valueOf(sizeRaw);
+            boolean neutered = !neuteredRaw.isEmpty() && Boolean.parseBoolean(neuteredRaw);
+            return new Dog(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, size, neutered);
+        } else if (speciesRaw.equals("CAT")) {
+            boolean indoor   = !indoorRaw.isEmpty() && Boolean.parseBoolean(indoorRaw);
+            boolean neutered = !neuteredRaw.isEmpty() && Boolean.parseBoolean(neuteredRaw);
+            return new Cat(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, indoor, neutered);
+        } else if (speciesRaw.equals("RABBIT")) {
+            Rabbit.FurLength fur = furRaw.isEmpty() ? Rabbit.FurLength.SHORT : Rabbit.FurLength.valueOf(furRaw);
+            return new Rabbit(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, fur);
+        } else {
+            // Any unrecognised species string is treated as Other; speciesRaw is the free-form name
+            return new Other(id, name, breed, birthday, act, vaccinated, adopterId, shelterId, speciesRaw);
         }
     }
 
@@ -160,8 +157,14 @@ public class CsvAnimalRepository implements AnimalRepository {
             furVal = r.getFurLength().name();
         }
 
+        // For Other animals, write the free-form speciesName into col 1 instead of "OTHER",
+        // so the reader can reconstruct the correct speciesName on reload.
+        String speciesCol = (a instanceof Other)
+                ? CsvUtils.escapeCsv(((Other) a).getSpeciesName())
+                : a.getSpecies().name();
+
         return CsvUtils.escapeCsv(a.getId()) + ','
-             + a.getSpecies().name() + ','
+             + speciesCol + ','
              + CsvUtils.escapeCsv(a.getName()) + ','
              + CsvUtils.escapeCsv(a.getBreed()) + ','
              + a.getBirthday().toString() + ','
