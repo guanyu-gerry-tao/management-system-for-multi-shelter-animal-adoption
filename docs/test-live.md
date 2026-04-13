@@ -44,7 +44,7 @@ shelter --version                                      # 验证 CLI 可用
 ✅ 期望：`Admitted dog: Max (id=..., shelter=...)`
 
 **对 Claude 说：**
-> 再往 Boston Paws 收容一只 2 岁的暹罗猫，叫 Luna，活跃度 LOW，室内猫。
+> 再往 Boston Paws 收容一只 2 岁的暹罗猫，叫 Luna，活跃度 LOW，室内猫，已绝育。
 
 ✅ 期望：`Admitted cat: Luna (id=..., shelter=...)`
 
