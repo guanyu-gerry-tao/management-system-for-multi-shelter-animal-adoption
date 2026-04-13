@@ -22,7 +22,7 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 ```
 
 **Domain Layer** (`shelter.domain`):
-- `Animal` (abstract base) → `Dog`, `Cat`, `Rabbit`
+- `Animal` (abstract base) → `Dog`, `Cat`, `Rabbit`, `Other` (free-form species name)
   - `adopterId`: `null` = available; non-null = adopted by that adopter
 - `Shelter`: holds a collection of animals, manages capacity
 - `Adopter`: adopter info, preferences, lifestyle context
@@ -124,7 +124,9 @@ For demo purposes, Claude Code is used as the AI agent: the user speaks natural 
   - Group code into logical blocks and add one comment per block (not per line)
   - Explain **why** or **what the block achieves**, not just what the code literally does
   - Example blocks to comment: guard checks, business rule validations, domain delegation, side effects, persistence calls
-- **Testing**: JUnit unit tests covering normal paths and edge cases; use `MockExplanationService` for AI module tests
+- **Testing**: Two levels of tests, both run via `./gradlew test`:
+  - **Unit tests**: JUnit, cover normal paths and edge cases; use `MockExplanationService` for AI module tests
+  - **Integration tests**: tagged `@Tag("integration")`, spawn real `shelter` subprocesses via `ProcessBuilder`; isolated via `SHELTER_HOME` env var pointing to a `@TempDir` — the real `~/shelter` directory is never touched; 78 tests covering all UC-01 through UC-08 including error cases
 - **Build**: Gradle with `application` plugin; main class is `shelter.cli.Main`; CLI dependency is Picocli
 
 ### Domain Class Requirements
@@ -162,6 +164,7 @@ Every domain class must implement the following:
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) — team roles, branch strategy, commit conventions
 - [docs/use-cases.md](docs/use-cases.md) — full use case list with application layer method signatures
+- [docs/integration-test-plan.md](docs/integration-test-plan.md) — CLI integration test design and isolation strategy
 - [docs/proposal/proposal-for-pdf.md](docs/proposal/proposal-for-pdf.md) — human-readable proposal
 - [docs/diagram-class.mmd](docs/diagram-class.mmd) — class diagram (Mermaid source)
 - [docs/diagram-layer.mmd](docs/diagram-layer.mmd) — layer architecture diagram
