@@ -8,7 +8,6 @@ import shelter.domain.Dog;
 import shelter.domain.Other;
 import shelter.domain.Rabbit;
 import shelter.domain.Shelter;
-import shelter.domain.AdoptionRequest;
 import shelter.domain.RequestStatus;
 import shelter.service.AdoptionService;
 import shelter.service.AnimalService;
@@ -148,15 +147,22 @@ public class AnimalApplicationServiceImpl implements AnimalApplicationService {
     /**
      * {@inheritDoc}
      * Fetches the current animal, applies only the non-null fields via setters, then persists.
-     * Breed and birthday are immutable; only name and activity level can be changed.
+     * Breed and birthday are immutable; only name, activity level, and neutered status can be changed.
+     * The neutered flag is silently ignored for species that do not support it (Rabbit, Other).
      */
     @Override
-    public Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel) {
+    public Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel, Boolean neutered) {
         Animal existing = animalService.findById(animalId);
 
         // Apply only the provided (non-null) fields via setters
         if (name != null) existing.setName(name);
         if (activityLevel != null) existing.setActivityLevel(activityLevel);
+
+        // Apply neutered status only for species that support it
+        if (neutered != null) {
+            if (existing instanceof Dog dog) dog.setNeutered(neutered);
+            else if (existing instanceof Cat cat) cat.setNeutered(neutered);
+        }
 
         animalService.update(existing);
         auditService.log("updated animal", existing);

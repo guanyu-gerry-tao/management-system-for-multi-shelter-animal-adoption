@@ -197,7 +197,8 @@ public class AnimalCmd implements Runnable {
 
     /**
      * Updates an existing animal's mutable fields.
-     * Breed and birthday are immutable; only name and activity level can be changed.
+     * Breed and birthday are immutable; name, activity level, and neutered status can be changed.
+     * The {@code --neutered} option accepts {@code true} or {@code false} and applies only to dogs and cats.
      */
     @Command(name = "update", description = "Update an animal's mutable details",
              mixinStandardHelpOptions = true)
@@ -215,6 +216,11 @@ public class AnimalCmd implements Runnable {
         @Option(names = "--activity", description = "New activity level (omit to keep current)")
         private ActivityLevel activityLevel;
 
+        /** The new neutered status (true/false); omit to keep current value. Applies to dogs and cats only. */
+        @Option(names = "--neutered", arity = "1",
+                description = "Neutered status: true or false (dogs/cats only; omit to keep current)")
+        private Boolean neutered;
+
         /**
          * Executes the update and prints a confirmation message with the updated values.
          * Prints an error message if the animal is not found.
@@ -222,7 +228,7 @@ public class AnimalCmd implements Runnable {
         @Override
         public void run() {
             try {
-                Animal a = AppContext.get().animalApp().updateAnimal(id, name, activityLevel);
+                Animal a = AppContext.get().animalApp().updateAnimal(id, name, activityLevel, neutered);
                 System.out.printf("Updated animal: %s (id=%s)%n", a.getName(), a.getId());
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());

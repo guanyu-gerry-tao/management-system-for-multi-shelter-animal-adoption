@@ -131,7 +131,7 @@ class AnimalApplicationServiceImplTest {
         Dog dog = new Dog("Rex", "Lab", LocalDate.now().minusYears(3), ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
         animalService.store.put(dog.getId(), dog);
 
-        Animal updated = service.updateAnimal(dog.getId(), "Max", null);
+        Animal updated = service.updateAnimal(dog.getId(), "Max", null, null);
 
         assertEquals("Max", updated.getName());
         assertEquals("Lab", updated.getBreed()); // unchanged
@@ -142,7 +142,7 @@ class AnimalApplicationServiceImplTest {
     @Test
     void updateAnimal_notFound_throws() {
         assertThrows(EntityNotFoundException.class,
-                () -> service.updateAnimal("missing", "Max", null));
+                () -> service.updateAnimal("missing", "Max", null, null));
     }
 
     @Test

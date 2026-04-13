@@ -94,14 +94,17 @@ public interface AnimalApplicationService {
      * Updates an existing animal's mutable fields with the provided values.
      * Only non-null parameters are applied; omitted (null) fields retain their current values.
      * Breed and birthday are immutable and cannot be changed after admission.
+     * The {@code neutered} flag is only applied when the animal is a {@link Dog} or {@link Cat};
+     * passing a non-null value for other species has no effect.
      * Throws an exception if the animal is not found.
      *
      * @param animalId      the ID of the animal to update; must not be null or blank
      * @param name          the new name, or {@code null} to keep the current value
      * @param activityLevel the new activity level, or {@code null} to keep the current value
+     * @param neutered      the new neutered status, or {@code null} to keep the current value
      * @return the updated {@link Animal}
      */
-    Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel);
+    Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel, Boolean neutered);
 
     /**
      * Removes an animal from the system by ID.
