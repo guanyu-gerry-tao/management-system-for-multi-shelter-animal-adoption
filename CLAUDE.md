@@ -65,18 +65,75 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 
 The system is operated as a stateless CLI. Data is persisted to `~/shelter/data/` as CSV files. Each command loads data, performs the operation, and saves back.
 
+### Shelter (UC-01)
 ```
 shelter shelter list
-shelter shelter register --name "Happy Paws" --location "Boston" --capacity 20
-shelter animal list [--shelter <id>]
-shelter animal admit --species dog --name "Max" --breed "Labrador" --age 3 --activity MEDIUM --shelter <id>
-shelter adopt submit --adopter <id> --animal <id>
-shelter adopt approve --request <id>
-shelter match animal --adopter <id> --shelter <id> [--explain]
-shelter match adopter --animal <id> [--explain]
-shelter vaccine record --animal <id> --type <name> --date <yyyy-mm-dd>
-shelter vaccine overdue --animal <id>
+shelter shelter register --name <name> --location <location> --capacity <n>
+shelter shelter update --id <id> [--name <name>] [--location <location>] [--capacity <n>]
+shelter shelter remove --id <id>
 ```
+
+### Animal (UC-02)
+```
+shelter animal list [--shelter <id>]
+shelter animal admit --species dog    --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--size <SMALL|MEDIUM|LARGE>] [--neutered]
+shelter animal admit --species cat    --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--indoor] [--neutered]
+shelter animal admit --species rabbit --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--fur <SHORT|LONG>]
+shelter animal admit --species other  --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> --species-name <e.g. fish>
+shelter animal update --id <id> [--name <name>] [--activity <LOW|MEDIUM|HIGH>]
+shelter animal remove --id <id>
+```
+
+### Adopter (UC-03)
+```
+shelter adopter list
+shelter adopter register --name <name> --space <APARTMENT|HOUSE_NO_YARD|HOUSE_WITH_YARD> --schedule <HOME_MOST_OF_DAY|AWAY_PART_OF_DAY|AWAY_MOST_OF_DAY> [--species <DOG|CAT|RABBIT|OTHER>] [--breed <breed>] [--activity <LOW|MEDIUM|HIGH>] [--requires-vaccinated <true|false>] [--min-age <n>] [--max-age <n>]
+shelter adopter update --id <id> [--name <name>] [--space <...>] [--schedule <...>] [--species <...>] [--breed <...>] [--activity <...>] [--requires-vaccinated <true|false>] [--min-age <n>] [--max-age <n>]
+shelter adopter remove --id <id>
+```
+
+### Matching (UC-04)
+```
+shelter match animal  --adopter <id> --shelter <id>
+shelter match adopter --animal <id>
+```
+
+### Adoption (UC-05)
+```
+shelter adopt submit  --adopter <id> --animal <id>
+shelter adopt approve --request <id>
+shelter adopt reject  --request <id>
+shelter adopt cancel  --request <id>
+```
+
+### Transfer (UC-06)
+```
+shelter transfer request --animal <id> --from <shelter-id> --to <shelter-id>
+shelter transfer approve --request <id>
+shelter transfer reject  --request <id>
+shelter transfer cancel  --request <id>
+```
+
+### Vaccination (UC-07)
+```
+shelter vaccine record  --animal <id> --type <vaccine-type-name> --date <yyyy-mm-dd>
+shelter vaccine overdue --animal <id>
+shelter vaccine type list
+shelter vaccine type add    --name <name> --species <DOG|CAT|RABBIT|OTHER> --days <n>
+shelter vaccine type update --id <id> [--name <name>] [--species <...>] [--days <n>]
+shelter vaccine type remove --id <id>
+```
+
+### Audit (UC-08)
+```
+shelter audit log
+```
+
+### Demo workflow note
+IDs are not known in advance — always run `list` first to retrieve them. Typical sequence:
+1. `shelter shelter list` → get shelter ID
+2. `shelter animal list` / `shelter adopter list` → get animal/adopter IDs
+3. Run the target command with the retrieved IDs
 
 For demo purposes, Claude Code is used as the AI agent: the user speaks natural language, Claude interprets the intent and executes the appropriate `shelter` commands.
 
