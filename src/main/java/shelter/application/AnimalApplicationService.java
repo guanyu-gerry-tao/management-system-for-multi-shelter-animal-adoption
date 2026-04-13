@@ -1,5 +1,6 @@
 package shelter.application;
 
+import shelter.application.model.AnimalView;
 import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
 import shelter.domain.Cat;
@@ -94,14 +95,28 @@ public interface AnimalApplicationService {
      * Updates an existing animal's mutable fields with the provided values.
      * Only non-null parameters are applied; omitted (null) fields retain their current values.
      * Breed and birthday are immutable and cannot be changed after admission.
+     * The {@code neutered} flag is only applied when the animal is a {@link Dog} or {@link Cat};
+     * passing a non-null value for other species has no effect.
      * Throws an exception if the animal is not found.
      *
      * @param animalId      the ID of the animal to update; must not be null or blank
      * @param name          the new name, or {@code null} to keep the current value
      * @param activityLevel the new activity level, or {@code null} to keep the current value
+     * @param neutered      the new neutered status, or {@code null} to keep the current value
      * @return the updated {@link Animal}
      */
-    Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel);
+    Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel, Boolean neutered);
+
+    /**
+     * Returns a list of {@link AnimalView} objects, each pairing an animal with its shelter's
+     * display name. Filters by shelter when {@code shelterId} is provided, or returns all animals
+     * system-wide when {@code shelterId} is {@code null}. The shelter name is resolved by the
+     * Application layer so that callers do not need to perform cross-domain lookups.
+     *
+     * @param shelterId the ID of the shelter to filter by, or {@code null} for all animals
+     * @return a list of enriched animal views matching the filter
+     */
+    List<AnimalView> listAnimalsWithShelterName(String shelterId);
 
     /**
      * Removes an animal from the system by ID.

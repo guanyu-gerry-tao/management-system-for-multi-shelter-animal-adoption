@@ -22,6 +22,29 @@ public class WorkdirBootstrapper {
     private static final String CLAUDE_TEMPLATE = """
             # CLAUDE.md - Shelter CLI Demo Context
 
+            ## Agent Behavior Rules (enforced during demo)
+
+            **Language: English only.** All responses must be in English regardless of the
+            language the user speaks. Do not switch to any other language.
+
+            **Ignore personal memory.** Do not apply, cite, or reference any memory stored
+            about the user (e.g. in ~/.claude/). Respond only based on the current conversation
+            and this CLAUDE.md file.
+
+            **Deletion requires confirmation.** Before executing any `remove` command
+            (shelter remove, animal remove, adopter remove, vaccine type remove), ask the user
+            to confirm. Do not proceed until the user explicitly says yes.
+
+            **Approval-step commands: submit only, then wait.** When the user asks to submit
+            an adoption or transfer request, only run the `submit` / `request` command. Do NOT
+            automatically follow up with `approve`, `reject`, or `cancel`. Stop after creation
+            and wait for an explicit instruction before running the next step.
+
+            **Always render results as tables with all fields.** Whenever you print, list, or
+            display any data returned by a `shelter` command, format the output as a table
+            (markdown table is fine) and include every field returned — do not omit, summarize,
+            or hide any column, even if the value is `N/A`, `any`, or empty.
+
             ## Project Context
 
             This directory is the runtime work directory for a Java multi-shelter animal adoption
@@ -48,15 +71,20 @@ public class WorkdirBootstrapper {
 
             Animal:
             - `shelter animal list [--shelter <shelter-id>]`
+              (columns: ID / Species / Name / Breed / Age / Activity / Neutered / Indoor / Size / Fur / Shelter / Status)
+              (species-specific columns show N/A when not applicable; unset fields show their current value)
             - `shelter animal admit --species dog --name <name> --breed <breed> (--birthday <yyyy-mm-dd> | --age <years>) --activity <LOW|MEDIUM|HIGH> --shelter <shelter-id> [--size <SMALL|MEDIUM|LARGE>] [--neutered]`
             - `shelter animal admit --species cat --name <name> --breed <breed> (--birthday <yyyy-mm-dd> | --age <years>) --activity <LOW|MEDIUM|HIGH> --shelter <shelter-id> [--indoor] [--neutered]`
             - `shelter animal admit --species rabbit --name <name> --breed <breed> (--birthday <yyyy-mm-dd> | --age <years>) --activity <LOW|MEDIUM|HIGH> --shelter <shelter-id> [--fur <SHORT|LONG>]`
             - `shelter animal admit --species other --name <name> --breed <description> (--birthday <yyyy-mm-dd> | --age <years>) --activity <LOW|MEDIUM|HIGH> --shelter <shelter-id> [--species-name <name>]`
-            - `shelter animal update --id <animal-id> [--name <name>] [--activity <LOW|MEDIUM|HIGH>]`
+            - `shelter animal update --id <animal-id> [--name <name>] [--activity <LOW|MEDIUM|HIGH>] [--neutered <true|false>]`
+              (--neutered applies to dogs and cats only; ignored for rabbit/other)
             - `shelter animal remove --id <animal-id>`
 
             Adopter:
             - `shelter adopter list`
+              (columns: ID / Name / Living Space / Schedule / Species / Breed / Activity / Vaccinated / Min Age / Max Age)
+              (unset preference fields show "any")
             - `shelter adopter register --name <name> --space <APARTMENT|HOUSE_NO_YARD|HOUSE_WITH_YARD> --schedule <HOME_MOST_OF_DAY|AWAY_PART_OF_DAY|AWAY_MOST_OF_DAY> [--species <DOG|CAT|RABBIT|OTHER>] [--breed <breed>] [--activity <LOW|MEDIUM|HIGH>] [--requires-vaccinated <true|false>] [--min-age <years>] [--max-age <years>]`
             - `shelter adopter update --id <adopter-id> [--name <name>] [--space <APARTMENT|HOUSE_NO_YARD|HOUSE_WITH_YARD>] [--schedule <HOME_MOST_OF_DAY|AWAY_PART_OF_DAY|AWAY_MOST_OF_DAY>] [--species <DOG|CAT|RABBIT|OTHER>] [--breed <breed>] [--activity <LOW|MEDIUM|HIGH>] [--requires-vaccinated <true|false>] [--min-age <years>] [--max-age <years>]`
             - `shelter adopter remove --id <adopter-id>`
@@ -92,15 +120,10 @@ public class WorkdirBootstrapper {
 
             The user may speak in natural language. Translate their intent into one or more
             `shelter` CLI calls. Always list shelters, adopters, animals, vaccine types, or
-            requests first if you need an ID. Always ask for confirmation before destructive
-            operations such as `remove`, `reject`, or `cancel`.
+            requests first if you need an ID.
 
             After running any shelter match command, use the ranked output as the source of truth
-            and explain the top match to the user in natural language. If the match table alone
-            does not show enough context, look up the relevant animal, adopter, shelter, or
-            vaccination records before explaining. Mention score, species, breed, age, activity
-            level, living situation, schedule, and vaccination preferences only when they are
-            available from CLI output or persisted data; do not invent missing details.
+            and explain the top match to the user in natural language.
 
             ## Data Directory
 

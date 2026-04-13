@@ -6,6 +6,7 @@ import shelter.application.impl.AnimalApplicationServiceImpl;
 import shelter.domain.*;
 import shelter.domain.Other;
 import shelter.exception.EntityNotFoundException;
+import shelter.service.AdoptionService;
 import shelter.service.AnimalService;
 import shelter.service.AuditService;
 import shelter.service.ShelterService;
@@ -28,17 +29,19 @@ class AnimalApplicationServiceImplTest {
 
     private StubAnimalService animalService;
     private StubShelterService shelterService;
+    private StubAdoptionService adoptionService;
     private SpyAuditService<Animal> auditService;
     private AnimalApplicationServiceImpl service;
     private Shelter shelter;
 
     @BeforeEach
     void setUp() {
-        animalService  = new StubAnimalService();
-        shelterService = new StubShelterService();
-        auditService   = new SpyAuditService<>();
-        service        = new AnimalApplicationServiceImpl(animalService, shelterService, auditService);
-        shelter        = new Shelter("Test Shelter", "Boston", 20);
+        animalService   = new StubAnimalService();
+        shelterService  = new StubShelterService();
+        adoptionService = new StubAdoptionService();
+        auditService    = new SpyAuditService<>();
+        service         = new AnimalApplicationServiceImpl(animalService, shelterService, adoptionService, auditService);
+        shelter         = new Shelter("Test Shelter", "Boston", 20);
         shelterService.store.put(shelter.getId(), shelter);
     }
 
@@ -128,7 +131,7 @@ class AnimalApplicationServiceImplTest {
         Dog dog = new Dog("Rex", "Lab", LocalDate.now().minusYears(3), ActivityLevel.MEDIUM, false, Dog.Size.LARGE, false);
         animalService.store.put(dog.getId(), dog);
 
-        Animal updated = service.updateAnimal(dog.getId(), "Max", null);
+        Animal updated = service.updateAnimal(dog.getId(), "Max", null, null);
 
         assertEquals("Max", updated.getName());
         assertEquals("Lab", updated.getBreed()); // unchanged
@@ -139,7 +142,7 @@ class AnimalApplicationServiceImplTest {
     @Test
     void updateAnimal_notFound_throws() {
         assertThrows(EntityNotFoundException.class,
-                () -> service.updateAnimal("missing", "Max", null));
+                () -> service.updateAnimal("missing", "Max", null, null));
     }
 
     @Test
@@ -161,11 +164,13 @@ class AnimalApplicationServiceImplTest {
     @Test
     void constructor_nullArgument_throws() {
         assertThrows(IllegalArgumentException.class,
-                () -> new AnimalApplicationServiceImpl(null, shelterService, auditService));
+                () -> new AnimalApplicationServiceImpl(null, shelterService, adoptionService, auditService));
         assertThrows(IllegalArgumentException.class,
-                () -> new AnimalApplicationServiceImpl(animalService, null, auditService));
+                () -> new AnimalApplicationServiceImpl(animalService, null, adoptionService, auditService));
         assertThrows(IllegalArgumentException.class,
-                () -> new AnimalApplicationServiceImpl(animalService, shelterService, null));
+                () -> new AnimalApplicationServiceImpl(animalService, shelterService, null, auditService));
+        assertThrows(IllegalArgumentException.class,
+                () -> new AnimalApplicationServiceImpl(animalService, shelterService, adoptionService, null));
     }
 
     // -------------------------------------------------------------------------
@@ -268,6 +273,22 @@ class AnimalApplicationServiceImplTest {
         public List<Shelter> listAll() {
             return new ArrayList<>(store.values());
         }
+    }
+
+    /**
+     * Stub implementation of {@link AdoptionService} that returns empty lists for all queries.
+     * Used to satisfy the dependency without simulating pending requests in most tests.
+     */
+    private static class StubAdoptionService implements AdoptionService {
+        @Override public void submit(shelter.domain.AdoptionRequest r) {}
+        @Override public void approve(shelter.domain.AdoptionRequest r) {}
+        @Override public void reject(shelter.domain.AdoptionRequest r) {}
+        @Override public void cancel(shelter.domain.AdoptionRequest r) {}
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsByAdopter(Adopter a) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsByShelter(Shelter s) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsByAnimal(Animal a) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsAfter(LocalDate d) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getApprovedAfter(LocalDate d) { return List.of(); }
     }
 
     /**

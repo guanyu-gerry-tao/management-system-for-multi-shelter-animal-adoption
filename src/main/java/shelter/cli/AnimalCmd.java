@@ -2,8 +2,10 @@ package shelter.cli;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import shelter.application.model.AnimalView;
 import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
+import shelter.domain.Cat;
 import shelter.domain.Dog;
 import shelter.domain.Rabbit;
 
@@ -55,24 +57,45 @@ public class AnimalCmd implements Runnable {
 
         /**
          * Executes the list operation and prints each animal's details to stdout.
+         * All columns are always shown; species-specific fields display "N/A" when not applicable.
+         * The Shelter column shows the shelter name resolved by the Application layer.
          * Prints a message if no animals are found.
          */
         @Override
         public void run() {
             try {
-                List<Animal> animals = AppContext.get().animalApp().listAnimals(shelterId);
-                if (animals.isEmpty()) {
+                List<AnimalView> views = AppContext.get().animalApp().listAnimalsWithShelterName(shelterId);
+                if (views.isEmpty()) {
                     System.out.println("No animals found.");
                     return;
                 }
-                System.out.printf("%-36s  %-10s  %-12s  %-20s  %-4s  %-8s  %s%n",
-                        "ID", "Species", "Name", "Breed", "Age", "Activity", "Status");
-                System.out.println("-".repeat(110));
-                for (Animal a : animals) {
+                System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
+                        "ID", "Species", "Name", "Breed", "Age", "Activity",
+                        "Neutered", "Indoor", "Size", "Fur", "Shelter", "Status");
+                System.out.println("-".repeat(148));
+                for (AnimalView v : views) {
+                    Animal a = v.getAnimal();
+
+                    // Resolve species-specific fields; use "N/A" when not applicable to this species
+                    String neutered = "N/A";
+                    String indoor   = "N/A";
+                    String size     = "N/A";
+                    String fur      = "N/A";
+                    if (a instanceof Dog dog) {
+                        neutered = String.valueOf(dog.isNeutered());
+                        size     = dog.getSize().name();
+                    } else if (a instanceof Cat cat) {
+                        neutered = String.valueOf(cat.isNeutered());
+                        indoor   = String.valueOf(cat.isIndoor());
+                    } else if (a instanceof Rabbit rabbit) {
+                        fur = rabbit.getFurLength().name();
+                    }
+
                     String status = a.isAvailable() ? "available" : "adopted";
-                    System.out.printf("%-36s  %-10s  %-12s  %-20s  %-4d  %-8s  %s%n",
+                    System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3d  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
                             a.getId(), a.getSpecies(), a.getName(), a.getBreed(),
-                            a.getAge(), a.getActivityLevel(), status);
+                            a.getAge(), a.getActivityLevel(),
+                            neutered, indoor, size, fur, v.getShelterName(), status);
                 }
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
@@ -197,7 +220,8 @@ public class AnimalCmd implements Runnable {
 
     /**
      * Updates an existing animal's mutable fields.
-     * Breed and birthday are immutable; only name and activity level can be changed.
+     * Breed and birthday are immutable; name, activity level, and neutered status can be changed.
+     * The {@code --neutered} option accepts {@code true} or {@code false} and applies only to dogs and cats.
      */
     @Command(name = "update", description = "Update an animal's mutable details",
              mixinStandardHelpOptions = true)
@@ -215,6 +239,11 @@ public class AnimalCmd implements Runnable {
         @Option(names = "--activity", description = "New activity level (omit to keep current)")
         private ActivityLevel activityLevel;
 
+        /** The new neutered status (true/false); omit to keep current value. Applies to dogs and cats only. */
+        @Option(names = "--neutered", arity = "1",
+                description = "Neutered status: true or false (dogs/cats only; omit to keep current)")
+        private Boolean neutered;
+
         /**
          * Executes the update and prints a confirmation message with the updated values.
          * Prints an error message if the animal is not found.
@@ -222,7 +251,7 @@ public class AnimalCmd implements Runnable {
         @Override
         public void run() {
             try {
-                Animal a = AppContext.get().animalApp().updateAnimal(id, name, activityLevel);
+                Animal a = AppContext.get().animalApp().updateAnimal(id, name, activityLevel, neutered);
                 System.out.printf("Updated animal: %s (id=%s)%n", a.getName(), a.getId());
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());

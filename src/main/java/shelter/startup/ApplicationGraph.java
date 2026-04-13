@@ -167,9 +167,9 @@ public class ApplicationGraph {
         ExplanationService explanationService = new MockExplanationService();
 
         AnimalApplicationService animalAppService =
-                new AnimalApplicationServiceImpl(animalService, shelterService, animalAudit);
+                new AnimalApplicationServiceImpl(animalService, shelterService, adoptionService, animalAudit);
         AdopterApplicationService adopterAppService =
-                new AdopterApplicationServiceImpl(adopterService, adopterAudit);
+                new AdopterApplicationServiceImpl(adopterService, adoptionService, adopterAudit);
         ShelterApplicationService shelterAppService =
                 new ShelterApplicationServiceImpl(shelterService, shelterAudit);
         AdoptionApplicationService adoptionAppService =

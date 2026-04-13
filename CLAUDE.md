@@ -22,7 +22,7 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 ```
 
 **Domain Layer** (`shelter.domain`):
-- `Animal` (abstract base) → `Dog`, `Cat`, `Rabbit`
+- `Animal` (abstract base) → `Dog`, `Cat`, `Rabbit`, `Other` (free-form species name)
   - `adopterId`: `null` = available; non-null = adopted by that adopter
 - `Shelter`: holds a collection of animals, manages capacity
 - `Adopter`: adopter info, preferences, lifestyle context
@@ -65,18 +65,84 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 
 The system is operated as a stateless CLI. Data is persisted to `~/shelter/data/` as CSV files. Each command loads data, performs the operation, and saves back.
 
+### Shelter (UC-01)
 ```
 shelter shelter list
-shelter shelter register --name "Happy Paws" --location "Boston" --capacity 20
-shelter animal list [--shelter <id>]
-shelter animal admit --species dog --name "Max" --breed "Labrador" --age 3 --activity MEDIUM --shelter <id>
-shelter adopt submit --adopter <id> --animal <id>
-shelter adopt approve --request <id>
-shelter match animal --adopter <id> --shelter <id> [--explain]
-shelter match adopter --animal <id> [--explain]
-shelter vaccine record --animal <id> --type <name> --date <yyyy-mm-dd>
-shelter vaccine overdue --animal <id>
+shelter shelter register --name <name> --location <location> --capacity <n>
+shelter shelter update --id <id> [--name <name>] [--location <location>] [--capacity <n>]
+shelter shelter remove --id <id>
 ```
+
+### Animal (UC-02)
+```
+shelter animal list [--shelter <id>]
+# list columns: ID / Species / Name / Breed / Age / Activity / Neutered / Indoor / Size / Fur / Status
+# species-specific columns show "N/A" when not applicable to that species
+
+shelter animal admit --species dog    --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--size <SMALL|MEDIUM|LARGE>] [--neutered]
+shelter animal admit --species cat    --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--indoor] [--neutered]
+shelter animal admit --species rabbit --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--fur <SHORT|LONG>]
+shelter animal admit --species other  --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> --species-name <e.g. fish>
+# --neutered in admit is a boolean flag (presence = true); in update it takes a value: --neutered true|false
+
+shelter animal update --id <id> [--name <name>] [--activity <LOW|MEDIUM|HIGH>] [--neutered <true|false>]
+# --neutered applies to dogs and cats only; silently ignored for rabbit/other
+shelter animal remove --id <id>
+```
+
+### Adopter (UC-03)
+```
+shelter adopter list
+# list columns: ID / Name / Living Space / Schedule / Species / Breed / Activity / Vaccinated / Min Age / Max Age
+# unset preference fields show "any"
+
+shelter adopter register --name <name> --space <APARTMENT|HOUSE_NO_YARD|HOUSE_WITH_YARD> --schedule <HOME_MOST_OF_DAY|AWAY_PART_OF_DAY|AWAY_MOST_OF_DAY> [--species <DOG|CAT|RABBIT|OTHER>] [--breed <breed>] [--activity <LOW|MEDIUM|HIGH>] [--requires-vaccinated <true|false>] [--min-age <n>] [--max-age <n>]
+shelter adopter update --id <id> [--name <name>] [--space <...>] [--schedule <...>] [--species <...>] [--breed <...>] [--activity <...>] [--requires-vaccinated <true|false>] [--min-age <n>] [--max-age <n>]
+shelter adopter remove --id <id>
+```
+
+### Matching (UC-04)
+```
+shelter match animal  --adopter <id> --shelter <id>
+shelter match adopter --animal <id>
+```
+
+### Adoption (UC-05)
+```
+shelter adopt submit  --adopter <id> --animal <id>
+shelter adopt approve --request <id>
+shelter adopt reject  --request <id>
+shelter adopt cancel  --request <id>
+```
+
+### Transfer (UC-06)
+```
+shelter transfer request --animal <id> --from <shelter-id> --to <shelter-id>
+shelter transfer approve --request <id>
+shelter transfer reject  --request <id>
+shelter transfer cancel  --request <id>
+```
+
+### Vaccination (UC-07)
+```
+shelter vaccine record  --animal <id> --type <vaccine-type-name> --date <yyyy-mm-dd>
+shelter vaccine overdue --animal <id>
+shelter vaccine type list
+shelter vaccine type add    --name <name> --species <DOG|CAT|RABBIT|OTHER> --days <n>
+shelter vaccine type update --id <id> [--name <name>] [--species <...>] [--days <n>]
+shelter vaccine type remove --id <id>
+```
+
+### Audit (UC-08)
+```
+shelter audit log
+```
+
+### Demo workflow note
+IDs are not known in advance — always run `list` first to retrieve them. Typical sequence:
+1. `shelter shelter list` → get shelter ID
+2. `shelter animal list` / `shelter adopter list` → get animal/adopter IDs
+3. Run the target command with the retrieved IDs
 
 For demo purposes, Claude Code is used as the AI agent: the user speaks natural language, Claude interprets the intent and executes the appropriate `shelter` commands.
 
@@ -124,7 +190,9 @@ For demo purposes, Claude Code is used as the AI agent: the user speaks natural 
   - Group code into logical blocks and add one comment per block (not per line)
   - Explain **why** or **what the block achieves**, not just what the code literally does
   - Example blocks to comment: guard checks, business rule validations, domain delegation, side effects, persistence calls
-- **Testing**: JUnit unit tests covering normal paths and edge cases; use `MockExplanationService` for AI module tests
+- **Testing**: Two levels of tests, both run via `./gradlew test`:
+  - **Unit tests**: JUnit, cover normal paths and edge cases; use `MockExplanationService` for AI module tests
+  - **Integration tests**: tagged `@Tag("integration")`, spawn real `shelter` subprocesses via `ProcessBuilder`; isolated via `SHELTER_HOME` env var pointing to a `@TempDir` — the real `~/shelter` directory is never touched; 78 tests covering all UC-01 through UC-08 including error cases
 - **Build**: Gradle with `application` plugin; main class is `shelter.cli.Main`; CLI dependency is Picocli
 
 ### Domain Class Requirements
@@ -162,6 +230,7 @@ Every domain class must implement the following:
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) — team roles, branch strategy, commit conventions
 - [docs/use-cases.md](docs/use-cases.md) — full use case list with application layer method signatures
+- [docs/integration-test-plan.md](docs/integration-test-plan.md) — CLI integration test design and isolation strategy
 - [docs/proposal/proposal-for-pdf.md](docs/proposal/proposal-for-pdf.md) — human-readable proposal
 - [docs/diagram-class.mmd](docs/diagram-class.mmd) — class diagram (Mermaid source)
 - [docs/diagram-layer.mmd](docs/diagram-layer.mmd) — layer architecture diagram

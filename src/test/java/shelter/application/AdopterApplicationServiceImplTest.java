@@ -6,6 +6,7 @@ import shelter.application.impl.AdopterApplicationServiceImpl;
 import shelter.domain.*;
 import shelter.exception.EntityNotFoundException;
 import shelter.service.AdopterService;
+import shelter.service.AdoptionService;
 import shelter.service.AuditService;
 import shelter.service.model.AuditEntry;
 
@@ -25,14 +26,16 @@ class AdopterApplicationServiceImplTest {
     // -------------------------------------------------------------------------
 
     private StubAdopterService adopterService;
+    private StubAdoptionService adoptionService;
     private SpyAuditService<Adopter> auditService;
     private AdopterApplicationServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        adopterService = new StubAdopterService();
-        auditService   = new SpyAuditService<>();
-        service        = new AdopterApplicationServiceImpl(adopterService, auditService);
+        adopterService  = new StubAdopterService();
+        adoptionService = new StubAdoptionService();
+        auditService    = new SpyAuditService<>();
+        service         = new AdopterApplicationServiceImpl(adopterService, adoptionService, auditService);
     }
 
     // -------------------------------------------------------------------------
@@ -103,9 +106,11 @@ class AdopterApplicationServiceImplTest {
     @Test
     void constructor_nullArgument_throws() {
         assertThrows(IllegalArgumentException.class,
-                () -> new AdopterApplicationServiceImpl(null, auditService));
+                () -> new AdopterApplicationServiceImpl(null, adoptionService, auditService));
         assertThrows(IllegalArgumentException.class,
-                () -> new AdopterApplicationServiceImpl(adopterService, null));
+                () -> new AdopterApplicationServiceImpl(adopterService, null, auditService));
+        assertThrows(IllegalArgumentException.class,
+                () -> new AdopterApplicationServiceImpl(adopterService, adoptionService, null));
     }
 
     // -------------------------------------------------------------------------
@@ -167,6 +172,22 @@ class AdopterApplicationServiceImplTest {
         public List<Adopter> adoptedAnimal(Animal a) {
             return List.of();
         }
+    }
+
+    /**
+     * Stub implementation of {@link AdoptionService} that returns empty lists for all queries.
+     * Used to satisfy the dependency without simulating pending requests in most tests.
+     */
+    private static class StubAdoptionService implements AdoptionService {
+        @Override public void submit(shelter.domain.AdoptionRequest r) {}
+        @Override public void approve(shelter.domain.AdoptionRequest r) {}
+        @Override public void reject(shelter.domain.AdoptionRequest r) {}
+        @Override public void cancel(shelter.domain.AdoptionRequest r) {}
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsByAdopter(Adopter a) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsByShelter(shelter.domain.Shelter s) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsByAnimal(Animal a) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getRequestsAfter(java.time.LocalDate d) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> getApprovedAfter(java.time.LocalDate d) { return List.of(); }
     }
 
     /**
