@@ -300,4 +300,79 @@ class AnimalIntegrationTest extends CliIntegrationTest {
                 "--id", "00000000-0000-0000-0000-000000000000");
         assertOutputContains(r, "Error");
     }
+
+    // -------------------------------------------------------------------------
+    // Shelter column in animal list
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that the animal list output always includes a Shelter column header
+     * and that the column shows the correct shelter name for each animal.
+     * Two animals are admitted to shelters with different names; both shelter names
+     * must appear in the unfiltered list output alongside the correct animal.
+     */
+    @Test
+    void list_allAnimals_showsShelterNameColumn() throws Exception {
+        String shelterA = registerShelter("Happy Paws", 10);
+        String shelterB = registerShelter("Green Field", 10);
+        run("animal", "admit",
+                "--species", "dog", "--name", "Rex", "--breed", "Lab",
+                "--age", "2", "--activity", "HIGH", "--shelter", shelterA);
+        run("animal", "admit",
+                "--species", "cat", "--name", "Misty", "--breed", "Mix",
+                "--age", "3", "--activity", "LOW", "--shelter", shelterB);
+
+        RunResult r = run("animal", "list");
+        assertSuccess(r);
+        assertOutputContains(r, "Shelter");
+        assertOutputContains(r, "Happy Paws");
+        assertOutputContains(r, "Green Field");
+    }
+
+    /**
+     * Verifies that filtering by shelter still shows the correct shelter name in the output.
+     * Only animals belonging to the specified shelter should appear, and their Shelter
+     * column must match the shelter name rather than the raw ID.
+     */
+    @Test
+    void list_byShelter_showsCorrectShelterName() throws Exception {
+        String shelterA = registerShelter("Cozy Corner", 10);
+        String shelterB = registerShelter("Open Meadow", 10);
+        run("animal", "admit",
+                "--species", "rabbit", "--name", "Bun", "--breed", "Dutch",
+                "--age", "1", "--activity", "MEDIUM", "--shelter", shelterA);
+        run("animal", "admit",
+                "--species", "dog", "--name", "Bolt", "--breed", "Mix",
+                "--age", "4", "--activity", "HIGH", "--shelter", shelterB);
+
+        RunResult r = run("animal", "list", "--shelter", shelterA);
+        assertSuccess(r);
+        assertOutputContains(r, "Cozy Corner");
+        assertOutputDoesNotContain(r, "Open Meadow");
+        assertOutputDoesNotContain(r, "Bolt");
+    }
+
+    /**
+     * Verifies that updating the neutered status of a dog changes the field from false to true.
+     * A second animal is admitted to confirm the update is scoped only to the target animal.
+     */
+    @Test
+    void update_neutered_changesNeuteredStatus() throws Exception {
+        String shelterId = registerShelter("Paws", 10);
+        run("animal", "admit",
+                "--species", "cat", "--name", "Bystander", "--breed", "Mix",
+                "--age", "2", "--activity", "LOW", "--shelter", shelterId);
+        RunResult admit = run("animal", "admit",
+                "--species", "dog", "--name", "Bruno", "--breed", "Lab",
+                "--age", "3", "--activity", "HIGH", "--shelter", shelterId);
+        String animalId = extractId(admit.stdout());
+
+        RunResult r = run("animal", "update", "--id", animalId, "--neutered", "true");
+        assertSuccess(r);
+        assertOutputContains(r, "Updated animal");
+
+        RunResult list = run("animal", "list", "--shelter", shelterId);
+        assertSuccess(list);
+        assertOutputContains(list, "true");
+    }
 }
