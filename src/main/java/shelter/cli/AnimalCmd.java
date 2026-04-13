@@ -4,7 +4,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
+import shelter.domain.Cat;
 import shelter.domain.Dog;
+import shelter.domain.Other;
 import shelter.domain.Rabbit;
 
 import java.time.LocalDate;
@@ -55,6 +57,7 @@ public class AnimalCmd implements Runnable {
 
         /**
          * Executes the list operation and prints each animal's details to stdout.
+         * All columns are always shown; species-specific fields display "-" when not applicable.
          * Prints a message if no animals are found.
          */
         @Override
@@ -65,14 +68,31 @@ public class AnimalCmd implements Runnable {
                     System.out.println("No animals found.");
                     return;
                 }
-                System.out.printf("%-36s  %-10s  %-12s  %-20s  %-4s  %-8s  %s%n",
-                        "ID", "Species", "Name", "Breed", "Age", "Activity", "Status");
-                System.out.println("-".repeat(110));
+                System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %s%n",
+                        "ID", "Species", "Name", "Breed", "Age", "Activity",
+                        "Neutered", "Indoor", "Size", "Fur", "Status");
+                System.out.println("-".repeat(130));
                 for (Animal a : animals) {
+                    // Resolve species-specific fields; use "N/A" when not applicable to this species
+                    String neutered = "N/A";
+                    String indoor   = "N/A";
+                    String size     = "N/A";
+                    String fur      = "N/A";
+                    if (a instanceof Dog dog) {
+                        neutered = String.valueOf(dog.isNeutered());
+                        size     = dog.getSize().name();
+                    } else if (a instanceof Cat cat) {
+                        neutered = String.valueOf(cat.isNeutered());
+                        indoor   = String.valueOf(cat.isIndoor());
+                    } else if (a instanceof Rabbit rabbit) {
+                        fur = rabbit.getFurLength().name();
+                    }
+
                     String status = a.isAvailable() ? "available" : "adopted";
-                    System.out.printf("%-36s  %-10s  %-12s  %-20s  %-4d  %-8s  %s%n",
+                    System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3d  %-8s  %-8s  %-7s  %-7s  %-6s  %s%n",
                             a.getId(), a.getSpecies(), a.getName(), a.getBreed(),
-                            a.getAge(), a.getActivityLevel(), status);
+                            a.getAge(), a.getActivityLevel(),
+                            neutered, indoor, size, fur, status);
                 }
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
