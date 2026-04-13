@@ -1,5 +1,6 @@
 package shelter.application;
 
+import shelter.application.model.AnimalView;
 import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
 import shelter.domain.Cat;
@@ -105,6 +106,17 @@ public interface AnimalApplicationService {
      * @return the updated {@link Animal}
      */
     Animal updateAnimal(String animalId, String name, ActivityLevel activityLevel, Boolean neutered);
+
+    /**
+     * Returns a list of {@link AnimalView} objects, each pairing an animal with its shelter's
+     * display name. Filters by shelter when {@code shelterId} is provided, or returns all animals
+     * system-wide when {@code shelterId} is {@code null}. The shelter name is resolved by the
+     * Application layer so that callers do not need to perform cross-domain lookups.
+     *
+     * @param shelterId the ID of the shelter to filter by, or {@code null} for all animals
+     * @return a list of enriched animal views matching the filter
+     */
+    List<AnimalView> listAnimalsWithShelterName(String shelterId);
 
     /**
      * Removes an animal from the system by ID.

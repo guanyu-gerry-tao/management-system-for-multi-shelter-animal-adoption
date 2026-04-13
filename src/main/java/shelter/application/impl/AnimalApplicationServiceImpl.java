@@ -1,6 +1,7 @@
 package shelter.application.impl;
 
 import shelter.application.AnimalApplicationService;
+import shelter.application.model.AnimalView;
 import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
 import shelter.domain.Cat;
@@ -142,6 +143,29 @@ public class AnimalApplicationServiceImpl implements AnimalApplicationService {
         }
         Shelter shelter = shelterService.findById(shelterId);
         return animalService.getAnimalsByShelter(shelter);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Delegates to {@link #listAnimals(String)} to obtain the base animal list, then resolves
+     * each animal's shelter name via {@code shelterService} and wraps the pair in an {@link AnimalView}.
+     * The shelter name lookup is centralised here so the CLI layer needs no knowledge of shelters.
+     */
+    @Override
+    public List<AnimalView> listAnimalsWithShelterName(String shelterId) {
+        List<Animal> animals = listAnimals(shelterId);
+        List<AnimalView> views = new java.util.ArrayList<>();
+        for (Animal a : animals) {
+            String name;
+            try {
+                name = shelterService.findById(a.getShelterId()).getName();
+            } catch (Exception e) {
+                // Fall back to the raw ID if the shelter cannot be resolved
+                name = a.getShelterId();
+            }
+            views.add(new AnimalView(a, name));
+        }
+        return views;
     }
 
     /**

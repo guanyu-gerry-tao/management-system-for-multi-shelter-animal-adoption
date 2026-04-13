@@ -2,11 +2,11 @@ package shelter.cli;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import shelter.application.model.AnimalView;
 import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
 import shelter.domain.Cat;
 import shelter.domain.Dog;
-import shelter.domain.Other;
 import shelter.domain.Rabbit;
 
 import java.time.LocalDate;
@@ -57,22 +57,25 @@ public class AnimalCmd implements Runnable {
 
         /**
          * Executes the list operation and prints each animal's details to stdout.
-         * All columns are always shown; species-specific fields display "-" when not applicable.
+         * All columns are always shown; species-specific fields display "N/A" when not applicable.
+         * The Shelter column shows the shelter name resolved by the Application layer.
          * Prints a message if no animals are found.
          */
         @Override
         public void run() {
             try {
-                List<Animal> animals = AppContext.get().animalApp().listAnimals(shelterId);
-                if (animals.isEmpty()) {
+                List<AnimalView> views = AppContext.get().animalApp().listAnimalsWithShelterName(shelterId);
+                if (views.isEmpty()) {
                     System.out.println("No animals found.");
                     return;
                 }
-                System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %s%n",
+                System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
                         "ID", "Species", "Name", "Breed", "Age", "Activity",
-                        "Neutered", "Indoor", "Size", "Fur", "Status");
-                System.out.println("-".repeat(130));
-                for (Animal a : animals) {
+                        "Neutered", "Indoor", "Size", "Fur", "Shelter", "Status");
+                System.out.println("-".repeat(148));
+                for (AnimalView v : views) {
+                    Animal a = v.getAnimal();
+
                     // Resolve species-specific fields; use "N/A" when not applicable to this species
                     String neutered = "N/A";
                     String indoor   = "N/A";
@@ -89,10 +92,10 @@ public class AnimalCmd implements Runnable {
                     }
 
                     String status = a.isAvailable() ? "available" : "adopted";
-                    System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3d  %-8s  %-8s  %-7s  %-7s  %-6s  %s%n",
+                    System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3d  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
                             a.getId(), a.getSpecies(), a.getName(), a.getBreed(),
                             a.getAge(), a.getActivityLevel(),
-                            neutered, indoor, size, fur, status);
+                            neutered, indoor, size, fur, v.getShelterName(), status);
                 }
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
