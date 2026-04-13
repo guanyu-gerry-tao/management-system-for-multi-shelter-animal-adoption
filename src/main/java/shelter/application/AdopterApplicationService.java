@@ -28,14 +28,14 @@ public interface AdopterApplicationService {
      * @param preferredActivityLevel the preferred activity level, or {@code null} for no preference
      * @param requiresVaccinated     {@code true} if vaccinated animals are required,
      *                               or {@code null} for no vaccination preference
-     * @param minAge                 the minimum preferred animal age; must be non-negative
-     * @param maxAge                 the maximum preferred animal age; must be &gt;= {@code minAge}
+     * @param minAge                 the minimum preferred animal age, or {@code null} for no preference
+     * @param maxAge                 the maximum preferred animal age, or {@code null} for no preference
      * @return the newly created {@link Adopter}
      */
     Adopter registerAdopter(String name, LivingSpace livingSpace, DailySchedule dailySchedule,
                              Species preferredSpecies, String preferredBreed,
                              ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
-                             int minAge, int maxAge);
+                             Integer minAge, Integer maxAge);
 
     /**
      * Returns a list of all registered adopters in the system.

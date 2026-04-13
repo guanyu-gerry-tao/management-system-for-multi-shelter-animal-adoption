@@ -117,8 +117,10 @@ public class CsvAdopterRepository implements AdopterRepository {
                 ? null
                 : Boolean.valueOf(requiresVaccinatedRaw);
 
-        int minAge             = Integer.parseInt(parts[9].trim());
-        int maxAge             = Integer.parseInt(parts[10].trim());
+        String minAgeRaw = parts[9].trim();
+        Integer minAge   = minAgeRaw.isEmpty() ? null : Integer.parseInt(minAgeRaw);
+        String maxAgeRaw = parts[10].trim();
+        Integer maxAge   = maxAgeRaw.isEmpty() ? null : Integer.parseInt(maxAgeRaw);
 
         List<String> adoptedIds = CsvUtils.decodeList(
                 CsvUtils.unescapeCsv(parts[11]));
@@ -143,8 +145,8 @@ public class CsvAdopterRepository implements AdopterRepository {
                   .append(CsvUtils.escapeCsv(p.getPreferredBreed())).append(',')
                   .append(p.getPreferredActivityLevel() != null ? p.getPreferredActivityLevel().name() : "").append(',')
                   .append(p.getRequiresVaccinated() != null ? p.getRequiresVaccinated() : "").append(',')
-                  .append(p.getMinAge()).append(',')
-                  .append(p.getMaxAge()).append(',')
+                  .append(p.getMinAge() != null ? p.getMinAge() : "").append(',')
+                  .append(p.getMaxAge() != null ? p.getMaxAge() : "").append(',')
                   .append(CsvUtils.escapeCsv(CsvUtils.encodeList(a.getAdoptedAnimalIds())))
                   .append(System.lineSeparator());
             }

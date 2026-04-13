@@ -30,7 +30,7 @@ class MatchingScoreCalculatorTest {
     void calculateScore_noApplicableStrategies_returnsOneHundred() {
         Adopter noPreferenceAdopter = new Adopter("Bob", LivingSpace.HOUSE_WITH_YARD,
                 DailySchedule.HOME_MOST_OF_DAY, null,
-                new AdopterPreferences(null, null, null, null, 0, Integer.MAX_VALUE));
+                new AdopterPreferences(null, null, null, null, null, null));
         MatchingScoreCalculator calculator = new MatchingScoreCalculator(
                 List.of(new SpeciesPreferenceStrategy()), null);
 

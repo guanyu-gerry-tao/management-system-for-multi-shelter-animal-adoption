@@ -41,7 +41,7 @@ class AgePreferenceStrategyTest {
     void isApplicable_noPreferenceSet_returnsFalse() {
         Adopter noAgePreference = new Adopter("Bob", LivingSpace.APARTMENT,
                 DailySchedule.AWAY_MOST_OF_DAY, null,
-                new AdopterPreferences(null, null, null, null, 0, Integer.MAX_VALUE));
+                new AdopterPreferences(null, null, null, null, null, null));
         assertFalse(strategy.isApplicable(noAgePreference, dogAtBirthday(LocalDate.now().minusYears(2))));
     }
 

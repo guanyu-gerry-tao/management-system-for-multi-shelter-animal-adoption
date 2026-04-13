@@ -47,7 +47,7 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
     public Adopter registerAdopter(String name, LivingSpace livingSpace, DailySchedule dailySchedule,
                                     Species preferredSpecies, String preferredBreed,
                                     ActivityLevel preferredActivityLevel, Boolean requiresVaccinated,
-                                    int minAge, int maxAge) {
+                                    Integer minAge, Integer maxAge) {
         // Build preferences object from individual fields
         AdopterPreferences preferences = new AdopterPreferences(
                 preferredSpecies, preferredBreed, preferredActivityLevel,
@@ -87,8 +87,8 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
         ActivityLevel newActivity = preferredActivityLevel != null ? preferredActivityLevel : oldPrefs.getPreferredActivityLevel();
         Boolean      newRequiresVaccinated =
                 requiresVaccinated != null ? requiresVaccinated : oldPrefs.getRequiresVaccinated();
-        int          newMin      = minAge != null ? minAge : oldPrefs.getMinAge();
-        int          newMax      = maxAge != null ? maxAge : oldPrefs.getMaxAge();
+        Integer      newMin      = minAge != null ? minAge : oldPrefs.getMinAge();
+        Integer      newMax      = maxAge != null ? maxAge : oldPrefs.getMaxAge();
 
         AdopterPreferences newPrefs = new AdopterPreferences(
                 newSpecies, newBreed, newActivity, newRequiresVaccinated, newMin, newMax);

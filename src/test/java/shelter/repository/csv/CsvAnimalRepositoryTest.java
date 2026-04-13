@@ -7,6 +7,7 @@ import shelter.domain.ActivityLevel;
 import shelter.domain.Animal;
 import shelter.domain.Cat;
 import shelter.domain.Dog;
+import shelter.domain.Other;
 import shelter.domain.Rabbit;
 
 import java.nio.file.Path;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link CsvAnimalRepository}, verifying CRUD operations and query methods
- * for all three concrete animal types using a JUnit {@code @TempDir}.
+ * for all concrete animal types (Dog, Cat, Rabbit, and Other) using a JUnit {@code @TempDir}.
  */
 class CsvAnimalRepositoryTest {
 
@@ -165,6 +166,28 @@ class CsvAnimalRepositoryTest {
         repo.save(dog);
 
         assertTrue(repo.findByAdopterId("some-adopter").isEmpty());
+    }
+
+    /**
+     * Regression test for the Other-animal CSV round-trip bug.
+     * Before the fix, parseLine() called Species.valueOf() which threw for non-enum values,
+     * silently dropping Other animals on reload. This verifies the free-form speciesName
+     * survives a full save-and-reload cycle.
+     */
+    @Test
+    void saveAndFindById_other_roundTripsSpeciesName() {
+        Other fish = new Other("Nemo", "Clownfish", LocalDate.now().minusYears(1),
+                ActivityLevel.LOW, false, "fish");
+        fish.setShelterId("shelter-4");
+        repo.save(fish);
+
+        CsvAnimalRepository repo2 = new CsvAnimalRepository(tempDir.toString());
+        Animal loaded = repo2.findById(fish.getId()).orElseThrow();
+        assertInstanceOf(Other.class, loaded);
+        assertEquals("fish", ((Other) loaded).getSpeciesName());
+        assertEquals("Nemo", loaded.getName());
+        assertEquals("Clownfish", loaded.getBreed());
+        assertEquals("shelter-4", loaded.getShelterId());
     }
 
     /**
