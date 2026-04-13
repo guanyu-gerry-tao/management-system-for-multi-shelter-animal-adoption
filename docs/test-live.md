@@ -30,9 +30,9 @@ shelter --version                                      # 验证 CLI 可用
 ✅ 期望：`Updated shelter: Boston Paws (id=...)`
 
 **对 Claude 说：**
-> 试着删除 Boston Paws。
+> 删除 Boston Paws，然后重新注册一个同名庇护所（容量 20）。
 
-✅ 期望：报错（因为后续会往里面放动物，此处可先跳过或验证空庇护所可删后重建）
+✅ 期望：先输出 `Removed shelter: ...`，再输出 `Registered shelter: Boston Paws (id=...)`（空庇护所可以正常删除；重建是为了后续阶段继续使用）
 
 ---
 
@@ -78,12 +78,12 @@ shelter --version                                      # 验证 CLI 可用
 ## 阶段三：领养人管理（UC-03）
 
 **对 Claude 说：**
-> 注册领养人 Alice，住 HOUSE_WITH_YARD，日程 HOME_MOST_OF_DAY，偏好 DOG，年龄范围 1 到 5 岁。
+> 注册领养人 Alice，住 HOUSE_WITH_YARD，日程 HOME_MOST_OF_DAY，偏好 DOG，偏好品种 Labrador，活跃度偏好 HIGH，要求已接种疫苗，年龄范围 1 到 5 岁。
 
 ✅ 期望：`Registered adopter: Alice (id=...)`
 
 **对 Claude 说：**
-> 注册领养人 Bob，住 APARTMENT，日程 AWAY_PART_OF_DAY，无特定偏好。
+> 注册领养人 Bob，住 APARTMENT，日程 AWAY_PART_OF_DAY，偏好 CAT，活跃度偏好 LOW，不要求接种疫苗，年龄范围不限。
 
 ✅ 期望：`Registered adopter: Bob (id=...)`
 
@@ -93,7 +93,7 @@ shelter --version                                      # 验证 CLI 可用
 ✅ 期望：Alice 和 Bob 都出现
 
 **对 Claude 说：**
-> 把 Bob 的日程改成 HOME_MOST_OF_DAY。
+> 把 Bob 的日程改成 HOME_MOST_OF_DAY，同时把他的活跃度偏好改成 MEDIUM。
 
 ✅ 期望：`Updated adopter: Bob (id=...)`
 

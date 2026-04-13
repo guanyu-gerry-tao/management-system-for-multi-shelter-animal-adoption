@@ -63,9 +63,9 @@ shelter --version              # 验证 CLI 可用
 
 | # | 对 Claude 说 | 演示亮点 |
 |---|---|---|
-| 1 | 注册 Alice：HOUSE_WITH_YARD，HOME_MOST_OF_DAY，偏好 DOG，年龄 1–5 岁 | `AdopterPreferences` 值对象封装偏好 |
-| 2 | 注册 Bob：APARTMENT，AWAY_PART_OF_DAY，无特定偏好 | 可选偏好字段 |
-| 3 | 把 Bob 的日程改为 HOME_MOST_OF_DAY | 部分字段更新 |
+| 1 | 注册 Alice：HOUSE_WITH_YARD，HOME_MOST_OF_DAY，偏好 DOG / Labrador / HIGH，要求已接种，年龄 1–5 岁 | `AdopterPreferences` 封装全部偏好字段 |
+| 2 | 注册 Bob：APARTMENT，AWAY_PART_OF_DAY，偏好 CAT / LOW，不要求接种，年龄不限 | 对比展示稀疏偏好 |
+| 3 | 把 Bob 的日程改为 HOME_MOST_OF_DAY，活跃度偏好改为 MEDIUM | 部分字段更新，其余保持不变 |
 
 ---
 

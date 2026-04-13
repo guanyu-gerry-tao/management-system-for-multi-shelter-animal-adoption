@@ -42,15 +42,16 @@ public class AdopterCmd implements Runnable {
     // -------------------------------------------------------------------------
 
     /**
-     * Lists all registered adopters with their IDs, names, living spaces, and schedules.
+     * Lists all registered adopters with their IDs, names, living spaces, schedules,
+     * and all preference fields. Fields with no preference set are displayed as "any".
      * Prints a message if no adopters have been registered.
      */
     @Command(name = "list", description = "List all adopters", mixinStandardHelpOptions = true)
     static class ListCmd implements Runnable {
 
         /**
-         * Executes the list operation and prints each adopter's summary to stdout.
-         * Prints a message if no adopters are found.
+         * Executes the list operation and prints each adopter's full details to stdout,
+         * including all preference fields. Prints a message if no adopters are found.
          */
         @Override
         public void run() {
@@ -59,12 +60,23 @@ public class AdopterCmd implements Runnable {
                 System.out.println("No adopters registered.");
                 return;
             }
-            System.out.printf("%-36s  %-15s  %-18s  %-22s%n",
-                    "ID", "Name", "Living Space", "Schedule");
-            System.out.println("-".repeat(100));
+            System.out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %-7s%n",
+                    "ID", "Name", "Living Space", "Schedule",
+                    "Species", "Breed", "Activity", "Vaccinated", "Min Age", "Max Age");
+            System.out.println("-".repeat(155));
             for (Adopter a : adopters) {
-                System.out.printf("%-36s  %-15s  %-18s  %-22s%n",
-                        a.getId(), a.getName(), a.getLivingSpace(), a.getDailySchedule());
+                // Resolve preference fields; display "any" when no preference is set
+                shelter.domain.AdopterPreferences p = a.getPreferences();
+                String species    = p.getPreferredSpecies()       != null ? p.getPreferredSpecies().name()       : "any";
+                String breed      = p.getPreferredBreed()         != null ? p.getPreferredBreed()                : "any";
+                String activity   = p.getPreferredActivityLevel() != null ? p.getPreferredActivityLevel().name() : "any";
+                String vaccinated = p.getRequiresVaccinated()     != null ? p.getRequiresVaccinated().toString() : "any";
+                String minAge     = p.getMinAge()                 != null ? p.getMinAge().toString()             : "any";
+                String maxAge     = p.getMaxAge()                 != null ? p.getMaxAge().toString()             : "any";
+
+                System.out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %-7s%n",
+                        a.getId(), a.getName(), a.getLivingSpace(), a.getDailySchedule(),
+                        species, breed, activity, vaccinated, minAge, maxAge);
             }
         }
     }
