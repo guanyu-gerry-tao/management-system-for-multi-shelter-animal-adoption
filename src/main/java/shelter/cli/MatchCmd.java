@@ -2,7 +2,6 @@ package shelter.cli;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import shelter.service.model.ExplanationResult;
 import shelter.service.model.MatchResult;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class MatchCmd implements Runnable {
     /**
      * Finds and ranks available animals in a shelter for a given adopter.
      * Only available (unadopted) matchable animals are scored and returned.
-     * Results are printed in descending score order; an optional AI explanation follows.
+     * Results are printed in descending score order for the CLI or demo agent to interpret.
      */
     @Command(name = "animal",
              description = "Find best-matching animals for an adopter",
@@ -54,12 +53,8 @@ public class MatchCmd implements Runnable {
         @Option(names = "--shelter", required = true, description = "Shelter ID")
         private String shelterId;
 
-        /** Whether to include a structured AI-generated explanation after the ranked list. */
-        @Option(names = "--explain", description = "Include AI match explanation")
-        private boolean explain;
-
         /**
-         * Executes the matching, prints ranked results, and optionally prints the AI explanation.
+         * Executes the matching and prints ranked results.
          * Prints a message if no available animals are found in the shelter.
          */
         @Override
@@ -80,16 +75,6 @@ public class MatchCmd implements Runnable {
                     System.out.printf("%-4d  %-36s  %-15s  %d%n",
                             rank++, r.getAnimal().getId(), r.getAnimal().getName(), r.getScore());
                 }
-                // Optionally print structured explanation from the explanation service
-                if (explain) {
-                    ExplanationResult exp =
-                            AppContext.get().explanationService().explain(results);
-                    System.out.println();
-                    System.out.println("=== Match Explanation ===");
-                    System.out.println("Rationale   : " + exp.getMatchRationale());
-                    System.out.println("Confidence  : " + exp.getConfidenceAssessment());
-                    System.out.println("Advice      : " + exp.getPersonalizedAdvice());
-                }
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
             }
@@ -102,7 +87,8 @@ public class MatchCmd implements Runnable {
 
     /**
      * Finds and ranks all registered adopters by compatibility with a given available animal.
-     * The animal must not have been adopted. Results are printed in descending score order.
+     * The animal must not have been adopted. Results are printed in descending score order
+     * for the CLI or demo agent to interpret.
      */
     @Command(name = "adopter",
              description = "Find best-matching adopters for an animal",
@@ -113,12 +99,8 @@ public class MatchCmd implements Runnable {
         @Option(names = "--animal", required = true, description = "Animal ID")
         private String animalId;
 
-        /** Whether to include a structured AI-generated explanation after the ranked list. */
-        @Option(names = "--explain", description = "Include AI match explanation")
-        private boolean explain;
-
         /**
-         * Executes the matching, prints ranked results, and optionally prints the AI explanation.
+         * Executes the matching and prints ranked results.
          * Prints an error if the animal is not found, is already adopted, or is not matchable.
          */
         @Override
@@ -139,16 +121,6 @@ public class MatchCmd implements Runnable {
                     System.out.printf("%-4d  %-36s  %-15s  %d%n",
                             rank++, r.getAdopter().getId(), r.getAdopter().getName(),
                             r.getScore());
-                }
-                // Optionally print structured explanation from the explanation service
-                if (explain) {
-                    ExplanationResult exp =
-                            AppContext.get().explanationService().explain(results);
-                    System.out.println();
-                    System.out.println("=== Match Explanation ===");
-                    System.out.println("Rationale   : " + exp.getMatchRationale());
-                    System.out.println("Confidence  : " + exp.getConfidenceAssessment());
-                    System.out.println("Advice      : " + exp.getPersonalizedAdvice());
                 }
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());

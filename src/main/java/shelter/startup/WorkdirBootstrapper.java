@@ -74,8 +74,8 @@ public class WorkdirBootstrapper {
             - `shelter transfer cancel --request <request-id>`
 
             Match:
-            - `shelter match animal --adopter <adopter-id> --shelter <shelter-id> [--explain]`
-            - `shelter match adopter --animal <animal-id> [--explain]`
+            - `shelter match animal --adopter <adopter-id> --shelter <shelter-id>`
+            - `shelter match adopter --animal <animal-id>`
 
             Vaccine:
             - `shelter vaccine record --animal <animal-id> --type <vaccine-type-name> --date <yyyy-mm-dd>`
@@ -94,6 +94,13 @@ public class WorkdirBootstrapper {
             `shelter` CLI calls. Always list shelters, adopters, animals, vaccine types, or
             requests first if you need an ID. Always ask for confirmation before destructive
             operations such as `remove`, `reject`, or `cancel`.
+
+            After running any shelter match command, use the ranked output as the source of truth
+            and explain the top match to the user in natural language. If the match table alone
+            does not show enough context, look up the relevant animal, adopter, shelter, or
+            vaccination records before explaining. Mention score, species, breed, age, activity
+            level, living situation, schedule, and vaccination preferences only when they are
+            available from CLI output or persisted data; do not invent missing details.
 
             ## Data Directory
 
