@@ -76,17 +76,26 @@ shelter shelter remove --id <id>
 ### Animal (UC-02)
 ```
 shelter animal list [--shelter <id>]
+# list columns: ID / Species / Name / Breed / Age / Activity / Neutered / Indoor / Size / Fur / Status
+# species-specific columns show "N/A" when not applicable to that species
+
 shelter animal admit --species dog    --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--size <SMALL|MEDIUM|LARGE>] [--neutered]
 shelter animal admit --species cat    --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--indoor] [--neutered]
 shelter animal admit --species rabbit --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> [--fur <SHORT|LONG>]
 shelter animal admit --species other  --name <name> --breed <breed> --age <years> --activity <LOW|MEDIUM|HIGH> --shelter <id> --species-name <e.g. fish>
-shelter animal update --id <id> [--name <name>] [--activity <LOW|MEDIUM|HIGH>]
+# --neutered in admit is a boolean flag (presence = true); in update it takes a value: --neutered true|false
+
+shelter animal update --id <id> [--name <name>] [--activity <LOW|MEDIUM|HIGH>] [--neutered <true|false>]
+# --neutered applies to dogs and cats only; silently ignored for rabbit/other
 shelter animal remove --id <id>
 ```
 
 ### Adopter (UC-03)
 ```
 shelter adopter list
+# list columns: ID / Name / Living Space / Schedule / Species / Breed / Activity / Vaccinated / Min Age / Max Age
+# unset preference fields show "any"
+
 shelter adopter register --name <name> --space <APARTMENT|HOUSE_NO_YARD|HOUSE_WITH_YARD> --schedule <HOME_MOST_OF_DAY|AWAY_PART_OF_DAY|AWAY_MOST_OF_DAY> [--species <DOG|CAT|RABBIT|OTHER>] [--breed <breed>] [--activity <LOW|MEDIUM|HIGH>] [--requires-vaccinated <true|false>] [--min-age <n>] [--max-age <n>]
 shelter adopter update --id <id> [--name <name>] [--space <...>] [--schedule <...>] [--species <...>] [--breed <...>] [--activity <...>] [--requires-vaccinated <true|false>] [--min-age <n>] [--max-age <n>]
 shelter adopter remove --id <id>
@@ -136,6 +145,12 @@ IDs are not known in advance — always run `list` first to retrieve them. Typic
 3. Run the target command with the retrieved IDs
 
 For demo purposes, Claude Code is used as the AI agent: the user speaks natural language, Claude interprets the intent and executes the appropriate `shelter` commands.
+
+### Agent behavior rules (enforced during demo)
+
+**Deletion requires confirmation.** Before executing any `remove` command (`shelter shelter remove`, `shelter animal remove`, `shelter adopter remove`, `shelter vaccine type remove`), ask the user to confirm. Do not proceed until the user explicitly says yes.
+
+**Approval-step commands: submit only, then wait.** When the user asks to submit an adoption request, transfer request, or similar workflow request, only run the `submit` / `request` command. Do NOT automatically follow up with `approve`, `reject`, or `cancel`. Stop after creation and wait for an explicit instruction such as "批准" / "approve" / "拒绝" / "reject" / "取消" / "cancel" before running the next step.
 
 ---
 
