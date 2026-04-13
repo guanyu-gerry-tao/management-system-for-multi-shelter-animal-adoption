@@ -120,6 +120,25 @@ class CsvAdopterRepositoryTest {
     }
 
     /**
+     * Regression test for the nullable minAge/maxAge bug.
+     * Before the fix, null age bounds were written as empty strings but parsed back with
+     * {@code Integer.parseInt()} directly, throwing {@code NumberFormatException} on reload.
+     * This verifies that null age bounds survive a full CSV round-trip without error.
+     */
+    @Test
+    void nullAge_roundTrip() {
+        AdopterPreferences prefs = new AdopterPreferences(null, null, null, null, null, null);
+        Adopter a = new Adopter("NoAgePrefs", LivingSpace.APARTMENT,
+                DailySchedule.AWAY_MOST_OF_DAY, null, prefs);
+        repo.save(a);
+
+        CsvAdopterRepository repo2 = new CsvAdopterRepository(tempDir.toString());
+        Adopter loaded = repo2.findById(a.getId()).orElseThrow();
+        assertNull(loaded.getPreferences().getMinAge());
+        assertNull(loaded.getPreferences().getMaxAge());
+    }
+
+    /**
      * Verifies that adoptedAnimalIds are preserved through a CSV round-trip.
      */
     @Test
