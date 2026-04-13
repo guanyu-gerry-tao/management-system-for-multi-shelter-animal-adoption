@@ -40,6 +40,11 @@ public class WorkdirBootstrapper {
             automatically follow up with `approve`, `reject`, or `cancel`. Stop after creation
             and wait for an explicit instruction before running the next step.
 
+            **Always render results as tables with all fields.** Whenever you print, list, or
+            display any data returned by a `shelter` command, format the output as a table
+            (markdown table is fine) and include every field returned — do not omit, summarize,
+            or hide any column, even if the value is `N/A`, `any`, or empty.
+
             ## Project Context
 
             This directory is the runtime work directory for a Java multi-shelter animal adoption
