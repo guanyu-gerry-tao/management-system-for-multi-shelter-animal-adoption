@@ -24,9 +24,11 @@ import java.util.Optional;
 /**
  * CSV-backed implementation of {@link AnimalRepository} that persists animal records to a flat file
  * named {@code animals.csv}.
- * All concrete animal types ({@link Dog}, {@link Cat}, {@link Rabbit}) are stored in the same file
- * using a species discriminator column; species-specific columns are left empty for non-applicable
- * types. Records are loaded into memory at construction and flushed on every mutation.
+ * All concrete animal types ({@link Dog}, {@link Cat}, {@link Rabbit}, and {@link Other}) are stored
+ * in the same file using a species discriminator column: standard species write their enum name
+ * (e.g. {@code DOG}), while {@link Other} animals write their free-form {@code speciesName} so the
+ * correct type can be reconstructed on reload. Species-specific columns are left empty for
+ * non-applicable types. Records are loaded into memory at construction and flushed on every mutation.
  */
 public class CsvAnimalRepository implements AnimalRepository {
 
@@ -100,7 +102,7 @@ public class CsvAnimalRepository implements AnimalRepository {
      * Species-specific columns that do not apply are stored as empty strings.
      *
      * @param line a non-empty CSV row
-     * @return the reconstructed {@link Animal} (a {@link Dog}, {@link Cat}, {@link Rabbit}, or {@link Other});
+     * @return the reconstructed {@link Animal} (a {@link Dog}, {@link Cat}, {@link Rabbit}, or {@link Other})
      */
     private Animal parseLine(String line) {
         String[] p = CsvUtils.splitCsv(line);
