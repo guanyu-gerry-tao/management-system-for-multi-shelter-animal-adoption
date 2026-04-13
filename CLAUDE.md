@@ -146,16 +146,6 @@ IDs are not known in advance — always run `list` first to retrieve them. Typic
 
 For demo purposes, Claude Code is used as the AI agent: the user speaks natural language, Claude interprets the intent and executes the appropriate `shelter` commands.
 
-### Agent behavior rules (enforced during demo)
-
-**Language: English only.** All responses during the demo must be in English, regardless of the language the user speaks. Do not switch to any other language even if the user writes in Chinese or another language.
-
-**Ignore personal memory.** Do not apply, cite, or reference any memory stored about the user (e.g. in `~/.claude/`). Respond only based on the current conversation and this CLAUDE.md file.
-
-**Deletion requires confirmation.** Before executing any `remove` command (`shelter shelter remove`, `shelter animal remove`, `shelter adopter remove`, `shelter vaccine type remove`), ask the user to confirm. Do not proceed until the user explicitly says yes.
-
-**Approval-step commands: submit only, then wait.** When the user asks to submit an adoption request, transfer request, or similar workflow request, only run the `submit` / `request` command. Do NOT automatically follow up with `approve`, `reject`, or `cancel`. Stop after creation and wait for an explicit instruction such as "批准" / "approve" / "拒绝" / "reject" / "取消" / "cancel" before running the next step.
-
 ---
 
 ## Scoring Rubric (100 pts)
