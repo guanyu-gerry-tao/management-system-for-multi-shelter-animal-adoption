@@ -8,6 +8,9 @@ import shelter.domain.Dog;
 import shelter.domain.Other;
 import shelter.domain.Rabbit;
 import shelter.domain.Shelter;
+import shelter.domain.AdoptionRequest;
+import shelter.domain.RequestStatus;
+import shelter.service.AdoptionService;
 import shelter.service.AnimalService;
 import shelter.service.AuditService;
 import shelter.service.ShelterService;
@@ -25,26 +28,31 @@ public class AnimalApplicationServiceImpl implements AnimalApplicationService {
 
     private final AnimalService animalService;
     private final ShelterService shelterService;
+    private final AdoptionService adoptionService;
     private final AuditService<Animal> auditService;
 
     /**
      * Constructs an AnimalApplicationServiceImpl with the required service dependencies.
-     * All three services are mandatory; none may be null.
+     * All four services are mandatory; none may be null.
      *
-     * @param animalService  the service for animal persistence; must not be null
-     * @param shelterService the service for shelter lookups and capacity checks; must not be null
-     * @param auditService   the service for recording audit log entries; must not be null
+     * @param animalService   the service for animal persistence; must not be null
+     * @param shelterService  the service for shelter lookups and capacity checks; must not be null
+     * @param adoptionService the service for querying adoption requests; must not be null
+     * @param auditService    the service for recording audit log entries; must not be null
      * @throws IllegalArgumentException if any argument is null
      */
     public AnimalApplicationServiceImpl(AnimalService animalService,
                                         ShelterService shelterService,
+                                        AdoptionService adoptionService,
                                         AuditService<Animal> auditService) {
-        if (animalService == null)  throw new IllegalArgumentException("AnimalService must not be null.");
-        if (shelterService == null) throw new IllegalArgumentException("ShelterService must not be null.");
-        if (auditService == null)   throw new IllegalArgumentException("AuditService must not be null.");
-        this.animalService  = animalService;
-        this.shelterService = shelterService;
-        this.auditService   = auditService;
+        if (animalService == null)   throw new IllegalArgumentException("AnimalService must not be null.");
+        if (shelterService == null)  throw new IllegalArgumentException("ShelterService must not be null.");
+        if (adoptionService == null) throw new IllegalArgumentException("AdoptionService must not be null.");
+        if (auditService == null)    throw new IllegalArgumentException("AuditService must not be null.");
+        this.animalService   = animalService;
+        this.shelterService  = shelterService;
+        this.adoptionService = adoptionService;
+        this.auditService    = auditService;
     }
 
     /**
@@ -157,11 +165,20 @@ public class AnimalApplicationServiceImpl implements AnimalApplicationService {
 
     /**
      * {@inheritDoc}
-     * Throws if the animal is not found.
+     * Throws if the animal is not found or has a pending adoption request.
      */
     @Override
     public void removeAnimal(String animalId) {
         Animal animal = animalService.findById(animalId);
+
+        // Guard: an animal with a pending adoption request cannot be removed
+        boolean hasPending = adoptionService.getRequestsByAnimal(animal).stream()
+                .anyMatch(r -> r.getStatus() == RequestStatus.PENDING);
+        if (hasPending) {
+            throw new IllegalStateException(
+                    "Cannot remove animal with a pending adoption request: " + animalId);
+        }
+
         animalService.remove(animal);
         auditService.log("removed animal", animal);
     }

@@ -7,7 +7,10 @@ import shelter.domain.AdopterPreferences;
 import shelter.domain.DailySchedule;
 import shelter.domain.LivingSpace;
 import shelter.domain.Species;
+import shelter.domain.AdoptionRequest;
+import shelter.domain.RequestStatus;
 import shelter.service.AdopterService;
+import shelter.service.AdoptionService;
 import shelter.service.AuditService;
 
 import java.util.List;
@@ -21,22 +24,27 @@ import java.util.List;
 public class AdopterApplicationServiceImpl implements AdopterApplicationService {
 
     private final AdopterService adopterService;
+    private final AdoptionService adoptionService;
     private final AuditService<Adopter> auditService;
 
     /**
      * Constructs an AdopterApplicationServiceImpl with the required service dependencies.
-     * Both services are mandatory; neither may be null.
+     * All three services are mandatory; none may be null.
      *
-     * @param adopterService the service for adopter persistence; must not be null
-     * @param auditService   the service for recording audit log entries; must not be null
-     * @throws IllegalArgumentException if either argument is null
+     * @param adopterService  the service for adopter persistence; must not be null
+     * @param adoptionService the service for querying adoption requests; must not be null
+     * @param auditService    the service for recording audit log entries; must not be null
+     * @throws IllegalArgumentException if any argument is null
      */
     public AdopterApplicationServiceImpl(AdopterService adopterService,
+                                          AdoptionService adoptionService,
                                           AuditService<Adopter> auditService) {
-        if (adopterService == null) throw new IllegalArgumentException("AdopterService must not be null.");
-        if (auditService == null)   throw new IllegalArgumentException("AuditService must not be null.");
-        this.adopterService = adopterService;
-        this.auditService   = auditService;
+        if (adopterService == null)  throw new IllegalArgumentException("AdopterService must not be null.");
+        if (adoptionService == null) throw new IllegalArgumentException("AdoptionService must not be null.");
+        if (auditService == null)    throw new IllegalArgumentException("AuditService must not be null.");
+        this.adopterService  = adopterService;
+        this.adoptionService = adoptionService;
+        this.auditService    = auditService;
     }
 
     /**
@@ -104,11 +112,20 @@ public class AdopterApplicationServiceImpl implements AdopterApplicationService 
 
     /**
      * {@inheritDoc}
-     * Throws if the adopter is not found.
+     * Throws if the adopter is not found or has a pending adoption request.
      */
     @Override
     public void removeAdopter(String adopterId) {
         Adopter adopter = adopterService.findById(adopterId);
+
+        // Guard: an adopter with a pending adoption request cannot be removed
+        boolean hasPending = adoptionService.getRequestsByAdopter(adopter).stream()
+                .anyMatch(r -> r.getStatus() == RequestStatus.PENDING);
+        if (hasPending) {
+            throw new IllegalStateException(
+                    "Cannot remove adopter with a pending adoption request: " + adopterId);
+        }
+
         adopterService.remove(adopter);
         auditService.log("removed adopter", adopter);
     }
