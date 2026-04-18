@@ -17,7 +17,7 @@ export PATH="$PROJECT_ROOT/build/install/shelter/bin:$PATH"
 shelter --version >/dev/null
 
 echo "==> Done. Shelter home initialized at: $SHELTER_HOME"
-echo "==> Entering $SHELTER_HOME (interactive shell with shelter on PATH)"
-cd "$SHELTER_HOME"
-export PATH="$PROJECT_ROOT/build/install/shelter/bin:$PATH"
-exec "$SHELL"
+echo
+echo "    binary:    $PROJECT_ROOT/build/install/shelter/bin/shelter"
+echo "    workdir:   $SHELTER_HOME"
+echo "    CLAUDE.md: $SHELTER_HOME/CLAUDE.md"
