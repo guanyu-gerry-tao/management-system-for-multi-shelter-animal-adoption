@@ -179,4 +179,39 @@ class TransferIntegrationTest extends CliIntegrationTest {
         RunResult r = run("transfer", "cancel", "--request", requestId);
         assertOutputContains(r, "Error");
     }
+
+    // -------------------------------------------------------------------------
+    // transfer list
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code shelter transfer list} on a fresh system exits successfully
+     * and prints the comma header plus the empty {@code (none)} marker.
+     */
+    @Test
+    void transferList_emptyByDefault() throws Exception {
+        RunResult r = run("transfer", "list");
+        assertSuccess(r);
+        assertOutputContains(r, "ID,");
+        assertOutputContains(r, "(none)");
+    }
+
+    /**
+     * Verifies that {@code shelter transfer list} shows a requested transfer's animal,
+     * source and destination shelter names, and the PENDING status after a request has been made.
+     */
+    @Test
+    void transferList_showsRequestedTransfer() throws Exception {
+        String s1 = registerShelter("S1", 5);
+        String s2 = registerShelter("S2", 5);
+        String animalId = admitDog("Rex", s1);
+        assertSuccess(run("transfer", "request", "--animal", animalId, "--from", s1, "--to", s2));
+
+        RunResult list = run("transfer", "list");
+        assertSuccess(list);
+        assertOutputContains(list, "Rex");
+        assertOutputContains(list, "S1");
+        assertOutputContains(list, "S2");
+        assertOutputContains(list, "PENDING");
+    }
 }

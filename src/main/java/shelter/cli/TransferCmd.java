@@ -4,6 +4,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import shelter.domain.TransferRequest;
 
+import java.io.PrintWriter;
+import java.util.List;
+
 /**
  * Top-level CLI command group for the inter-shelter transfer request lifecycle.
  * Provides subcommands to request, approve, reject, and cancel transfer requests.
@@ -13,6 +16,7 @@ import shelter.domain.TransferRequest;
         name = "transfer",
         description = "Manage inter-shelter transfer requests",
         subcommands = {
+                TransferCmd.ListCmd.class,
                 TransferCmd.RequestCmd.class,
                 TransferCmd.ApproveCmd.class,
                 TransferCmd.RejectCmd.class,
@@ -29,6 +33,65 @@ public class TransferCmd implements Runnable {
     @Override
     public void run() {
         System.out.println("Usage: shelter transfer <subcommand> --help");
+    }
+
+    // -------------------------------------------------------------------------
+    // render helper (shared by `transfer list` and `shelter print`)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Renders transfer requests as a comma-headed, space-padded table to the given writer.
+     * Empty input prints the header followed by {@code (none)}.
+     * Used by both {@code shelter transfer list} and {@code shelter print}.
+     *
+     * @param out      the writer to print to; must not be null
+     * @param requests the transfer requests to render; must not be null (may be empty)
+     */
+    static void renderList(PrintWriter out, List<TransferRequest> requests) {
+        out.printf("%-36s  %-14s  %-14s  %-14s  %-10s  %s%n",
+                "ID,", "ANIMAL,", "FROM,", "TO,", "STATUS,", "REQUESTED AT");
+        if (requests.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (TransferRequest r : requests) {
+            out.printf("%-36s  %-14s  %-14s  %-14s  %-10s  %s%n",
+                    r.getId(),
+                    r.getAnimal().getName(),
+                    r.getFrom().getName(),
+                    r.getTo().getName(),
+                    r.getStatus().name(),
+                    r.getRequestedAt());
+        }
+        out.flush();
+    }
+
+    // -------------------------------------------------------------------------
+    // list
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists every transfer request currently in the system.
+     * Used primarily for demo purposes and by the {@code shelter print} summary.
+     */
+    @Command(name = "list", description = "List all transfer requests",
+             mixinStandardHelpOptions = true)
+    static class ListCmd implements Runnable {
+
+        /**
+         * Executes the list operation by delegating to {@link TransferCmd#renderList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
+         */
+        @Override
+        public void run() {
+            try {
+                renderList(new PrintWriter(System.out, true),
+                        AppContext.get().transferApp().listAllTransfers());
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
