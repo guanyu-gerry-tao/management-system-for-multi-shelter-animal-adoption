@@ -173,6 +173,11 @@ class TransferApplicationServiceImplTest {
         public List<TransferRequest> getPendingRequests(Shelter s) {
             return new ArrayList<>(store.values());
         }
+
+        @Override
+        public List<TransferRequest> listAll() {
+            return new ArrayList<>(store.values());
+        }
     }
 
     /**
