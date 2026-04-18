@@ -76,7 +76,7 @@ class AdopterIntegrationTest extends CliIntegrationTest {
     void list_noAdopters_printsEmptyMessage() throws Exception {
         RunResult r = run("adopter", "list");
         assertSuccess(r);
-        assertOutputContains(r, "No adopters registered.");
+        assertOutputContains(r, "(none)");
     }
 
     /**

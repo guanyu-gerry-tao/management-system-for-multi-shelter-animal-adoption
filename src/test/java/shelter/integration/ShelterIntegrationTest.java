@@ -71,7 +71,7 @@ class ShelterIntegrationTest extends CliIntegrationTest {
     void list_noShelters_printsEmptyMessage() throws Exception {
         RunResult r = run("shelter", "list");
         assertSuccess(r);
-        assertOutputContains(r, "No shelters registered.");
+        assertOutputContains(r, "(none)");
     }
 
     /**

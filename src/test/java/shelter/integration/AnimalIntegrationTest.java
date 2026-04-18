@@ -182,7 +182,7 @@ class AnimalIntegrationTest extends CliIntegrationTest {
         String shelterId = registerShelter("Empty", 10);
         RunResult r = run("animal", "list", "--shelter", shelterId);
         assertSuccess(r);
-        assertOutputContains(r, "No animals found.");
+        assertOutputContains(r, "(none)");
     }
 
     // -------------------------------------------------------------------------
@@ -324,7 +324,7 @@ class AnimalIntegrationTest extends CliIntegrationTest {
 
         RunResult r = run("animal", "list");
         assertSuccess(r);
-        assertOutputContains(r, "Shelter");
+        assertOutputContains(r, "SHELTER,");
         assertOutputContains(r, "Happy Paws");
         assertOutputContains(r, "Green Field");
     }

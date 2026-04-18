@@ -9,6 +9,7 @@ import shelter.domain.Cat;
 import shelter.domain.Dog;
 import shelter.domain.Rabbit;
 
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -44,6 +45,50 @@ public class AnimalCmd implements Runnable {
     // -------------------------------------------------------------------------
 
     /**
+     * Renders a list of animal views as a comma-headed, space-padded table to the given writer.
+     * Empty input produces the header row followed by {@code (none)} on the next line.
+     * Species-specific fields show {@code N/A} when not applicable to the animal's species.
+     * Used by both {@code shelter animal list} and {@code shelter print}.
+     *
+     * @param out   the writer to print to; must not be null
+     * @param views the animal views to render; must not be null (may be empty)
+     */
+    static void renderList(PrintWriter out, List<AnimalView> views) {
+        out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
+                "ID,", "SPECIES,", "NAME,", "BREED,", "AGE,", "ACTIVITY,",
+                "NEUTERED,", "INDOOR,", "SIZE,", "FUR,", "SHELTER,", "STATUS");
+        if (views.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (AnimalView v : views) {
+            Animal a = v.getAnimal();
+            // Resolve species-specific fields; use "N/A" when not applicable to this species
+            String neutered = "N/A";
+            String indoor   = "N/A";
+            String size     = "N/A";
+            String fur      = "N/A";
+            if (a instanceof Dog dog) {
+                neutered = String.valueOf(dog.isNeutered());
+                size     = dog.getSize().name();
+            } else if (a instanceof Cat cat) {
+                neutered = String.valueOf(cat.isNeutered());
+                indoor   = String.valueOf(cat.isIndoor());
+            } else if (a instanceof Rabbit rabbit) {
+                fur = rabbit.getFurLength().name();
+            }
+
+            String status = a.isAvailable() ? "available" : "adopted";
+            out.printf("%-36s  %-8s  %-12s  %-18s  %-3d  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
+                    a.getId(), a.getSpecies(), a.getName(), a.getBreed(),
+                    a.getAge(), a.getActivityLevel(),
+                    neutered, indoor, size, fur, v.getShelterName(), status);
+        }
+        out.flush();
+    }
+
+    /**
      * Lists animals in the system, optionally filtered to a specific shelter.
      * Without {@code --shelter}, all animals system-wide are returned.
      */
@@ -56,47 +101,14 @@ public class AnimalCmd implements Runnable {
         private String shelterId;
 
         /**
-         * Executes the list operation and prints each animal's details to stdout.
-         * All columns are always shown; species-specific fields display "N/A" when not applicable.
-         * The Shelter column shows the shelter name resolved by the Application layer.
-         * Prints a message if no animals are found.
+         * Executes the list operation by delegating to {@link AnimalCmd#renderList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
          */
         @Override
         public void run() {
             try {
                 List<AnimalView> views = AppContext.get().animalApp().listAnimalsWithShelterName(shelterId);
-                if (views.isEmpty()) {
-                    System.out.println("No animals found.");
-                    return;
-                }
-                System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
-                        "ID", "Species", "Name", "Breed", "Age", "Activity",
-                        "Neutered", "Indoor", "Size", "Fur", "Shelter", "Status");
-                System.out.println("-".repeat(148));
-                for (AnimalView v : views) {
-                    Animal a = v.getAnimal();
-
-                    // Resolve species-specific fields; use "N/A" when not applicable to this species
-                    String neutered = "N/A";
-                    String indoor   = "N/A";
-                    String size     = "N/A";
-                    String fur      = "N/A";
-                    if (a instanceof Dog dog) {
-                        neutered = String.valueOf(dog.isNeutered());
-                        size     = dog.getSize().name();
-                    } else if (a instanceof Cat cat) {
-                        neutered = String.valueOf(cat.isNeutered());
-                        indoor   = String.valueOf(cat.isIndoor());
-                    } else if (a instanceof Rabbit rabbit) {
-                        fur = rabbit.getFurLength().name();
-                    }
-
-                    String status = a.isAvailable() ? "available" : "adopted";
-                    System.out.printf("%-36s  %-8s  %-12s  %-18s  %-3d  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
-                            a.getId(), a.getSpecies(), a.getName(), a.getBreed(),
-                            a.getAge(), a.getActivityLevel(),
-                            neutered, indoor, size, fur, v.getShelterName(), status);
-                }
+                renderList(new PrintWriter(System.out, true), views);
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
             }
