@@ -134,7 +134,7 @@ public class AdopterCmd implements Runnable {
         private ActivityLevel preferredActivityLevel;
 
         /** Whether vaccinated animals are required; omit for no preference. */
-        @Option(names = "--requires-vaccinated",
+        @Option(names = "--requires-vaccinated", arity = "1",
                 description = "Whether vaccinated animals are required: true or false")
         private Boolean requiresVaccinated;
 
@@ -207,7 +207,7 @@ public class AdopterCmd implements Runnable {
         private ActivityLevel preferredActivityLevel;
 
         /** New vaccination requirement; omit to keep current value. */
-        @Option(names = "--requires-vaccinated",
+        @Option(names = "--requires-vaccinated", arity = "1",
                 description = "New vaccination requirement: true or false (omit to keep current)")
         private Boolean requiresVaccinated;
 
