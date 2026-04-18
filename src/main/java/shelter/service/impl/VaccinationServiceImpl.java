@@ -188,6 +188,15 @@ public class VaccinationServiceImpl implements VaccinationService, VaccinationIn
     }
 
     /**
+     * {@inheritDoc}
+     * Delegates directly to the underlying repository's {@code findAll} query.
+     */
+    @Override
+    public List<VaccinationRecord> listAllRecords() {
+        return recordRepository.findAll();
+    }
+
+    /**
      * Scans the given vaccination history and returns the most recent administration date
      * for the specified vaccine type ID. Returns null if no matching record is found.
      *

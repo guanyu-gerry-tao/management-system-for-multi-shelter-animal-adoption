@@ -141,6 +141,11 @@ class VaccinationApplicationServiceImplTest {
         public VaccinationRecord findById(String id) {
             return null;
         }
+
+        @Override
+        public List<VaccinationRecord> listAllRecords() {
+            return List.of();
+        }
     }
 
     /**

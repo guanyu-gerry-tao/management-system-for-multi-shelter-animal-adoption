@@ -50,4 +50,13 @@ public interface VaccinationService {
      * @return the matching vaccination record
      */
     VaccinationRecord findById(String id);
+
+    /**
+     * Returns every vaccination record currently persisted in the system.
+     * Returns an empty list if no vaccinations have been recorded.
+     * Used by the presentation layer to render a full vaccination snapshot.
+     *
+     * @return a list of all vaccination records
+     */
+    List<VaccinationRecord> listAllRecords();
 }
