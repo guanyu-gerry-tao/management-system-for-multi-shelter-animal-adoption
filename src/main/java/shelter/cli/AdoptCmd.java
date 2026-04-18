@@ -4,6 +4,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import shelter.domain.AdoptionRequest;
 
+import java.io.PrintWriter;
+import java.util.List;
+
 /**
  * Top-level CLI command group for the adoption request lifecycle.
  * Provides subcommands to submit, approve, reject, and cancel adoption requests.
@@ -13,6 +16,7 @@ import shelter.domain.AdoptionRequest;
         name = "adopt",
         description = "Manage adoption requests",
         subcommands = {
+                AdoptCmd.ListCmd.class,
                 AdoptCmd.SubmitCmd.class,
                 AdoptCmd.ApproveCmd.class,
                 AdoptCmd.RejectCmd.class,
@@ -29,6 +33,64 @@ public class AdoptCmd implements Runnable {
     @Override
     public void run() {
         System.out.println("Usage: shelter adopt <subcommand> --help");
+    }
+
+    // -------------------------------------------------------------------------
+    // render helper (shared by `adopt list` and `shelter print`)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Renders adoption requests as a comma-headed, space-padded table to the given writer.
+     * Empty input prints the header followed by {@code (none)}.
+     * Used by both {@code shelter adopt list} and {@code shelter print}.
+     *
+     * @param out      the writer to print to; must not be null
+     * @param requests the requests to render; must not be null (may be empty)
+     */
+    public static void renderList(PrintWriter out, List<AdoptionRequest> requests) {
+        out.printf("%-36s  %-16s  %-14s  %-10s  %s%n",
+                "ID,", "ADOPTER,", "ANIMAL,", "STATUS,", "SUBMITTED AT");
+        if (requests.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (AdoptionRequest r : requests) {
+            out.printf("%-36s  %-16s  %-14s  %-10s  %s%n",
+                    r.getId(),
+                    r.getAdopter().getName(),
+                    r.getAnimal().getName(),
+                    r.getStatus().name(),
+                    r.getSubmittedAt());
+        }
+        out.flush();
+    }
+
+    // -------------------------------------------------------------------------
+    // list
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists every adoption request currently in the system.
+     * Used primarily for demo purposes and by the {@code shelter print} summary.
+     */
+    @Command(name = "list", description = "List all adoption requests",
+             mixinStandardHelpOptions = true)
+    static class ListCmd implements Runnable {
+
+        /**
+         * Executes the list operation by delegating to {@link AdoptCmd#renderList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
+         */
+        @Override
+        public void run() {
+            try {
+                renderList(new PrintWriter(System.out, true),
+                        AppContext.get().adoptionApp().listAllRequests());
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+        }
     }
 
     // -------------------------------------------------------------------------

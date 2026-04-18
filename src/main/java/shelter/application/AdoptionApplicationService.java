@@ -2,6 +2,8 @@ package shelter.application;
 
 import shelter.domain.AdoptionRequest;
 
+import java.util.List;
+
 /**
  * Application service for the adoption request lifecycle.
  * Orchestrates validation, state transitions, notifications, and audit logging
@@ -42,4 +44,13 @@ public interface AdoptionApplicationService {
      * @param requestId the ID of the adoption request to cancel; must not be null or blank
      */
     void cancelRequest(String requestId);
+
+    /**
+     * Returns every adoption request currently in the system.
+     * Returns an empty list if no adoption requests have been submitted.
+     * Used by the {@code shelter print} command to render a system-wide snapshot.
+     *
+     * @return a list of all adoption requests
+     */
+    List<AdoptionRequest> listAllRequests();
 }

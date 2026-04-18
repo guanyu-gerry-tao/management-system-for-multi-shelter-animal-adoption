@@ -8,6 +8,7 @@ import shelter.domain.DailySchedule;
 import shelter.domain.LivingSpace;
 import shelter.domain.Species;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -42,42 +43,54 @@ public class AdopterCmd implements Runnable {
     // -------------------------------------------------------------------------
 
     /**
+     * Renders a list of adopters as a comma-headed, space-padded table to the given writer.
+     * Empty input produces the header row followed by {@code (none)} on the next line.
+     * Used by both {@code shelter adopter list} and {@code shelter print}.
+     *
+     * @param out      the writer to print to; must not be null
+     * @param adopters the adopters to render; must not be null (may be empty)
+     */
+    public static void renderList(PrintWriter out, List<Adopter> adopters) {
+        out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %s%n",
+                "ID,", "NAME,", "LIVING SPACE,", "SCHEDULE,",
+                "SPECIES,", "BREED,", "ACTIVITY,", "VACCINATED,", "MIN AGE,", "MAX AGE");
+        if (adopters.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (Adopter a : adopters) {
+            // Resolve preference fields; display "any" when no preference is set
+            shelter.domain.AdopterPreferences p = a.getPreferences();
+            String species    = p.getPreferredSpecies()       != null ? p.getPreferredSpecies().name()       : "any";
+            String breed      = p.getPreferredBreed()         != null ? p.getPreferredBreed()                : "any";
+            String activity   = p.getPreferredActivityLevel() != null ? p.getPreferredActivityLevel().name() : "any";
+            String vaccinated = p.getRequiresVaccinated()     != null ? p.getRequiresVaccinated().toString() : "any";
+            String minAge     = p.getMinAge()                 != null ? p.getMinAge().toString()             : "any";
+            String maxAge     = p.getMaxAge()                 != null ? p.getMaxAge().toString()             : "any";
+
+            out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %s%n",
+                    a.getId(), a.getName(), a.getLivingSpace(), a.getDailySchedule(),
+                    species, breed, activity, vaccinated, minAge, maxAge);
+        }
+        out.flush();
+    }
+
+    /**
      * Lists all registered adopters with their IDs, names, living spaces, schedules,
-     * and all preference fields. Fields with no preference set are displayed as "any".
-     * Prints a message if no adopters have been registered.
+     * and all preference fields. Prints {@code (none)} if no adopters have been registered.
      */
     @Command(name = "list", description = "List all adopters", mixinStandardHelpOptions = true)
     static class ListCmd implements Runnable {
 
         /**
-         * Executes the list operation and prints each adopter's full details to stdout,
-         * including all preference fields. Prints a message if no adopters are found.
+         * Executes the list operation by delegating to {@link AdopterCmd#renderList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
          */
         @Override
         public void run() {
             List<Adopter> adopters = AppContext.get().adopterApp().listAdopters();
-            if (adopters.isEmpty()) {
-                System.out.println("No adopters registered.");
-                return;
-            }
-            System.out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %-7s%n",
-                    "ID", "Name", "Living Space", "Schedule",
-                    "Species", "Breed", "Activity", "Vaccinated", "Min Age", "Max Age");
-            System.out.println("-".repeat(155));
-            for (Adopter a : adopters) {
-                // Resolve preference fields; display "any" when no preference is set
-                shelter.domain.AdopterPreferences p = a.getPreferences();
-                String species    = p.getPreferredSpecies()       != null ? p.getPreferredSpecies().name()       : "any";
-                String breed      = p.getPreferredBreed()         != null ? p.getPreferredBreed()                : "any";
-                String activity   = p.getPreferredActivityLevel() != null ? p.getPreferredActivityLevel().name() : "any";
-                String vaccinated = p.getRequiresVaccinated()     != null ? p.getRequiresVaccinated().toString() : "any";
-                String minAge     = p.getMinAge()                 != null ? p.getMinAge().toString()             : "any";
-                String maxAge     = p.getMaxAge()                 != null ? p.getMaxAge().toString()             : "any";
-
-                System.out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %-7s%n",
-                        a.getId(), a.getName(), a.getLivingSpace(), a.getDailySchedule(),
-                        species, breed, activity, vaccinated, minAge, maxAge);
-            }
+            renderList(new PrintWriter(System.out, true), adopters);
         }
     }
 
@@ -121,7 +134,7 @@ public class AdopterCmd implements Runnable {
         private ActivityLevel preferredActivityLevel;
 
         /** Whether vaccinated animals are required; omit for no preference. */
-        @Option(names = "--requires-vaccinated",
+        @Option(names = "--requires-vaccinated", arity = "1",
                 description = "Whether vaccinated animals are required: true or false")
         private Boolean requiresVaccinated;
 
@@ -194,7 +207,7 @@ public class AdopterCmd implements Runnable {
         private ActivityLevel preferredActivityLevel;
 
         /** New vaccination requirement; omit to keep current value. */
-        @Option(names = "--requires-vaccinated",
+        @Option(names = "--requires-vaccinated", arity = "1",
                 description = "New vaccination requirement: true or false (omit to keep current)")
         private Boolean requiresVaccinated;
 

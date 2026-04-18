@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Multi-Shelter Animal Adoption Management System — CS 5004 Final</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+  <style>
+    :root {
+      --r-main-font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --r-heading-font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --r-main-color: #1f2328;
+      --r-heading-color: #0b2545;
+      --r-link-color: #2563eb;
+      --r-selection-background-color: #fde68a;
+    }
+
+    .reveal .slides { text-align: left; }
+
+    /* 96px padding = 1-inch margin; vertical centering; overflow safety. */
+    .reveal .slides > section,
+    .reveal .slides > section > section {
+      box-sizing: border-box;
+      padding: 96px !important;
+      height: 100% !important;
+      top: 0 !important;
+      overflow: hidden;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Auto-fit wrapper — JS applies transform: scale() on overflow. */
+    .slide-fit {
+      transform-origin: center center;
+      width: 100%;
+    }
+
+    .reveal h1 { font-size: 1.6em; margin-bottom: 0.3em; letter-spacing: -0.01em; line-height: 1.15; }
+    .reveal h2 { font-size: 1.1em; margin-bottom: 0.35em; letter-spacing: -0.01em; }
+    .reveal h3 { font-size: 0.8em; color: #475569; font-weight: 600; margin-top: 0; margin-bottom: 0.25em; }
+    .reveal p, .reveal li { font-size: 0.56em; line-height: 1.4; }
+    .reveal ul { margin-left: 1.0em; }
+    .reveal ul li { margin-bottom: 0.2em; }
+    .reveal ul ul { margin-top: 0.1em; }
+    .reveal ul ul li { font-size: 0.92em; color: #475569; }
+
+    .reveal pre {
+      width: 100%;
+      box-shadow: none;
+      margin: 0.25em 0;
+      font-size: 0.38em;
+      line-height: 1.4;
+    }
+    .reveal pre code {
+      padding: 0.8em 1em;
+      border-radius: 6px;
+    }
+
+    /* Title slide */
+    .reveal .title-slide h1 { color: #0b2545; font-size: 1.5em; margin-bottom: 0.3em; line-height: 1.15; }
+    .reveal .title-slide .subtitle { color: #475569; font-size: 0.65em; margin-bottom: 1.1em; }
+    .reveal .title-slide .team { color: #1f2328; font-size: 0.55em; }
+    .reveal .title-slide .team span { display: inline-block; margin: 0 0.75em; text-align: center; }
+    .reveal .title-slide .team span small { display: block; color: #64748b; font-weight: 400; font-size: 0.85em; margin-top: 0.15em; }
+    .reveal .title-slide { text-align: center; }
+
+    /* Kicker eyebrow */
+    .reveal .kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      font-size: 0.45em;
+      font-weight: 600;
+      margin-bottom: 0.5em;
+    }
+
+    /* One-liner under title */
+    .reveal .oneliner {
+      font-size: 0.62em;
+      color: #334155;
+      line-height: 1.4;
+      margin-top: -0.1em;
+      margin-bottom: 1em;
+      font-style: italic;
+    }
+
+    /* Multi-section bullets (Slide 2 "3 tabs vertical") */
+    .section-block {
+      border-left: 3px solid #0b2545;
+      padding: 0.3em 0.9em;
+      margin-bottom: 0.5em;
+      background: #f8fafc;
+    }
+    .section-block .section-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #0b2545;
+      font-size: 0.48em;
+      font-weight: 700;
+      margin-bottom: 0.15em;
+    }
+    .section-block ul { margin: 0 0 0 1em; padding: 0; }
+    .section-block ul li { font-size: 0.56em; margin-bottom: 0.1em; }
+    .section-block p { margin: 0; font-size: 0.56em; line-height: 1.4; }
+
+    /* Layer stack (Slide 3) */
+    .layer-stack {
+      display: grid;
+      gap: 0.25em;
+      margin: 0.4em 0 0.7em 0;
+    }
+    .layer-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 1em;
+      padding: 0.35em 0.8em;
+      border-left: 3px solid #0b2545;
+      background: #f8fafc;
+      font-size: 0.58em;
+      line-height: 1.35;
+      align-items: baseline;
+    }
+    .layer-row .name { font-weight: 700; color: #0b2545; }
+    .layer-row .desc { color: #334155; }
+
+    .tools-strip {
+      font-size: 0.55em;
+      color: #334155;
+      padding: 0.5em 0;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 0.4em;
+    }
+    .tools-strip strong { color: #0b2545; }
+
+    /* LIVE DEMO divider */
+    .demo-slide {
+      text-align: center;
+      align-items: center;
+    }
+    .demo-slide .demo-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #64748b;
+      font-size: 0.55em;
+      font-weight: 600;
+      margin-bottom: 0.6em;
+    }
+    .demo-slide .demo-title {
+      font-size: 2.0em;
+      font-weight: 800;
+      color: #0b2545;
+      margin-bottom: 0.4em;
+      line-height: 1.1;
+    }
+    .demo-slide .demo-sub {
+      font-size: 0.7em;
+      color: #334155;
+    }
+    .demo-slide .demo-scaffold {
+      margin-top: 1.5em;
+      text-align: left;
+      display: inline-block;
+    }
+    .demo-slide .demo-scaffold ul {
+      font-size: 0.52em;
+      color: #475569;
+      margin: 0;
+      padding-left: 1em;
+    }
+
+    /* Takeaways (Slide 8) */
+    .takeaway-group {
+      margin-bottom: 0.55em;
+    }
+    .takeaway-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #0b2545;
+      font-size: 0.48em;
+      font-weight: 700;
+      margin-bottom: 0.15em;
+    }
+    .takeaway-body {
+      font-size: 0.56em;
+      color: #1f2328;
+      line-height: 1.4;
+    }
+    .takeaway-body ul { margin: 0 0 0 1em; padding: 0; }
+    .takeaway-body ul li { font-size: 1em; margin-bottom: 0.1em; }
+
+    .footer {
+      position: absolute;
+      bottom: 28px;
+      left: 96px;
+      right: 96px;
+      text-align: center;
+      font-size: 0.32em;
+      color: #94a3b8;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- Slide 1 — Title -->
+    <section class="title-slide">
+      <div class="kicker">CS 5004 · Northeastern University · Spring 2026</div>
+      <h1>Multi-Shelter Animal<br>Adoption Management System</h1>
+      <p class="subtitle">An OOD-first Java application, driven by a natural-language CLI</p>
+      <p class="team">
+        <span><strong>Guanyu Tao</strong><small>Service Layer + AI Integration</small></span>
+        <span><strong>Yiying Xie</strong><small>Domain Layer</small></span>
+        <span><strong>Yuxi Ou</strong><small>Strategy Layer + Matching</small></span>
+      </p>
+      <p class="subtitle" style="margin-top:1.2em; font-style:normal;">April 21, 2026</p>
+    </section>
+
+    <!-- Slide 2 — Introduction -->
+    <section>
+      <div class="kicker">Introduction</div>
+      <h2>What we set out to build and why</h2>
+
+      <div class="section-block">
+        <div class="section-label">Problem</div>
+        <ul>
+          <li>Shelters track animals, adopters, and vaccines in separate spreadsheets.</li>
+          <li>Cross-shelter matching is manual; vaccine deadlines get missed.</li>
+          <li>No AI automation in this space, and Java isn't built for frontend UIs.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Objectives</div>
+        <ul>
+          <li>Rigorous OOD across clean layers.</li>
+          <li>One CLI — usable by humans <em>and</em> AI agents.</li>
+          <li>Extensible: new species, matching rule, or request type = one new class.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">What it does</div>
+        <ul>
+          <li>Intake animals and adopters.</li>
+          <li>Score adopter–animal compatibility.</li>
+          <li>Run adoption + transfer workflows.</li>
+          <li>Track vaccines + full audit log.</li>
+        </ul>
+      </div>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 3 — Architecture -->
+    <section>
+      <div class="kicker">Design &amp; methods — each layer depends only on the one beneath it</div>
+      <h2>Six-layer architecture</h2>
+
+      <div class="layer-stack">
+        <div class="layer-row"><span class="name">Presentation</span><span class="desc">Picocli: parse <code>--</code> args → call Application → print.</span></div>
+        <div class="layer-row"><span class="name">Application</span><span class="desc">One method per use case — load via Repository, call Services, save.</span></div>
+        <div class="layer-row"><span class="name">Service</span><span class="desc">5 services (Adoption, Transfer, Matching, Vaccination, Audit) — pure business logic.</span></div>
+        <div class="layer-row"><span class="name">Strategy</span><span class="desc">6 <code>IMatchingStrategy</code> impls composed by <code>MatchingScoreCalculator</code>.</span></div>
+        <div class="layer-row"><span class="name">Repository</span><span class="desc">Interfaces + CSV impls — the only code that touches disk.</span></div>
+        <div class="layer-row"><span class="name">Domain</span><span class="desc">Entity classes (<code>Animal</code>, <code>Shelter</code>, <code>Adopter</code>, …) — validated constructors, no I/O.</span></div>
+      </div>
+
+      <div class="tools-strip">
+        <strong>Tools:</strong> Java 17 · Gradle · Picocli · JUnit 5 · CSV (no DB).
+      </div>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 4 — Why CLI, not GUI -->
+    <section>
+      <div class="kicker">Design choice</div>
+      <h2>Why CLI, not GUI</h2>
+      <p class="oneliner">Java is built for backend logic. The CLI turns that into a universal API surface.</p>
+      <ul>
+        <li><strong>Right tool for the job.</strong> Java earns its keep on logic, not rendering pixels.</li>
+        <li><strong>One surface, many callers</strong> — humans in the terminal, AI agents (Claude Code), and 78 integration tests hit the same commands.</li>
+        <li><strong>Future-proof.</strong> A JS/web UI can layer on top by calling the CLI — Java core stays untouched.</li>
+      </ul>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 5 — Strategy pattern -->
+    <section>
+      <div class="kicker">Object-Oriented Design — highlight #1</div>
+      <h2>Strategy pattern</h2>
+      <p class="oneliner">One interface, six matching rules, zero <code>if</code>-ladders.</p>
+      <pre><code class="language-java" data-trim data-noescape>
+public interface IMatchingStrategy {
+    MatchingCriterion getCriterion();
+    boolean isApplicable(Adopter adopter, Animal animal);
+    double score(Adopter adopter, Animal animal);
+}
+
+public class SpeciesPreferenceStrategy      implements IMatchingStrategy { ... }
+public class BreedPreferenceStrategy        implements IMatchingStrategy { ... }
+public class AgePreferenceStrategy          implements IMatchingStrategy { ... }
+public class ActivityLevelStrategy          implements IMatchingStrategy { ... }
+public class LifestyleCompatibilityStrategy implements IMatchingStrategy { ... }
+public class VaccinationPreferenceStrategy  implements IMatchingStrategy { ... }
+      </code></pre>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 6 — Shared request lifecycle -->
+    <section>
+      <div class="kicker">Object-Oriented Design — highlight #2</div>
+      <h2>Shared request lifecycle</h2>
+      <p class="oneliner">Two request types, one state machine.</p>
+      <pre><code class="language-java" data-trim data-noescape>
+public enum RequestStatus { PENDING, APPROVED, REJECTED, CANCELLED }
+
+public class AdoptionRequest {
+    public void approve();
+    public void reject();
+    public void cancel();
+}
+
+public class TransferRequest {
+    public void approve();
+    public void reject();
+    public void cancel();
+}
+      </code></pre>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 7 — LIVE DEMO divider -->
+    <section class="demo-slide">
+      <div class="demo-kicker">Demonstration</div>
+      <div class="demo-title">LIVE DEMO</div>
+      <div class="demo-sub">Claude Code operating the <code>shelter</code> CLI</div>
+      <div class="demo-scaffold">
+        <ul>
+          <li>Register 2 shelters.</li>
+          <li>Admit a dog, a cat, a fish (shows <code>Other</code> extensibility).</li>
+          <li>Register an adopter → <code>shelter match animal</code>.</li>
+          <li>Submit + approve adoption.</li>
+          <li>Transfer across shelters.</li>
+          <li>Record vaccine + overdue check + audit log.</li>
+        </ul>
+      </div>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 8 — Takeaways -->
+    <section>
+      <div class="kicker">Conclusion</div>
+      <h2>Takeaways</h2>
+
+      <div class="takeaway-group">
+        <div class="takeaway-label">Learned</div>
+        <div class="takeaway-body">
+          <ul>
+            <li>Clear structure → problems are easy to locate and code is easy to reuse.</li>
+            <li>Layers don't duplicate work — the separation paid off.</li>
+            <li>3-person coordination was the real challenge — locking public interfaces early saved us.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway-group">
+        <div class="takeaway-label">Next</div>
+        <div class="takeaway-body">
+          <ul>
+            <li>CSV → real DB · add a REST layer · role-based access.</li>
+            <li>Add a JavaScript/TypeScript dashboard and a dedicated AI system.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 9 — AI use acknowledgment -->
+    <section>
+      <div class="kicker">Transparency note</div>
+      <h2>How AI fit into this project</h2>
+
+      <div class="takeaway-group">
+        <div class="takeaway-label">Tools</div>
+        <div class="takeaway-body">
+          <ul>
+            <li>Claude Code + Codex as pair-programming partners.</li>
+            <li><code>CLAUDE.md</code> and <code>AGENTS.md</code> in the repo — shared context so humans and agents stay in sync.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway-group">
+        <div class="takeaway-label">Process</div>
+        <div class="takeaway-body">
+          <ul>
+            <li>Research → planning → implementation with human in the loop.</li>
+            <li>Test-driven: unit tests, integration tests, human acceptance runs.</li>
+            <li>Docs-first: use cases, demo plan, integration-test plan.</li>
+            <li>This deck: built with reveal.js 5.1, highlight.js, a custom auto-fit script, and Claude Code; reviewed via Chrome MCP screenshots.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  // Wrap each slide's non-footer content in a .slide-fit div for auto-fit.
+  document.querySelectorAll('.reveal .slides > section').forEach(section => {
+    if (section.querySelector(':scope > .slide-fit')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'slide-fit';
+    Array.from(section.childNodes).forEach(child => {
+      if (child.nodeType === 1) {
+        const tag = child.tagName;
+        if (tag === 'ASIDE') return;
+        if (child.classList && child.classList.contains('footer')) return;
+      }
+      wrapper.appendChild(child);
+    });
+    section.insertBefore(wrapper, section.firstChild);
+  });
+
+  function autoFitSlides() {
+    document.querySelectorAll('.reveal .slides > section').forEach(section => {
+      const wrapper = section.querySelector(':scope > .slide-fit');
+      if (!wrapper) return;
+      wrapper.style.transform = '';
+      const cs = getComputedStyle(section);
+      const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      const padH = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const availH = section.clientHeight - padV;
+      const availW = section.clientWidth - padH;
+      const contentH = wrapper.scrollHeight;
+      const contentW = wrapper.scrollWidth;
+      const scale = Math.min(1, availH / contentH, availW / contentW);
+      if (scale < 1) wrapper.style.transform = `scale(${scale})`;
+    });
+  }
+
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'fade',
+    controls: true,
+    progress: true,
+    center: false,
+    width: 1280,
+    height: 720,
+    margin: 0,
+    pdfSeparateFragments: false,
+    plugins: [ RevealHighlight, RevealNotes ]
+  }).then(() => {
+    autoFitSlides();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(autoFitSlides);
+    }
+    Reveal.on('slidechanged', autoFitSlides);
+    Reveal.on('resize', autoFitSlides);
+    window.addEventListener('resize', () => setTimeout(autoFitSlides, 50));
+  });
+</script>
+</body>
+</html>

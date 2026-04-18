@@ -6,6 +6,7 @@ import shelter.domain.Species;
 import shelter.domain.VaccineType;
 import shelter.service.model.OverdueVaccination;
 
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
         name = "vaccine",
         description = "Manage vaccinations and vaccine types",
         subcommands = {
+                VaccineCmd.ListCmd.class,
                 VaccineCmd.RecordCmd.class,
                 VaccineCmd.OverdueCmd.class,
                 VaccineCmd.TypeCmd.class
@@ -33,6 +35,89 @@ public class VaccineCmd implements Runnable {
     @Override
     public void run() {
         System.out.println("Usage: shelter vaccine <subcommand> --help");
+    }
+
+    // -------------------------------------------------------------------------
+    // render helpers (shared by list subcommands and `shelter print`)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Renders a list of vaccine types as a comma-headed, space-padded table to the given writer.
+     * Empty input produces the header row followed by {@code (none)} on the next line.
+     * Used by both {@code shelter vaccine type list} and {@code shelter print}.
+     *
+     * @param out   the writer to print to; must not be null
+     * @param types the vaccine types to render; must not be null (may be empty)
+     */
+    public static void renderTypeList(PrintWriter out, List<VaccineType> types) {
+        out.printf("%-36s  %-20s  %-10s  %s%n",
+                "ID,", "NAME,", "SPECIES,", "VALIDITY (DAYS)");
+        if (types.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (VaccineType t : types) {
+            out.printf("%-36s  %-20s  %-10s  %d%n",
+                    t.getId(), t.getName(), t.getApplicableSpecies(), t.getValidityDays());
+        }
+        out.flush();
+    }
+
+    /**
+     * Renders vaccination records as a comma-headed, space-padded table to the given writer.
+     * Empty input prints the header followed by {@code (none)}.
+     * Used by both {@code shelter vaccine list} and {@code shelter print}.
+     *
+     * @param out   the writer to print to; must not be null
+     * @param views the vaccination record views to render; must not be null (may be empty)
+     */
+    public static void renderRecordList(PrintWriter out,
+                                        List<shelter.application.model.VaccinationRecordView> views) {
+        out.printf("%-36s  %-14s  %-8s  %-20s  %s%n",
+                "ID,", "ANIMAL,", "SPECIES,", "VACCINE,", "DATE");
+        if (views.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (shelter.application.model.VaccinationRecordView v : views) {
+            out.printf("%-36s  %-14s  %-8s  %-20s  %s%n",
+                    v.getRecord().getId(),
+                    v.getAnimalName(),
+                    v.getSpecies().name(),
+                    v.getVaccineTypeName(),
+                    v.getRecord().getDateAdministered());
+        }
+        out.flush();
+    }
+
+    // -------------------------------------------------------------------------
+    // list (vaccination records)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists every vaccination record in the system, using {@link shelter.application.model.VaccinationRecordView}
+     * to resolve animal and vaccine type display names. Used primarily for demo purposes
+     * and by the {@code shelter print} summary.
+     */
+    @Command(name = "list", description = "List all vaccination records",
+             mixinStandardHelpOptions = true)
+    static class ListCmd implements Runnable {
+
+        /**
+         * Executes the list operation by delegating to {@link VaccineCmd#renderRecordList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
+         */
+        @Override
+        public void run() {
+            try {
+                renderRecordList(new PrintWriter(System.out, true),
+                        AppContext.get().vaccinationApp().listAllVaccinationRecords());
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -150,30 +235,20 @@ public class VaccineCmd implements Runnable {
 
         /**
          * Lists all vaccine types in the catalog with their IDs, names, species, and validity periods.
-         * Prints a message if the catalog is empty.
+         * Prints {@code (none)} if the catalog is empty.
          */
         @Command(name = "list", description = "List all vaccine types",
                  mixinStandardHelpOptions = true)
         static class ListCmd implements Runnable {
 
             /**
-             * Executes the list and prints each vaccine type's details.
-             * Prints a message if no vaccine types have been added.
+             * Executes the list operation by delegating to {@link VaccineCmd#renderTypeList}.
+             * Writes to stdout via a flushing {@link PrintWriter}.
              */
             @Override
             public void run() {
                 List<VaccineType> types = AppContext.get().vaccinationApp().listVaccineTypes();
-                if (types.isEmpty()) {
-                    System.out.println("No vaccine types in catalog.");
-                    return;
-                }
-                System.out.printf("%-36s  %-20s  %-10s  %s%n",
-                        "ID", "Name", "Species", "Validity (days)");
-                System.out.println("-".repeat(80));
-                for (VaccineType t : types) {
-                    System.out.printf("%-36s  %-20s  %-10s  %d%n",
-                            t.getId(), t.getName(), t.getApplicableSpecies(), t.getValidityDays());
-                }
+                renderTypeList(new PrintWriter(System.out, true), types);
             }
         }
 

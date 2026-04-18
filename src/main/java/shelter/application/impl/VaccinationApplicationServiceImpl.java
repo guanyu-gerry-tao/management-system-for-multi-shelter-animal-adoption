@@ -1,10 +1,12 @@
 package shelter.application.impl;
 
 import shelter.application.VaccinationApplicationService;
+import shelter.application.model.VaccinationRecordView;
 import shelter.domain.Animal;
 import shelter.domain.VaccinationRecord;
 import shelter.domain.Species;
 import shelter.domain.VaccineType;
+import shelter.exception.EntityNotFoundException;
 import shelter.service.AnimalService;
 import shelter.service.AuditService;
 import shelter.service.VaccinationService;
@@ -12,6 +14,8 @@ import shelter.service.VaccineTypeCatalogService;
 import shelter.service.model.OverdueVaccination;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -115,5 +119,31 @@ public class VaccinationApplicationServiceImpl implements VaccinationApplication
     @Override
     public List<VaccineType> listVaccineTypes() {
         return vaccineTypeCatalogService.listAll();
+    }
+
+    /**
+     * {@inheritDoc}
+     * Resolves animal and vaccine type names by looking up each record's referenced IDs
+     * through the respective services. Records whose referenced animal or vaccine type
+     * cannot be found are skipped (defensive against orphaned rows).
+     */
+    @Override
+    public List<VaccinationRecordView> listAllVaccinationRecords() {
+        List<VaccinationRecord> records = vaccinationService.listAllRecords();
+        List<VaccinationRecordView> views = new ArrayList<>();
+        for (VaccinationRecord r : records) {
+            Animal animal;
+            VaccineType vt;
+            try {
+                // Look up associated entities; orphaned rows throw and are skipped
+                animal = animalService.findById(r.getAnimalId());
+                vt = vaccineTypeCatalogService.findById(r.getVaccineTypeId());
+            } catch (EntityNotFoundException skip) {
+                continue;
+            }
+            views.add(new VaccinationRecordView(
+                    r, animal.getName(), vt.getName(), animal.getSpecies()));
+        }
+        return Collections.unmodifiableList(views);
     }
 }

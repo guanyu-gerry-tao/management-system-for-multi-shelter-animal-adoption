@@ -91,4 +91,13 @@ public interface AdoptionService {
      * @return a list of approved adoption requests after the date
      */
     List<AdoptionRequest> getApprovedAfter(LocalDate date);
+
+    /**
+     * Returns every adoption request currently persisted in the system.
+     * Returns an empty list if no requests have been submitted.
+     * Used by the presentation layer to render a full snapshot of the adoption queue.
+     *
+     * @return a list of all adoption requests
+     */
+    List<AdoptionRequest> listAll();
 }

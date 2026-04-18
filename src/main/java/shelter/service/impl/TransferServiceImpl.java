@@ -166,4 +166,13 @@ public class TransferServiceImpl implements TransferService {
         // The repository query covers both from-shelter and to-shelter in one call
         return requestRepository.findByShelterIdAndStatus(shelter.getId(), RequestStatus.PENDING);
     }
+
+    /**
+     * {@inheritDoc}
+     * Delegates directly to the underlying repository's {@code findAll} query.
+     */
+    @Override
+    public List<TransferRequest> listAll() {
+        return requestRepository.findAll();
+    }
 }

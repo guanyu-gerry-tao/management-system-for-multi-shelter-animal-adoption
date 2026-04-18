@@ -1,14 +1,76 @@
 # Live Test Plan (Claude Agent)
 
-Full end-to-end verification before demo. Claude Code acts as AI agent — interpreting natural language and executing `shelter` CLI commands.
+Full end-to-end verification before demo. Claude Code acts as AI agent — interpreting natural language and executing `shelter` CLI commands. A live markdown dashboard (`shelter print --watch`) renders system state to `~/shelter/dashboard.md` so the audience sees every mutation update within ~1 second.
 
-**Setup** (run from project root `management-system-for-multi-shelter-animal-adoption/`):
+---
+
+## Setup — full clean reinstall + dashboard
+
+Run once before a live demo. This rebuilds the binary, wipes any previous session, refreshes the agent's `CLAUDE.md` context file (which lists all commands the agent is allowed to run), and opens the three demo panes.
+
+### 0. Clean state
+
 ```bash
+# From project root. Shell the command opens here is irrelevant — it uses absolute paths.
+PROJECT_DIR="$HOME/developers/NU-coursework/management-system-for-multi-shelter-animal-adoption"
+cd "$PROJECT_DIR"
+
+# Build the distributable binary.
 ./gradlew installDist
-export PATH="$PWD/build/install/shelter/bin:$PATH"
-rm -rf ~/shelter/data
+
+# Make `shelter` available in every new terminal (persistent — run once, then reopen terminals).
+SHELTER_BIN="$PROJECT_DIR/build/install/shelter/bin"
+grep -q "$SHELTER_BIN" ~/.zshrc || \
+    echo "export PATH=\"$SHELTER_BIN:\$PATH\"" >> ~/.zshrc
+export PATH="$SHELTER_BIN:$PATH"
+
+# Wipe previous session data AND the stale CLAUDE.md (it is regenerated on next `shelter` run).
+rm -rf ~/shelter/data ~/shelter/CLAUDE.md ~/shelter/dashboard.md
+
+# Confirm the binary works AND regenerate CLAUDE.md + data dir.
 shelter --version
+shelter print    # prints 8 empty sections; also triggers bootstrap of ~/shelter/CLAUDE.md
 ```
+
+Expected: `shelter --version` prints `1.0`. `ls ~/shelter/` shows `CLAUDE.md` and `data/`. The `CLAUDE.md` file now documents `shelter print`, `shelter adopt list`, `shelter transfer list`, and `shelter vaccine list` so the agent knows they exist.
+
+### 1. Start the live dashboard watcher (Pane A — terminal, bottom-left)
+
+```bash
+shelter print --watch
+# → "Watching /Users/<you>/shelter/data, writing /Users/<you>/shelter/dashboard.md (Ctrl+C to stop)"
+```
+
+Leave this running for the entire demo. Every CSV change triggers a rewrite within 1s.
+
+### 2. Open the dashboard preview (Pane B — VS Code, top-left)
+
+```bash
+code ~/shelter/dashboard.md
+```
+
+Inside VS Code: `Cmd+K V` to open the markdown preview. Drag the preview tab to a side-pane and close the raw-markdown editor so only the rendered view is visible.
+
+### 3. Launch Claude Code in the shelter directory (Pane C — terminal, right half)
+
+```bash
+cd ~/shelter
+claude
+```
+
+Critical: `cd ~/shelter` first so Claude Code picks up `~/shelter/CLAUDE.md` as its instructions. That file tells the agent the full CLI surface, confirmation rules, and output conventions.
+
+Smoke test once Claude Code is running:
+```
+Show me everything we have right now.
+```
+Expected: the agent runs `shelter print` and produces the 8-section snapshot with `(none)` markers in every section. The dashboard preview already shows the same content. If the agent lists entities via separate `list` commands instead of `shelter print`, the `CLAUDE.md` refresh didn't take — re-run the last two lines of step 0.
+
+---
+
+## Visual checkpoint during every phase below
+
+After each command the agent runs, glance at **Pane B** (the preview). The affected section should update within a second. If it doesn't, something is wrong before you proceed to the next step.
 
 ---
 

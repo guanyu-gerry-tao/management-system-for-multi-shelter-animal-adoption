@@ -2,6 +2,8 @@ package shelter.application;
 
 import shelter.domain.TransferRequest;
 
+import java.util.List;
+
 /**
  * Application service for the inter-shelter transfer request lifecycle.
  * Orchestrates availability checks, capacity validation, notifications, and audit logging
@@ -44,4 +46,13 @@ public interface TransferApplicationService {
      * @param requestId the ID of the transfer request to cancel; must not be null or blank
      */
     void cancelTransfer(String requestId);
+
+    /**
+     * Returns every transfer request currently in the system.
+     * Returns an empty list if no transfers have been requested.
+     * Used by the {@code shelter print} command to render a system-wide snapshot.
+     *
+     * @return a list of all transfer requests
+     */
+    List<TransferRequest> listAllTransfers();
 }

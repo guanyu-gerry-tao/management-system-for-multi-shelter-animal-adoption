@@ -55,4 +55,13 @@ public interface TransferService {
      * @return a list of pending transfer requests involving the shelter
      */
     List<TransferRequest> getPendingRequests(Shelter shelter);
+
+    /**
+     * Returns every transfer request currently persisted in the system.
+     * Returns an empty list if no transfers have been requested.
+     * Used by the presentation layer to render a full snapshot of the transfer queue.
+     *
+     * @return a list of all transfer requests
+     */
+    List<TransferRequest> listAll();
 }

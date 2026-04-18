@@ -20,7 +20,7 @@ class AuditIntegrationTest extends CliIntegrationTest {
     void log_noActions_printsEmptyMessage() throws Exception {
         RunResult r = run("audit", "log");
         assertSuccess(r);
-        assertOutputContains(r, "Audit log is empty.");
+        assertOutputContains(r, "(none)");
     }
 
     /**
@@ -39,7 +39,7 @@ class AuditIntegrationTest extends CliIntegrationTest {
                 "--age", "3", "--activity", "HIGH", "--shelter", shelterId);
         RunResult r = run("audit", "log");
         assertSuccess(r);
-        assertOutputDoesNotContain(r, "Audit log is empty.");
+        assertOutputDoesNotContain(r, "(none)");
     }
 
     /**
@@ -64,6 +64,6 @@ class AuditIntegrationTest extends CliIntegrationTest {
         run("adopt", "submit", "--adopter", adopterId, "--animal", animalId);
         RunResult r = run("audit", "log");
         assertSuccess(r);
-        assertOutputDoesNotContain(r, "Audit log is empty.");
+        assertOutputDoesNotContain(r, "(none)");
     }
 }

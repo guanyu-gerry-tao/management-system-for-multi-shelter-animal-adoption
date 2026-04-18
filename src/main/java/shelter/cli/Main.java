@@ -23,6 +23,7 @@ import java.nio.file.Path;
                 MatchCmd.class,
                 VaccineCmd.class,
                 AuditCmd.class,
+                PrintCmd.class,
                 CommandLine.HelpCommand.class
         },
         mixinStandardHelpOptions = true,
@@ -37,7 +38,7 @@ public class Main implements Runnable {
     @Override
     public void run() {
         System.out.println("Usage: shelter <subcommand> --help");
-        System.out.println("Subcommands: shelter, animal, adopter, adopt, transfer, match, vaccine, audit");
+        System.out.println("Subcommands: shelter, animal, adopter, adopt, transfer, match, vaccine, audit, print");
     }
 
     /**

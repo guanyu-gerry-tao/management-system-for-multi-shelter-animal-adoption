@@ -4,6 +4,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import shelter.domain.Shelter;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -38,31 +39,44 @@ public class ShelterCmd implements Runnable {
     // -------------------------------------------------------------------------
 
     /**
+     * Renders a list of shelters as a comma-headed, space-padded table to the given writer.
+     * Empty input produces the header row followed by {@code (none)} on the next line.
+     * Used by both {@code shelter shelter list} and {@code shelter print}.
+     *
+     * @param out      the writer to print to; must not be null
+     * @param shelters the shelters to render; must not be null (may be empty)
+     */
+    public static void renderList(PrintWriter out, List<Shelter> shelters) {
+        out.printf("%-36s  %-20s  %-20s  %s%n",
+                "ID,", "NAME,", "LOCATION,", "CAPACITY");
+        if (shelters.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (Shelter s : shelters) {
+            out.printf("%-36s  %-20s  %-20s  %d/%d%n",
+                    s.getId(), s.getName(), s.getLocation(),
+                    s.getCurrentCount(), s.getCapacity());
+        }
+        out.flush();
+    }
+
+    /**
      * Lists all registered shelters with their IDs, names, locations, and capacity usage.
-     * Prints a message if no shelters have been registered.
+     * Prints {@code (none)} if no shelters have been registered.
      */
     @Command(name = "list", description = "List all shelters", mixinStandardHelpOptions = true)
     static class ListCmd implements Runnable {
 
         /**
-         * Executes the list operation and prints each shelter's details to stdout.
-         * Prints a message if the system contains no shelters.
+         * Executes the list operation by delegating to {@link ShelterCmd#renderList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
          */
         @Override
         public void run() {
             List<Shelter> shelters = AppContext.get().shelterApp().listShelters();
-            if (shelters.isEmpty()) {
-                System.out.println("No shelters registered.");
-                return;
-            }
-            System.out.printf("%-36s  %-20s  %-20s  %s%n",
-                    "ID", "Name", "Location", "Capacity");
-            System.out.println("-".repeat(90));
-            for (Shelter s : shelters) {
-                System.out.printf("%-36s  %-20s  %-20s  %d/%d%n",
-                        s.getId(), s.getName(), s.getLocation(),
-                        s.getCurrentCount(), s.getCapacity());
-            }
+            renderList(new PrintWriter(System.out, true), shelters);
         }
     }
 

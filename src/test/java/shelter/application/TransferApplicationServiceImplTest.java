@@ -127,6 +127,17 @@ class TransferApplicationServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> service.approveTransfer("missing"));
     }
 
+    @Test
+    void listAllTransfers_returnsDataFromTransferService() {
+        TransferRequest t = new TransferRequest(dog, from, to);
+        transferService.store.put(t.getId(), t);
+
+        List<TransferRequest> all = service.listAllTransfers();
+
+        assertEquals(1, all.size());
+        assertSame(t, all.get(0));
+    }
+
     // -------------------------------------------------------------------------
     // Stubs
     // -------------------------------------------------------------------------
@@ -171,6 +182,11 @@ class TransferApplicationServiceImplTest {
 
         @Override
         public List<TransferRequest> getPendingRequests(Shelter s) {
+            return new ArrayList<>(store.values());
+        }
+
+        @Override
+        public List<TransferRequest> listAll() {
             return new ArrayList<>(store.values());
         }
     }

@@ -203,4 +203,13 @@ public class AdoptionServiceImpl implements AdoptionService {
                 .filter(r -> r.getSubmittedAt().toLocalDate().isAfter(date))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * {@inheritDoc}
+     * Delegates directly to the underlying repository's {@code findAll} query.
+     */
+    @Override
+    public List<AdoptionRequest> listAll() {
+        return requestRepository.findAll();
+    }
 }
