@@ -26,6 +26,12 @@ import java.util.List;
 public class ShelterCmd implements Runnable {
 
     /**
+     * Creates a new ShelterCmd instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public ShelterCmd() {}
+
+    /**
      * Prints usage help when the subcommand group is invoked without a subcommand.
      * This method is called by Picocli when no subcommand is specified.
      */

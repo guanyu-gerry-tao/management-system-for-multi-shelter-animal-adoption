@@ -9,6 +9,12 @@ import shelter.domain.Animal;
 public abstract class AbstractMatchingStrategy implements IMatchingStrategy {
 
     /**
+     * Constructs a new abstract matching strategy.
+     * Subclasses invoke this constructor implicitly when they are instantiated.
+     */
+    protected AbstractMatchingStrategy() {}
+
+    /**
      * Validates that both inputs are present before a strategy performs any work.
      *
      * @param adopter the adopter being evaluated

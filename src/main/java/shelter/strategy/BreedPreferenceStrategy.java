@@ -10,6 +10,12 @@ import shelter.domain.Animal;
 public class BreedPreferenceStrategy extends AbstractBinaryMatchingStrategy {
 
     /**
+     * Constructs a new BreedPreferenceStrategy instance.
+     * This strategy is stateless and requires no initialization parameters.
+     */
+    public BreedPreferenceStrategy() {}
+
+    /**
      * Returns the matching criterion handled by this strategy.
      *
      * @return {@link MatchingCriterion#BREED}

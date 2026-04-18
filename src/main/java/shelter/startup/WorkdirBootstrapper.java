@@ -177,6 +177,12 @@ public class WorkdirBootstrapper {
             """;
 
     /**
+     * Creates a new WorkdirBootstrapper instance.
+     * This bootstrapper is stateless and sets up the working directory structure on first run.
+     */
+    public WorkdirBootstrapper() {}
+
+    /**
      * Creates the required startup files and folders under the given shelter home directory.
      * Existing user-edited files are preserved so startup is safe to run repeatedly.
      *

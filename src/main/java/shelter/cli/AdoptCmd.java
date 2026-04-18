@@ -27,6 +27,12 @@ import java.util.List;
 public class AdoptCmd implements Runnable {
 
     /**
+     * Creates a new AdoptCmd instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public AdoptCmd() {}
+
+    /**
      * Prints usage help when the subcommand group is invoked without a subcommand.
      * This method is called by Picocli when no subcommand is specified.
      */

@@ -15,6 +15,12 @@ import java.util.Optional;
 public class ShelterAnimalLinker {
 
     /**
+     * Creates a new ShelterAnimalLinker instance.
+     * This linker is stateless and restores in-memory shelter-to-animal associations from repository data.
+     */
+    public ShelterAnimalLinker() {}
+
+    /**
      * Rebuilds shelter-to-animal relationships after CSV data has been loaded.
      *
      * @param repositories the loaded repository bundle

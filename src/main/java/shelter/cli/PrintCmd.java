@@ -30,6 +30,12 @@ import java.time.format.DateTimeFormatter;
 )
 public class PrintCmd implements Runnable {
 
+    /**
+     * Creates a new PrintCmd instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public PrintCmd() {}
+
     private static final String DEFAULT_OUT_NAME = "dashboard.md";
     private static final long POLL_INTERVAL_MS = 1000L;
     private static final DateTimeFormatter CLOCK = DateTimeFormatter.ofPattern("HH:mm:ss");

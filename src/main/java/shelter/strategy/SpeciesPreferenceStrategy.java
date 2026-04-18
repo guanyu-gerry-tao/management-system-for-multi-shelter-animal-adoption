@@ -11,6 +11,12 @@ import shelter.domain.Species;
 public class SpeciesPreferenceStrategy extends AbstractBinaryMatchingStrategy {
 
     /**
+     * Constructs a new SpeciesPreferenceStrategy instance.
+     * This strategy is stateless and requires no initialization parameters.
+     */
+    public SpeciesPreferenceStrategy() {}
+
+    /**
      * Returns the matching criterion handled by this strategy.
      *
      * @return {@link MatchingCriterion#SPECIES}

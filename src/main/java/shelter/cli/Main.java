@@ -32,6 +32,12 @@ import java.nio.file.Path;
 public class Main implements Runnable {
 
     /**
+     * Creates a new Main instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public Main() {}
+
+    /**
      * Prints a brief usage hint when the CLI is invoked with no subcommand.
      * This method is called by Picocli when the user types {@code shelter} with no arguments.
      */

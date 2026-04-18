@@ -29,6 +29,13 @@ import java.util.List;
 public class VaccineCmd implements Runnable {
 
     /**
+     * Creates a new VaccineCmd instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public VaccineCmd() {}
+
+
+    /**
      * Prints usage help when the subcommand group is invoked without a subcommand.
      * This method is called by Picocli when no subcommand is specified.
      */
