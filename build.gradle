@@ -37,3 +37,7 @@ test {
     useJUnitPlatform()
     dependsOn installDist
 }
+
+javadoc {
+    destinationDir = file("$rootDir/javadoc")
+}
