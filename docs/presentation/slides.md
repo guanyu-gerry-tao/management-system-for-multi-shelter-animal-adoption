@@ -278,6 +278,26 @@ public class TransferRequest {
 
 ---
 
+## Slide 10 — Thank you + Citations
+
+**Layout:** title + bullets
+
+**Kicker:** Thank you
+
+**Title:** Questions?
+
+**Citations:**
+- Picocli — https://picocli.info/
+- JUnit 5 User Guide — https://junit.org/junit5/docs/current/user-guide/
+- Gradle Application Plugin — https://docs.gradle.org/current/userguide/application_plugin.html
+- Gamma et al., *Design Patterns* — Strategy — https://en.wikipedia.org/wiki/Strategy_pattern
+- Oracle Java SE 17 API — https://docs.oracle.com/en/java/javase/17/docs/api/
+- reveal.js 5.1 — https://revealjs.com/
+
+**Speaker notes:** Holds the screen during Q&A so citations stay visible. No spoken content — covered by Q&A time.
+
+---
+
 ## Q&A (not a slide — 2 minutes)
 
 Likely questions to pre-think:
