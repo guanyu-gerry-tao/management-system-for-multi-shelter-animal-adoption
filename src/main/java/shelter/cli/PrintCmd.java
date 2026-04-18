@@ -5,6 +5,7 @@ import picocli.CommandLine.Option;
 import shelter.cli.print.DataDirHash;
 import shelter.cli.print.MarkdownRenderer;
 import shelter.cli.print.SnapshotRenderer;
+import shelter.startup.SystemStartupImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,12 +91,37 @@ public class PrintCmd implements Runnable {
             String currentHash = DataDirHash.compute(dataDir);
             // Only rewrite when the CSV byte-content has actually changed
             if (!currentHash.equals(lastHash)) {
-                writeAtomically(outPath, new MarkdownRenderer(AppContext.get()).render());
+                writeAtomically(outPath, renderFreshMarkdown(shelterHome));
                 System.out.println("[" + LocalTime.now().format(CLOCK) + "] updated");
                 lastHash = currentHash;
             }
             Thread.sleep(POLL_INTERVAL_MS);
         }
+    }
+
+    /**
+     * Builds a fresh {@link SystemStartupImpl} bound to {@code shelterHome} and renders
+     * the markdown dashboard from it. Rebuilding the graph each tick ensures the dashboard
+     * reflects CSV writes made by other {@code shelter} processes during the watch,
+     * avoiding stale in-memory state from the cached CLI application graph.
+     *
+     * @param shelterHome the base shelter home directory
+     * @return the rendered markdown dashboard
+     */
+    private static String renderFreshMarkdown(Path shelterHome) {
+        SystemStartupImpl fresh = new SystemStartupImpl(shelterHome);
+        fresh.initialize();
+        SnapshotRenderer snap = new SnapshotRenderer(
+                () -> fresh.shelterApp().listShelters(),
+                () -> fresh.animalApp().listAnimalsWithShelterName(null),
+                () -> fresh.adopterApp().listAdopters(),
+                () -> fresh.adoptionApp().listAllRequests(),
+                () -> fresh.transferApp().listAllTransfers(),
+                () -> fresh.vaccinationApp().listVaccineTypes(),
+                () -> fresh.vaccinationApp().listAllVaccinationRecords(),
+                () -> fresh.auditApp().getLog()
+        );
+        return new MarkdownRenderer(snap).render();
     }
 
     /**
