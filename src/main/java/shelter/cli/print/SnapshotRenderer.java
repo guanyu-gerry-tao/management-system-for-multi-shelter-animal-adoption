@@ -90,18 +90,27 @@ public final class SnapshotRenderer {
      */
     public SnapshotRenderer(AppContext ctx) {
         this(
-                () -> ctx.shelterApp().listShelters(),
-                () -> ctx.animalApp().listAnimalsWithShelterName(null),
-                () -> ctx.adopterApp().listAdopters(),
-                () -> ctx.adoptionApp().listAllRequests(),
-                () -> ctx.transferApp().listAllTransfers(),
-                () -> ctx.vaccinationApp().listVaccineTypes(),
-                () -> ctx.vaccinationApp().listAllVaccinationRecords(),
-                () -> ctx.auditApp().getLog()
+                () -> requireCtx(ctx).shelterApp().listShelters(),
+                () -> requireCtx(ctx).animalApp().listAnimalsWithShelterName(null),
+                () -> requireCtx(ctx).adopterApp().listAdopters(),
+                () -> requireCtx(ctx).adoptionApp().listAllRequests(),
+                () -> requireCtx(ctx).transferApp().listAllTransfers(),
+                () -> requireCtx(ctx).vaccinationApp().listVaccineTypes(),
+                () -> requireCtx(ctx).vaccinationApp().listAllVaccinationRecords(),
+                () -> requireCtx(ctx).auditApp().getLog()
         );
+        requireCtx(ctx);
+    }
+
+    /**
+     * Returns {@code ctx} if non-null; otherwise throws {@link IllegalArgumentException}.
+     * Used to fail fast both at construction time and at first lambda invocation.
+     */
+    private static AppContext requireCtx(AppContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("AppContext must not be null.");
         }
+        return ctx;
     }
 
     /**

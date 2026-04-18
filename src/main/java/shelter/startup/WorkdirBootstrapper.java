@@ -90,12 +90,16 @@ public class WorkdirBootstrapper {
             - `shelter adopter remove --id <adopter-id>`
 
             Adopt:
+            - `shelter adopt list`
+              (columns: ID / Adopter / Animal / Status / Submitted At)
             - `shelter adopt submit --adopter <adopter-id> --animal <animal-id>`
             - `shelter adopt approve --request <request-id>`
             - `shelter adopt reject --request <request-id>`
             - `shelter adopt cancel --request <request-id>`
 
             Transfer:
+            - `shelter transfer list`
+              (columns: ID / Animal / From / To / Status / Requested At)
             - `shelter transfer request --animal <animal-id> --from <source-shelter-id> --to <destination-shelter-id>`
             - `shelter transfer approve --request <request-id>`
             - `shelter transfer reject --request <request-id>`
@@ -106,6 +110,8 @@ public class WorkdirBootstrapper {
             - `shelter match adopter --animal <animal-id>`
 
             Vaccine:
+            - `shelter vaccine list`
+              (columns: ID / Animal / Species / Vaccine / Date)
             - `shelter vaccine record --animal <animal-id> --type <vaccine-type-name> --date <yyyy-mm-dd>`
             - `shelter vaccine overdue --animal <animal-id>`
             - `shelter vaccine type list`
@@ -115,6 +121,18 @@ public class WorkdirBootstrapper {
 
             Audit:
             - `shelter audit log`
+
+            Print / Live Dashboard:
+            - `shelter print`
+              Prints the full 8-section system snapshot to stdout
+              (sections: Shelters, Animals, Adopters, Adoption Requests, Transfer Requests,
+              Vaccine Types, Vaccinations, Audit Log).
+            - `shelter print --watch [--out <path>]`
+              Keeps running and rewrites a markdown file whenever CSV contents change.
+              Default output path is `~/shelter/dashboard.md`. Ideal for a demo: open the
+              file with VS Code's markdown preview in a side pane, run this command in a
+              terminal, then run any `shelter` command in another terminal and watch the
+              preview update within a second.
 
             ## Natural Language To CLI Guidance
 
