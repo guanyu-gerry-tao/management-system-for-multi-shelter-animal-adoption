@@ -204,6 +204,89 @@
       color: #94a3b8;
       letter-spacing: 0.05em;
     }
+
+    /* Demo prompt slides (Slides 7a–7d) */
+    .prompt-body {
+      display: flex;
+      gap: 1.5em;
+      align-items: flex-start;
+      width: 100%;
+    }
+    .prompt-left { flex: 0 0 57%; }
+    .prompt-right {
+      flex: 1;
+      padding-left: 1em;
+      border-left: 2px solid #e2e8f0;
+    }
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3em;
+    }
+    .prompt-step {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.42em;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .copy-btn {
+      font-size: 0.42em;
+      padding: 0.2em 0.7em;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #334155;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      line-height: 1.6;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .copy-btn:hover { background: #e2e8f0; }
+    .copy-btn.copied { background: #dcfce7; border-color: #86efac; color: #166534; }
+    .reveal .prompt-text {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 6px;
+      padding: 0.65em 0.85em;
+      font-size: 0.33em;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      font-family: "SF Mono", "Cascadia Code", "Fira Code", monospace;
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .pr-label {
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #0b2545;
+      font-size: 0.44em;
+      font-weight: 700;
+      margin-bottom: 0.15em;
+      margin-top: 0.65em;
+    }
+    .pr-label:first-child { margin-top: 0; }
+    .prompt-right ul { margin: 0 0 0 1em; padding: 0; }
+    .prompt-right ul li { font-size: 0.5em; line-height: 1.4; margin-bottom: 0.12em; color: #334155; }
+    .pr-expect {
+      font-size: 0.49em;
+      color: #166534;
+      background: #f0fdf4;
+      border-left: 3px solid #4ade80;
+      padding: 0.4em 0.7em;
+      border-radius: 0 4px 4px 0;
+      line-height: 1.4;
+    }
+    .warmup-note {
+      font-size: 0.44em;
+      color: #64748b;
+      font-style: italic;
+      margin: -0.15em 0 0.55em;
+    }
   </style>
 </head>
 <body>
@@ -341,22 +424,155 @@ public class TransferRequest {
       <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
     </section>
 
-    <!-- Slide 7 — LIVE DEMO divider -->
-    <section class="demo-slide">
-      <div class="demo-kicker">Demonstration</div>
-      <div class="demo-title">LIVE DEMO</div>
-      <div class="demo-sub">Claude Code operating the <code>shelter</code> CLI</div>
-      <div class="demo-scaffold">
-        <ul>
-          <li>Register 2 shelters.</li>
-          <li>Admit a dog, a cat, a fish (shows <code>Other</code> extensibility).</li>
-          <li>Register an adopter → <code>shelter match animal</code>.</li>
-          <li>Submit + approve adoption.</li>
-          <li>Transfer across shelters.</li>
-          <li>Record vaccine + overdue check + audit log.</li>
-        </ul>
-      </div>
+    <!-- Slide 7a — Demo: Prompt 1 -->
+    <section>
+      <div class="kicker">Demonstration · 1 of 4</div>
+      <h2>Populate the system</h2>
+      <p class="warmup-note">Warm-up first: say "hi" — the agent introduces itself without running any command.</p>
+      <div class="prompt-body">
+        <div class="prompt-left">
+          <div class="prompt-header">
+            <span class="prompt-step">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+<pre class="prompt-text">Register two shelters:
+- "Boston Paws" in Boston, capacity 20
+- "Cambridge Care" in Cambridge, capacity 10
 
+Admit four animals:
+- Buddy — Labrador, 3 years old, activity HIGH, size LARGE, into Boston Paws
+- Luna — Siamese cat, 2 years old, activity LOW, indoor, neutered, into Boston Paws
+- Fluffy — Dutch rabbit, 1 year old, activity MEDIUM, into Boston Paws
+- Max — Golden Retriever, 4 years old, activity MEDIUM, size LARGE, neutered, into Cambridge Care
+
+Register two adopters:
+
+Alice
+- Lives in a house with yard, home most of the day
+- Prefers Labradors, high activity level
+- Requires vaccinated animals
+- Age range 1 to 5
+
+Bob
+- Lives in an apartment, away part of the day
+- Prefers indoor cats, low activity
+- No vaccination requirement, no age limit
+
+Finally print the full system snapshot.</pre>
+        </div>
+        <div class="prompt-right">
+          <div class="pr-label">What it does</div>
+          <ul>
+            <li>Registers 2 shelters (Boston Paws, Cambridge Care)</li>
+            <li>Admits 4 animals: Labrador dog, Siamese cat, Dutch rabbit, Golden Retriever</li>
+            <li>Registers 2 adopters with lifestyle + preferences</li>
+            <li>Prints full system snapshot</li>
+          </ul>
+          <div class="pr-label">Expect</div>
+          <div class="pr-expect">9 confirmations (2 shelters + 4 animals + 2 adopters + 1 print), then snapshot with Shelters / Animals / Adopters populated; everything else (none).</div>
+        </div>
+      </div>
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 7b — Demo: Prompt 2 -->
+    <section>
+      <div class="kicker">Demonstration · 2 of 4</div>
+      <h2>Match → Adopt → Vaccinate</h2>
+      <div class="prompt-body">
+        <div class="prompt-left">
+          <div class="prompt-header">
+            <span class="prompt-step">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+<pre class="prompt-text">Find the best animal in Boston Paws for Alice, submit an adoption request for whichever scored highest, then approve it.
+
+Next, set up the vaccine catalog:
+- Rabies for dogs, valid 365 days
+- Feline FVRCP for cats, valid 365 days
+
+Record two vaccinations: Buddy received Rabies today, and Luna received Feline FVRCP today.
+
+Print the snapshot at the end.</pre>
+        </div>
+        <div class="prompt-right">
+          <div class="pr-label">What it does</div>
+          <ul>
+            <li>Runs <code>shelter match animal</code> for Alice in Boston Paws</li>
+            <li>Submits + approves the adoption for the top-ranked animal</li>
+            <li>Adds 2 vaccine types to the catalog</li>
+            <li>Records 2 vaccinations (Buddy + Luna)</li>
+            <li>Prints snapshot</li>
+          </ul>
+          <div class="pr-label">Expect</div>
+          <div class="pr-expect">Ranked table — Buddy on top; Buddy marked adopted; Vaccine Types + Vaccinations sections populated in snapshot.</div>
+        </div>
+      </div>
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 7c — Demo: Prompt 3 -->
+    <section>
+      <div class="kicker">Demonstration · 3 of 4</div>
+      <h2>Transfer workflow + updates</h2>
+      <div class="prompt-body">
+        <div class="prompt-left">
+          <div class="prompt-header">
+            <span class="prompt-step">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+<pre class="prompt-text">Request a transfer for Luna from Boston Paws to Cambridge Care, then reject that request.
+
+Submit a fresh transfer request for Luna from Boston Paws to Cambridge Care, and approve it this time.
+
+Also make these updates while you're at it:
+- Rename Max to Rocky
+- Change Bob's preferred activity level to MEDIUM
+
+Print the snapshot at the end.</pre>
+        </div>
+        <div class="prompt-right">
+          <div class="pr-label">What it does</div>
+          <ul>
+            <li>Two transfer lifecycles: one rejected, one approved</li>
+            <li>Renames Max → Rocky</li>
+            <li>Updates Bob's activity preference to MEDIUM</li>
+            <li>Prints snapshot</li>
+          </ul>
+          <div class="pr-label">Expect</div>
+          <div class="pr-expect">Luna in Cambridge Care; Transfer Requests shows 1 REJECTED + 1 APPROVED row; animal formerly named Max now reads Rocky.</div>
+        </div>
+      </div>
+      <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
+    </section>
+
+    <!-- Slide 7d — Demo: Prompt 4 -->
+    <section>
+      <div class="kicker">Demonstration · 4 of 4</div>
+      <h2>Error handling + audit log</h2>
+      <div class="prompt-body">
+        <div class="prompt-left">
+          <div class="prompt-header">
+            <span class="prompt-step">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+<pre class="prompt-text">Try three operations that should fail — show me the error message for each:
+1. Submit an adoption request for Bob to adopt Buddy (Buddy is already adopted).
+2. Give Luna the Rabies vaccine (Rabies is for dogs only).
+3. Delete Cambridge Care (it still holds animals).
+
+After that, show me the audit log so we can review every action from this session.</pre>
+        </div>
+        <div class="prompt-right">
+          <div class="pr-label">What it does</div>
+          <ul>
+            <li>Tests 3 intentional failure cases (already adopted, wrong species, shelter non-empty)</li>
+            <li>Displays the full audit log</li>
+          </ul>
+          <div class="pr-label">Expect</div>
+          <div class="pr-expect">3 distinct error messages; system state unchanged after each; then a chronological audit log covering every action from this session.</div>
+        </div>
+      </div>
       <div class="footer">CS 5004 Final — Multi-Shelter Animal Adoption</div>
     </section>
 
@@ -456,6 +672,16 @@ public class TransferRequest {
       const contentW = wrapper.scrollWidth;
       const scale = Math.min(1, availH / contentH, availW / contentW);
       if (scale < 1) wrapper.style.transform = `scale(${scale})`;
+    });
+  }
+
+  function copyPrompt(btn) {
+    const pre = btn.closest('.prompt-left').querySelector('.prompt-text');
+    const text = pre.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
     });
   }
 
