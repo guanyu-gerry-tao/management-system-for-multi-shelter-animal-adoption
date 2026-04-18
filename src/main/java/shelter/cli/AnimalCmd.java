@@ -53,7 +53,7 @@ public class AnimalCmd implements Runnable {
      * @param out   the writer to print to; must not be null
      * @param views the animal views to render; must not be null (may be empty)
      */
-    static void renderList(PrintWriter out, List<AnimalView> views) {
+    public static void renderList(PrintWriter out, List<AnimalView> views) {
         out.printf("%-36s  %-8s  %-12s  %-18s  %-3s  %-8s  %-8s  %-7s  %-7s  %-6s  %-16s  %s%n",
                 "ID,", "SPECIES,", "NAME,", "BREED,", "AGE,", "ACTIVITY,",
                 "NEUTERED,", "INDOOR,", "SIZE,", "FUR,", "SHELTER,", "STATUS");

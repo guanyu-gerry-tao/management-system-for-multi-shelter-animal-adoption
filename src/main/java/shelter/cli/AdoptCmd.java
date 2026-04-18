@@ -47,7 +47,7 @@ public class AdoptCmd implements Runnable {
      * @param out      the writer to print to; must not be null
      * @param requests the requests to render; must not be null (may be empty)
      */
-    static void renderList(PrintWriter out, List<AdoptionRequest> requests) {
+    public static void renderList(PrintWriter out, List<AdoptionRequest> requests) {
         out.printf("%-36s  %-16s  %-14s  %-10s  %s%n",
                 "ID,", "ADOPTER,", "ANIMAL,", "STATUS,", "SUBMITTED AT");
         if (requests.isEmpty()) {

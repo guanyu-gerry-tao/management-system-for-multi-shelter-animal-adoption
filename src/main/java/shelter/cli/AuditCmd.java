@@ -43,7 +43,7 @@ public class AuditCmd implements Runnable {
      * @param entries the audit entries to render; must not be null (may be empty)
      * @param limit   the maximum number of most-recent entries to show; must be positive
      */
-    static void renderLog(PrintWriter out, List<AuditEntry<?>> entries, int limit) {
+    public static void renderLog(PrintWriter out, List<AuditEntry<?>> entries, int limit) {
         out.printf("%-20s  %-12s  %-30s  %s%n",
                 "TIMESTAMP,", "STAFF,", "ACTION,", "TARGET");
         if (entries.isEmpty()) {

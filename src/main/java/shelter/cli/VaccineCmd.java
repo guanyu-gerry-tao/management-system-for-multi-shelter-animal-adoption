@@ -49,7 +49,7 @@ public class VaccineCmd implements Runnable {
      * @param out   the writer to print to; must not be null
      * @param types the vaccine types to render; must not be null (may be empty)
      */
-    static void renderTypeList(PrintWriter out, List<VaccineType> types) {
+    public static void renderTypeList(PrintWriter out, List<VaccineType> types) {
         out.printf("%-36s  %-20s  %-10s  %s%n",
                 "ID,", "NAME,", "SPECIES,", "VALIDITY (DAYS)");
         if (types.isEmpty()) {
@@ -72,8 +72,8 @@ public class VaccineCmd implements Runnable {
      * @param out   the writer to print to; must not be null
      * @param views the vaccination record views to render; must not be null (may be empty)
      */
-    static void renderRecordList(PrintWriter out,
-                                 List<shelter.application.model.VaccinationRecordView> views) {
+    public static void renderRecordList(PrintWriter out,
+                                        List<shelter.application.model.VaccinationRecordView> views) {
         out.printf("%-36s  %-14s  %-8s  %-20s  %s%n",
                 "ID,", "ANIMAL,", "SPECIES,", "VACCINE,", "DATE");
         if (views.isEmpty()) {

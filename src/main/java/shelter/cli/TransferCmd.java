@@ -47,7 +47,7 @@ public class TransferCmd implements Runnable {
      * @param out      the writer to print to; must not be null
      * @param requests the transfer requests to render; must not be null (may be empty)
      */
-    static void renderList(PrintWriter out, List<TransferRequest> requests) {
+    public static void renderList(PrintWriter out, List<TransferRequest> requests) {
         out.printf("%-36s  %-14s  %-14s  %-14s  %-10s  %s%n",
                 "ID,", "ANIMAL,", "FROM,", "TO,", "STATUS,", "REQUESTED AT");
         if (requests.isEmpty()) {

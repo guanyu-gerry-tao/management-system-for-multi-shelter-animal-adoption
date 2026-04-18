@@ -50,7 +50,7 @@ public class AdopterCmd implements Runnable {
      * @param out      the writer to print to; must not be null
      * @param adopters the adopters to render; must not be null (may be empty)
      */
-    static void renderList(PrintWriter out, List<Adopter> adopters) {
+    public static void renderList(PrintWriter out, List<Adopter> adopters) {
         out.printf("%-36s  %-12s  %-17s  %-20s  %-8s  %-12s  %-8s  %-10s  %-7s  %s%n",
                 "ID,", "NAME,", "LIVING SPACE,", "SCHEDULE,",
                 "SPECIES,", "BREED,", "ACTIVITY,", "VACCINATED,", "MIN AGE,", "MAX AGE");

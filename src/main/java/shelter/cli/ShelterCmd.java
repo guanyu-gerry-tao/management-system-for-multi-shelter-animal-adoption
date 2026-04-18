@@ -46,7 +46,7 @@ public class ShelterCmd implements Runnable {
      * @param out      the writer to print to; must not be null
      * @param shelters the shelters to render; must not be null (may be empty)
      */
-    static void renderList(PrintWriter out, List<Shelter> shelters) {
+    public static void renderList(PrintWriter out, List<Shelter> shelters) {
         out.printf("%-36s  %-20s  %-20s  %s%n",
                 "ID,", "NAME,", "LOCATION,", "CAPACITY");
         if (shelters.isEmpty()) {
