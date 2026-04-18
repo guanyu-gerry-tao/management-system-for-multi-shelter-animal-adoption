@@ -269,4 +269,39 @@ class VaccineIntegrationTest extends CliIntegrationTest {
                 "--id", "00000000-0000-0000-0000-000000000000");
         assertOutputContains(r, "Error");
     }
+
+    // -------------------------------------------------------------------------
+    // vaccine list (records)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code shelter vaccine list} on a fresh system exits successfully
+     * and prints the {@code (none)} empty marker.
+     */
+    @Test
+    void vaccineList_emptyByDefault() throws Exception {
+        RunResult r = run("vaccine", "list");
+        assertSuccess(r);
+        assertOutputContains(r, "(none)");
+    }
+
+    /**
+     * Verifies that {@code shelter vaccine list} shows a recorded vaccination's animal name,
+     * vaccine type, and administration date after the full record flow has been exercised.
+     */
+    @Test
+    void vaccineList_showsRecordedVaccinations() throws Exception {
+        String sId = registerShelter();
+        String aId = admitDog("Rex", sId);
+        assertSuccess(run("vaccine", "type", "add",
+                "--name", "Rabies", "--species", "DOG", "--days", "365"));
+        assertSuccess(run("vaccine", "record",
+                "--animal", aId, "--type", "Rabies", "--date", "2026-04-01"));
+
+        RunResult list = run("vaccine", "list");
+        assertSuccess(list);
+        assertOutputContains(list, "Rex");
+        assertOutputContains(list, "Rabies");
+        assertOutputContains(list, "2026-04-01");
+    }
 }

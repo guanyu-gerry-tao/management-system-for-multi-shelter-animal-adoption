@@ -19,6 +19,7 @@ import java.util.List;
         name = "vaccine",
         description = "Manage vaccinations and vaccine types",
         subcommands = {
+                VaccineCmd.ListCmd.class,
                 VaccineCmd.RecordCmd.class,
                 VaccineCmd.OverdueCmd.class,
                 VaccineCmd.TypeCmd.class
@@ -61,6 +62,62 @@ public class VaccineCmd implements Runnable {
                     t.getId(), t.getName(), t.getApplicableSpecies(), t.getValidityDays());
         }
         out.flush();
+    }
+
+    /**
+     * Renders vaccination records as a comma-headed, space-padded table to the given writer.
+     * Empty input prints the header followed by {@code (none)}.
+     * Used by both {@code shelter vaccine list} and {@code shelter print}.
+     *
+     * @param out   the writer to print to; must not be null
+     * @param views the vaccination record views to render; must not be null (may be empty)
+     */
+    static void renderRecordList(PrintWriter out,
+                                 List<shelter.application.model.VaccinationRecordView> views) {
+        out.printf("%-36s  %-14s  %-8s  %-20s  %s%n",
+                "ID,", "ANIMAL,", "SPECIES,", "VACCINE,", "DATE");
+        if (views.isEmpty()) {
+            out.println("(none)");
+            out.flush();
+            return;
+        }
+        for (shelter.application.model.VaccinationRecordView v : views) {
+            out.printf("%-36s  %-14s  %-8s  %-20s  %s%n",
+                    v.getRecord().getId(),
+                    v.getAnimalName(),
+                    v.getSpecies().name(),
+                    v.getVaccineTypeName(),
+                    v.getRecord().getDateAdministered());
+        }
+        out.flush();
+    }
+
+    // -------------------------------------------------------------------------
+    // list (vaccination records)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists every vaccination record in the system, using {@link shelter.application.model.VaccinationRecordView}
+     * to resolve animal and vaccine type display names. Used primarily for demo purposes
+     * and by the {@code shelter print} summary.
+     */
+    @Command(name = "list", description = "List all vaccination records",
+             mixinStandardHelpOptions = true)
+    static class ListCmd implements Runnable {
+
+        /**
+         * Executes the list operation by delegating to {@link VaccineCmd#renderRecordList}.
+         * Writes to stdout via a flushing {@link PrintWriter}.
+         */
+        @Override
+        public void run() {
+            try {
+                renderRecordList(new PrintWriter(System.out, true),
+                        AppContext.get().vaccinationApp().listAllVaccinationRecords());
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
