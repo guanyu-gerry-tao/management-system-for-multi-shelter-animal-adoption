@@ -14,6 +14,12 @@ import java.util.List;
  */
 public class MockExplanationService implements ExplanationService {
 
+    /**
+     * Creates a new MockExplanationService instance.
+     * This service is stateless and produces deterministic output without any external dependencies.
+     */
+    public MockExplanationService() {}
+
     /** Placeholder message shown in every explanation field when no AI service is connected. */
     private static final String NOT_CONNECTED_MESSAGE =
             "AI explanation service is not connected — no explanation available.";

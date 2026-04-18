@@ -15,6 +15,12 @@ import shelter.domain.Animal;
 public class AgePreferenceStrategy extends AbstractRangeMatchingStrategy {
 
     /**
+     * Constructs a new AgePreferenceStrategy instance.
+     * This strategy is stateless and requires no initialization parameters.
+     */
+    public AgePreferenceStrategy() {}
+
+    /**
      * Returns the matching criterion handled by this strategy.
      *
      * @return {@link MatchingCriterion#AGE}

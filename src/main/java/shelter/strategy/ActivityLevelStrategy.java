@@ -14,6 +14,12 @@ import shelter.domain.Animal;
 public class ActivityLevelStrategy extends AbstractOrdinalMatchingStrategy {
 
     /**
+     * Constructs a new ActivityLevelStrategy instance.
+     * This strategy is stateless and requires no initialization parameters.
+     */
+    public ActivityLevelStrategy() {}
+
+    /**
      * Returns the matching criterion handled by this strategy.
      *
      * @return {@link MatchingCriterion#ACTIVITY_LEVEL}

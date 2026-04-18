@@ -60,27 +60,67 @@ public class RepositoryBundle {
         this.auditRepository = Objects.requireNonNull(auditRepository, "Audit repository must not be null.");
     }
 
-    /** @return the shelter repository */
+    /**
+     * Provides access to the shelter repository for loading and persisting shelter records.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the shelter repository
+     */
     public ShelterRepository shelterRepository() { return shelterRepository; }
 
-    /** @return the animal repository */
+    /**
+     * Provides access to the animal repository for loading and persisting animal records.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the animal repository
+     */
     public AnimalRepository animalRepository() { return animalRepository; }
 
-    /** @return the adopter repository */
+    /**
+     * Provides access to the adopter repository for loading and persisting adopter records.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the adopter repository
+     */
     public AdopterRepository adopterRepository() { return adopterRepository; }
 
-    /** @return the adoption request repository */
+    /**
+     * Provides access to the adoption request repository for loading and persisting adoption requests.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the adoption request repository
+     */
     public AdoptionRequestRepository adoptionRequestRepository() { return adoptionRequestRepository; }
 
-    /** @return the transfer request repository */
+    /**
+     * Provides access to the transfer request repository for loading and persisting transfer requests.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the transfer request repository
+     */
     public TransferRequestRepository transferRequestRepository() { return transferRequestRepository; }
 
-    /** @return the vaccine type repository */
+    /**
+     * Provides access to the vaccine type repository for loading and persisting vaccine type definitions.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the vaccine type repository
+     */
     public VaccineTypeRepository vaccineTypeRepository() { return vaccineTypeRepository; }
 
-    /** @return the vaccination record repository */
+    /**
+     * Provides access to the vaccination record repository for loading and persisting individual vaccination events.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the vaccination record repository
+     */
     public VaccinationRecordRepository vaccinationRecordRepository() { return vaccinationRecordRepository; }
 
-    /** @return the audit repository */
+    /**
+     * Provides access to the audit repository for appending and retrieving audit log entries.
+     * Returns the instance supplied to this bundle at construction time.
+     *
+     * @return the audit repository
+     */
     public AuditRepository auditRepository() { return auditRepository; }
 }

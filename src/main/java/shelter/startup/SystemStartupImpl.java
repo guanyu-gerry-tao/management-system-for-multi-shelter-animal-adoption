@@ -107,47 +107,92 @@ public class SystemStartupImpl implements SystemStartup {
         applicationGraph = ApplicationGraph.from(repositories);
     }
 
-    /** @return the animal application service */
+    /**
+     * Provides access to the animal application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the animal application service
+     */
     public AnimalApplicationService animalApp() {
         return graph().animalApp();
     }
 
-    /** @return the adopter application service */
+    /**
+     * Provides access to the adopter application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the adopter application service
+     */
     public AdopterApplicationService adopterApp() {
         return graph().adopterApp();
     }
 
-    /** @return the shelter application service */
+    /**
+     * Provides access to the shelter application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the shelter application service
+     */
     public ShelterApplicationService shelterApp() {
         return graph().shelterApp();
     }
 
-    /** @return the adoption request application service */
+    /**
+     * Provides access to the adoption application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the adoption request application service
+     */
     public AdoptionApplicationService adoptionApp() {
         return graph().adoptionApp();
     }
 
-    /** @return the transfer request application service */
+    /**
+     * Provides access to the transfer application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the transfer request application service
+     */
     public TransferApplicationService transferApp() {
         return graph().transferApp();
     }
 
-    /** @return the matching application service */
+    /**
+     * Provides access to the matching application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the matching application service
+     */
     public MatchingApplicationService matchingApp() {
         return graph().matchingApp();
     }
 
-    /** @return the vaccination application service */
+    /**
+     * Provides access to the vaccination application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the vaccination application service
+     */
     public VaccinationApplicationService vaccinationApp() {
         return graph().vaccinationApp();
     }
 
-    /** @return the audit application service */
+    /**
+     * Provides access to the audit application service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the audit application service
+     */
     public AuditApplicationService auditApp() {
         return graph().auditApp();
     }
 
-    /** @return the explanation service */
+    /**
+     * Provides access to the explanation service, initializing the system if not yet started.
+     * Delegates retrieval to the fully wired {@link ApplicationGraph}.
+     *
+     * @return the explanation service
+     */
     public ExplanationService explanationService() {
         return graph().explanationService();
     }

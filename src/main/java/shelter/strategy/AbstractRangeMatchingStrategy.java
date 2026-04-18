@@ -9,6 +9,12 @@ import shelter.domain.Animal;
 public abstract class AbstractRangeMatchingStrategy extends AbstractMatchingStrategy {
 
     /**
+     * Constructs a new abstract range matching strategy.
+     * Subclasses invoke this constructor implicitly when they are instantiated.
+     */
+    protected AbstractRangeMatchingStrategy() {}
+
+    /**
      * Scores the adopter-animal pair using the subclass-provided distance from the
      * preferred range.
      *

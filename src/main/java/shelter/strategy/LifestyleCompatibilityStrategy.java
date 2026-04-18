@@ -20,6 +20,12 @@ import shelter.domain.LivingSpace;
 public class LifestyleCompatibilityStrategy implements IMatchingStrategy {
 
     /**
+     * Constructs a new LifestyleCompatibilityStrategy instance.
+     * This strategy is stateless and requires no initialization parameters.
+     */
+    public LifestyleCompatibilityStrategy() {}
+
+    /**
      * Returns the matching criterion handled by this strategy.
      *
      * @return {@link MatchingCriterion#LIFESTYLE}

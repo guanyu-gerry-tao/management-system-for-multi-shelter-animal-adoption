@@ -9,6 +9,12 @@ import shelter.domain.Animal;
 public abstract class AbstractOrdinalMatchingStrategy extends AbstractMatchingStrategy {
 
     /**
+     * Constructs a new abstract ordinal matching strategy.
+     * Subclasses invoke this constructor implicitly when they are instantiated.
+     */
+    protected AbstractOrdinalMatchingStrategy() {}
+
+    /**
      * Scores the adopter-animal pair using the ordinal distance supplied by the subclass.
      *
      * @param adopter the adopter being evaluated

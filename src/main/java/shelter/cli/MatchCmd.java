@@ -23,6 +23,12 @@ import java.util.List;
 public class MatchCmd implements Runnable {
 
     /**
+     * Creates a new MatchCmd instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public MatchCmd() {}
+
+    /**
      * Prints usage help when the subcommand group is invoked without a subcommand.
      * This method is called by Picocli when no subcommand is specified.
      */

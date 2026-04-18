@@ -19,6 +19,12 @@ import java.nio.file.Path;
 public class CsvRepositoryFactory {
 
     /**
+     * Creates a new CsvRepositoryFactory instance.
+     * This factory is stateless and produces CSV-backed repository instances on demand.
+     */
+    public CsvRepositoryFactory() {}
+
+    /**
      * Creates all repositories backed by the given data directory.
      *
      * @param dataDir the directory containing the CSV data files

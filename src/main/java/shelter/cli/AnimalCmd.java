@@ -32,6 +32,12 @@ import java.util.List;
 public class AnimalCmd implements Runnable {
 
     /**
+     * Creates a new AnimalCmd instance.
+     * Picocli instantiates command classes reflectively via the no-arg constructor.
+     */
+    public AnimalCmd() {}
+
+    /**
      * Prints usage help when the subcommand group is invoked without a subcommand.
      * This method is called by Picocli when no subcommand is specified.
      */

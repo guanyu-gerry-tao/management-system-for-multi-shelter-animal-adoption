@@ -10,6 +10,12 @@ import shelter.domain.Animal;
 public abstract class AbstractBinaryMatchingStrategy extends AbstractMatchingStrategy {
 
     /**
+     * Constructs a new abstract binary matching strategy.
+     * Subclasses invoke this constructor implicitly when they are instantiated.
+     */
+    protected AbstractBinaryMatchingStrategy() {}
+
+    /**
      * Returns {@code 1.0} for a binary match and {@code 0.0} otherwise.
      *
      * @param adopter the adopter being evaluated

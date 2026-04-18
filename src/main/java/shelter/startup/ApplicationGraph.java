@@ -76,6 +76,18 @@ public class ApplicationGraph {
 
     /**
      * Constructs the application graph from already-wired application services.
+     * Each parameter is validated to be non-null so that callers receive an early failure
+     * rather than a NullPointerException at first use.
+     *
+     * @param animalAppService the application service for animal use cases
+     * @param adopterAppService the application service for adopter use cases
+     * @param shelterAppService the application service for shelter use cases
+     * @param adoptionAppService the application service for adoption request use cases
+     * @param transferAppService the application service for inter-shelter transfer use cases
+     * @param matchingAppService the application service for animal-adopter matching use cases
+     * @param vaccinationAppService the application service for vaccination use cases
+     * @param auditAppService the application service for audit log retrieval
+     * @param explanationService the service that generates natural-language match summaries
      */
     public ApplicationGraph(AnimalApplicationService animalAppService,
                             AdopterApplicationService adopterAppService,
@@ -212,30 +224,75 @@ public class ApplicationGraph {
                 explanationService);
     }
 
-    /** @return the animal application service */
+    /**
+     * Provides access to the animal application service that orchestrates animal-related use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the animal application service
+     */
     public AnimalApplicationService animalApp() { return animalAppService; }
 
-    /** @return the adopter application service */
+    /**
+     * Provides access to the adopter application service that orchestrates adopter-related use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the adopter application service
+     */
     public AdopterApplicationService adopterApp() { return adopterAppService; }
 
-    /** @return the shelter application service */
+    /**
+     * Provides access to the shelter application service that orchestrates shelter-related use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the shelter application service
+     */
     public ShelterApplicationService shelterApp() { return shelterAppService; }
 
-    /** @return the adoption request application service */
+    /**
+     * Provides access to the adoption application service that orchestrates adoption request use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the adoption request application service
+     */
     public AdoptionApplicationService adoptionApp() { return adoptionAppService; }
 
-    /** @return the transfer request application service */
+    /**
+     * Provides access to the transfer application service that orchestrates inter-shelter transfer use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the transfer request application service
+     */
     public TransferApplicationService transferApp() { return transferAppService; }
 
-    /** @return the matching application service */
+    /**
+     * Provides access to the matching application service that orchestrates animal-adopter matching use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the matching application service
+     */
     public MatchingApplicationService matchingApp() { return matchingAppService; }
 
-    /** @return the vaccination application service */
+    /**
+     * Provides access to the vaccination application service that orchestrates vaccination use cases.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the vaccination application service
+     */
     public VaccinationApplicationService vaccinationApp() { return vaccinationAppService; }
 
-    /** @return the audit application service */
+    /**
+     * Provides access to the audit application service used to retrieve the system audit log.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the audit application service
+     */
     public AuditApplicationService auditApp() { return auditAppService; }
 
-    /** @return the explanation service */
+    /**
+     * Provides access to the explanation service used to generate natural-language match summaries.
+     * Returns the instance stored in this graph during construction.
+     *
+     * @return the explanation service
+     */
     public ExplanationService explanationService() { return explanationService; }
 }
