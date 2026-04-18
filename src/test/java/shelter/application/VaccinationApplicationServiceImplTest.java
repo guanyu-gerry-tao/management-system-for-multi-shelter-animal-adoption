@@ -109,6 +109,35 @@ class VaccinationApplicationServiceImplTest {
         assertEquals(1, service.listVaccineTypes().size());
     }
 
+    @Test
+    void listAllVaccinationRecords_bundlesAnimalAndVaccineTypeNames() {
+        VaccinationRecord record = new VaccinationRecord(
+                dog.getId(), rabies.getId(), LocalDate.of(2026, 1, 1));
+        vaccinationService.allRecords.add(record);
+
+        List<shelter.application.model.VaccinationRecordView> views =
+                service.listAllVaccinationRecords();
+
+        assertEquals(1, views.size());
+        shelter.application.model.VaccinationRecordView v = views.get(0);
+        assertSame(record, v.getRecord());
+        assertEquals("Rex", v.getAnimalName());
+        assertEquals("Rabies", v.getVaccineTypeName());
+        assertEquals(Species.DOG, v.getSpecies());
+    }
+
+    @Test
+    void listAllVaccinationRecords_skipsOrphanedRecords() {
+        VaccinationRecord orphan = new VaccinationRecord(
+                "nonexistent-animal", rabies.getId(), LocalDate.of(2026, 1, 1));
+        vaccinationService.allRecords.add(orphan);
+
+        List<shelter.application.model.VaccinationRecordView> views =
+                service.listAllVaccinationRecords();
+
+        assertTrue(views.isEmpty());
+    }
+
     // -------------------------------------------------------------------------
     // Stubs
     // -------------------------------------------------------------------------
@@ -120,6 +149,7 @@ class VaccinationApplicationServiceImplTest {
     private static class StubVaccinationService implements VaccinationService {
 
         int recordCount;
+        final List<VaccinationRecord> allRecords = new ArrayList<>();
 
         @Override
         public void recordVaccination(Animal a, VaccineType v, LocalDate d) {
@@ -144,7 +174,7 @@ class VaccinationApplicationServiceImplTest {
 
         @Override
         public List<VaccinationRecord> listAllRecords() {
-            return List.of();
+            return new ArrayList<>(allRecords);
         }
     }
 

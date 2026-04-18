@@ -1,5 +1,6 @@
 package shelter.application;
 
+import shelter.application.model.VaccinationRecordView;
 import shelter.domain.Species;
 import shelter.domain.VaccineType;
 import shelter.service.model.OverdueVaccination;
@@ -74,4 +75,14 @@ public interface VaccinationApplicationService {
      * @return a list of all {@link VaccineType} entries
      */
     List<VaccineType> listVaccineTypes();
+
+    /**
+     * Returns every vaccination record in the system, each wrapped in a view that
+     * resolves the animal and vaccine type display names. Returns an empty list if
+     * no vaccinations have been recorded. Orphaned records whose referenced animal
+     * or vaccine type can no longer be found are silently skipped.
+     *
+     * @return a list of {@link VaccinationRecordView} entries
+     */
+    List<VaccinationRecordView> listAllVaccinationRecords();
 }
