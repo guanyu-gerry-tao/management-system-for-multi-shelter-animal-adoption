@@ -12,6 +12,8 @@ import shelter.service.RequestNotificationService;
 import shelter.service.ShelterService;
 import shelter.service.TransferService;
 
+import java.util.List;
+
 /**
  * Default implementation of {@link TransferApplicationService} that orchestrates
  * inter-shelter transfer requests across the service layer.
@@ -111,6 +113,15 @@ public class TransferApplicationServiceImpl implements TransferApplicationServic
         TransferRequest request = findRequestById(requestId);
         transferService.dismiss(request);
         auditService.log("cancelled transfer", request);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Delegates to the underlying {@link shelter.service.TransferService}.
+     */
+    @Override
+    public List<TransferRequest> listAllTransfers() {
+        return transferService.listAll();
     }
 
     /**
