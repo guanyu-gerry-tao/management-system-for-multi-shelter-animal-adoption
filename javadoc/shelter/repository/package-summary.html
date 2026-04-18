@@ -67,6 +67,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="horizontal-scroll">
 <div class="package-signature">package <span class="element-name">shelter.repository</span></div>
+<section class="package-description" id="package-description">
+<div class="block">Repository interfaces that abstract persistent storage for each aggregate root.
+ Service-layer code depends only on these interfaces, keeping business logic
+ independent of the underlying storage format (CSV, in-memory, or otherwise).</div>
+</section>
 </div>
 <section class="summary">
 <ul class="summary-list">
@@ -77,7 +82,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="csv/package-summary.html">shelter.repository.csv</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">CSV-backed implementations of the repository interfaces.</div>
+</div>
 </div>
 </div>
 </li>
