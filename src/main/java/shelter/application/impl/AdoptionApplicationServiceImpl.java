@@ -11,6 +11,8 @@ import shelter.service.AnimalService;
 import shelter.service.AuditService;
 import shelter.service.RequestNotificationService;
 
+import java.util.List;
+
 /**
  * Default implementation of {@link AdoptionApplicationService} that orchestrates
  * the full adoption request lifecycle: submit, approve, reject, and cancel.
@@ -114,6 +116,15 @@ public class AdoptionApplicationServiceImpl implements AdoptionApplicationServic
         adoptionService.cancel(request);
         notificationService.notifyAdoptionStatusChange(request);
         auditService.log("cancelled adoption request", request);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Delegates to the underlying {@link shelter.service.AdoptionService}.
+     */
+    @Override
+    public List<AdoptionRequest> listAllRequests() {
+        return adoptionService.listAll();
     }
 
     /**

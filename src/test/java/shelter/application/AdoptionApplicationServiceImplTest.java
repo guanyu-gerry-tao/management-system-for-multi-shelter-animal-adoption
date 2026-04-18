@@ -122,6 +122,17 @@ class AdoptionApplicationServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> service.approveRequest("missing"));
     }
 
+    @Test
+    void listAllRequests_returnsDataFromAdoptionService() {
+        AdoptionRequest request = new AdoptionRequest(adopter, dog);
+        adoptionService.store.put(request.getId(), request);
+
+        List<AdoptionRequest> all = service.listAllRequests();
+
+        assertEquals(1, all.size());
+        assertSame(request, all.get(0));
+    }
+
     // -------------------------------------------------------------------------
     // Stubs
     // -------------------------------------------------------------------------
