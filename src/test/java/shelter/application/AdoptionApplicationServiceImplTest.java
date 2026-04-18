@@ -190,6 +190,11 @@ class AdoptionApplicationServiceImplTest {
         public List<AdoptionRequest> getApprovedAfter(LocalDate d) {
             return List.of();
         }
+
+        @Override
+        public List<AdoptionRequest> listAll() {
+            return new ArrayList<>(store.values());
+        }
     }
 
     /**

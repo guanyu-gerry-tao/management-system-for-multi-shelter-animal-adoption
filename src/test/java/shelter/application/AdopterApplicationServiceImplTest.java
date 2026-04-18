@@ -188,6 +188,7 @@ class AdopterApplicationServiceImplTest {
         @Override public List<shelter.domain.AdoptionRequest> getRequestsByAnimal(Animal a) { return List.of(); }
         @Override public List<shelter.domain.AdoptionRequest> getRequestsAfter(java.time.LocalDate d) { return List.of(); }
         @Override public List<shelter.domain.AdoptionRequest> getApprovedAfter(java.time.LocalDate d) { return List.of(); }
+        @Override public List<shelter.domain.AdoptionRequest> listAll() { return List.of(); }
     }
 
     /**
