@@ -215,4 +215,38 @@ class AdoptionIntegrationTest extends CliIntegrationTest {
         RunResult r = run("adopt", "cancel", "--request", requestId);
         assertOutputContains(r, "Error");
     }
+
+    // -------------------------------------------------------------------------
+    // adopt list
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code shelter adopt list} on a fresh system exits successfully
+     * and prints the comma header plus the empty {@code (none)} marker.
+     */
+    @Test
+    void adoptList_emptyByDefault() throws Exception {
+        RunResult r = run("adopt", "list");
+        assertSuccess(r);
+        assertOutputContains(r, "ID,");
+        assertOutputContains(r, "(none)");
+    }
+
+    /**
+     * Verifies that {@code shelter adopt list} shows a submitted request's adopter, animal,
+     * and PENDING status after the full submit flow has been exercised.
+     */
+    @Test
+    void adoptList_showsSubmittedRequest() throws Exception {
+        String shelterId = registerShelter();
+        String adopterId = registerAdopter("Alice");
+        String animalId = admitDog(shelterId, "Rex");
+        assertSuccess(run("adopt", "submit", "--adopter", adopterId, "--animal", animalId));
+
+        RunResult list = run("adopt", "list");
+        assertSuccess(list);
+        assertOutputContains(list, "Rex");
+        assertOutputContains(list, "Alice");
+        assertOutputContains(list, "PENDING");
+    }
 }
