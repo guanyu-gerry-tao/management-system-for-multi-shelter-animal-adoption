@@ -8,13 +8,16 @@ bash scripts/init-demo.sh         # wipes ~/shelter, builds, regenerates CLAUDE.
 shelter print --watch &           # Pane A — watcher
 code ~/shelter/dashboard.md       # Pane B — Cmd+K V for markdown preview
 cd ~/shelter && claude            # Pane C — agent picks up ~/shelter/CLAUDE.md
+# Pane D — presentation deck (flip to the matching prompt slide during each step)
+cd <project>/docs/presentation && python3 -m http.server 8765 &
+open http://localhost:8765/deck.html   # navigate to slide 7/12 to start
 ```
 
 Warm-up (not counted): just say `hi` to the agent. It should introduce itself as the shelter management assistant without running any command.
 
 ---
 
-**1 — Populate the system: shelters, animals, adopters**
+**1 — Populate the system: shelters, animals, adopters** *(deck: slide 7/12)*
 ```
 Register two shelters:
 - "Boston Paws" in Boston, capacity 20
@@ -45,7 +48,7 @@ Finally print the full system snapshot.
 
 ---
 
-**2 — Match, adopt, vaccinate**
+**2 — Match, adopt, vaccinate** *(deck: slide 8/12)*
 ```
 Find the best animal in Boston Paws for Alice, submit an adoption request for whichever scored highest, then approve it.
 
@@ -61,7 +64,7 @@ Print the snapshot at the end.
 
 ---
 
-**3 — Transfer workflow with a rejection, plus updates**
+**3 — Transfer workflow with a rejection, plus updates** *(deck: slide 9/12)*
 ```
 Request a transfer for Luna from Boston Paws to Cambridge Care, then reject that request.
 
@@ -77,7 +80,7 @@ Print the snapshot at the end.
 
 ---
 
-**4 — Errors, then audit log wrap-up**
+**4 — Errors, then audit log wrap-up** *(deck: slide 10/12)*
 ```
 Try three operations that should fail — show me the error message for each:
 1. Submit an adoption request for Bob to adopt Buddy (Buddy is already adopted).
