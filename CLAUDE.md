@@ -5,7 +5,25 @@
 **Course**: CS 5004, Northeastern University
 **Type**: Final Project (Java OOD)
 **Deadline**: 2026-04-21 12:00 PM PT (final GitHub push)
-**Presentation**: 2026-04-21 1:00–4:00 PM (in-class demo + Q&A)
+**Presentation**: 2026-04-21 1:00–4:20 PM PT (in-class demo + Q&A via Zoom)
+
+### Presentation rules (hard constraints)
+
+- **10 minutes per group: 8-min presentation + 2-min Q&A.** Hard stop at 8 min — anything not presented loses points.
+- Groups sign up for a time slot on Canvas (first-come, first-served). Must be logged into Zoom **before 1:00 PM**.
+- All group members must participate roughly equally.
+- The deck must cover these 9 required sections (rubric awards points per section):
+  1. Goals & Rationale
+  2. Demo of the project in operation
+  3. Methods & Tools Used
+  4. Walk-through of a small portion of code
+  5. Findings and Lessons Learned
+  6. Limitations and Future Extensions
+  7. Highlights of 1–2 big OOD ideas
+  8. Scholarly Citations
+  9. Q&A
+
+Budget ~50 sec per required item against the 8-min total — every slide must be dense but readable in under a minute. When proposing content for any slide, name which of the 9 required items it satisfies.
 
 The goal is a Java-based multi-shelter animal adoption management system that demonstrates object-oriented design principles. The system is operated via a CLI tool called `shelter` and is designed to be demoed using an AI agent (Claude Code) that interprets natural language and executes CLI commands.
 
@@ -20,6 +38,11 @@ Service Layer       ←  single-responsibility business operations
 Strategy Layer      ←  pluggable scoring rules (MatchingStrategy...)
 Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionRequest...)
 ```
+
+Three supporting packages sit beneath these logical layers and are part of the repository:
+- `shelter.repository` — repository interfaces and their CSV implementations (`shelter.repository.csv.*`) that persist data under `~/shelter/data/`
+- `shelter.startup` — boot sequence: work-directory bootstrap, CSV repository factory, and the application graph wiring everything together
+- `shelter.exception` — custom exception types used across the other layers
 
 **Domain Layer** (`shelter.domain`):
 - `Animal` (abstract base) → `Dog`, `Cat`, `Rabbit`, `Other` (free-form species name)
@@ -41,7 +64,8 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 - `VaccinationService`: records vaccinations, checks overdue, retrieves history
 - `VaccineTypeCatalogService`: CRUD for vaccine types
 - `RequestNotificationService`: dispatches status change notifications
-- `ExplanationService` (interface) → `AIExplanationService` / `MockExplanationService`
+- `ExplanationService` (interface) → `MockExplanationService` (the only implementation today; returns a fixed "AI explanation service is not connected" message. A real AI-backed implementation is a planned extension, not yet in code.)
+- `VaccinationInfoProvider`: read-only helper interface used by matching to check an animal's vaccination status
 - `AnimalService`, `AdopterService`, `ShelterService`, `StaffService`, `AuditService`
 
 **Application Layer** (`shelter.application`):
@@ -51,7 +75,13 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 - Classes: `AnimalApplicationService`, `AdopterApplicationService`, `ShelterApplicationService`, `AdoptionApplicationService`, `TransferApplicationService`, `MatchingApplicationService`, `VaccinationApplicationService`, `AuditApplicationService`
 
 **Strategy Layer** (`shelter.strategy`):
-- `IMatchingStrategy` (interface) → `SpeciesPreferenceStrategy`, `BreedPreferenceStrategy`, `ActivityLevelStrategy`, `AgePreferenceStrategy`, `LifestyleCompatibilityStrategy`, `VaccinationPreferenceStrategy`
+- `IMatchingStrategy` (interface) with `getCriterion()`, `isApplicable(Adopter, Animal)`, `score(Adopter, Animal)`
+- `AbstractMatchingStrategy` (shared validation + template) with three specialised abstract subclasses:
+  - `AbstractBinaryMatchingStrategy` → `SpeciesPreferenceStrategy`, `BreedPreferenceStrategy` (exact-match 1.0 / 0.0 scoring)
+  - `AbstractRangeMatchingStrategy` → `AgePreferenceStrategy` (distance-from-range scoring)
+  - `AbstractOrdinalMatchingStrategy` → `ActivityLevelStrategy` (ordinal-level distance scoring)
+- Concrete strategies that implement `IMatchingStrategy` directly (no abstract parent because their scoring doesn't fit the three templates): `LifestyleCompatibilityStrategy`, `VaccinationPreferenceStrategy`
+- `MatchingScoreCalculator` — orchestrates applicable strategies for a given (adopter, animal) pair
 - `MatchingCriterion` (enum), `MatchingPreferencesProfile`, `MatchingPreferencesPriority`
 
 **Presentation Layer** (`shelter.cli`):
@@ -138,6 +168,13 @@ shelter vaccine type remove --id <id>
 shelter audit log
 ```
 
+### Print (demo utility — not tied to a use case)
+```
+shelter print                       # one-shot 8-section snapshot to stdout
+shelter print --watch [--out <path>]# polls the data dir; rewrites a markdown file on every CSV change
+```
+Used during the in-class demo to drive a live-updating VS Code preview pane.
+
 ### Demo workflow note
 IDs are not known in advance — always run `list` first to retrieve them. Typical sequence:
 1. `shelter shelter list` → get shelter ID
@@ -192,7 +229,7 @@ For demo purposes, Claude Code is used as the AI agent: the user speaks natural 
   - Example blocks to comment: guard checks, business rule validations, domain delegation, side effects, persistence calls
 - **Testing**: Two levels of tests, both run via `./gradlew test`:
   - **Unit tests**: JUnit, cover normal paths and edge cases; use `MockExplanationService` for AI module tests
-  - **Integration tests**: tagged `@Tag("integration")`, spawn real `shelter` subprocesses via `ProcessBuilder`; isolated via `SHELTER_HOME` env var pointing to a `@TempDir` — the real `~/shelter` directory is never touched; 78 tests covering all UC-01 through UC-08 including error cases
+  - **Integration tests**: live under `src/test/java/shelter/integration/`, extend a common `CliIntegrationTest` base (which carries `@Tag("integration")` and spawns real `shelter` subprocesses via `ProcessBuilder`); isolated via `SHELTER_HOME` env var pointing to a `@TempDir` — the real `~/shelter` directory is never touched; 10 test classes with ~90 test methods covering all UC-01 through UC-08 including error cases
 - **Build**: Gradle with `application` plugin; main class is `shelter.cli.Main`; CLI dependency is Picocli
 
 ### Domain Class Requirements
@@ -218,11 +255,12 @@ Every domain class must implement the following:
 
 ## AI Integration Notes
 
-- `AIExplanationService` calls an external AI API as a post-processing step to generate natural-language match summaries
-- AI does not affect matching scores — scoring logic lives entirely in the Strategy layer
-- Use `MockExplanationService` in tests to ensure deterministic output
-- API keys must never be committed to the repository
-- For demo: Claude Code acts as the AI agent, interpreting natural language and calling `shelter` CLI commands
+- AI enters the system at two seams, only one of which is inside this repository:
+  1. **External natural-language agent (Claude Code)** — the only "AI" used in the demo. The user speaks natural language; Claude Code interprets it and executes the appropriate `shelter` CLI commands. This runs outside the Java code and is not a class in this repository.
+  2. **`ExplanationService` extension point** — a pluggable interface on the service layer for post-processing match results into natural-language summaries. The current repository ships only `MockExplanationService`, which returns a fixed "AI explanation service is not connected" message. An AI-backed implementation (e.g., calling an external LLM API) is a planned extension and is not yet in code.
+- AI does not affect matching scores in any case — scoring logic lives entirely in the Strategy layer and is fully deterministic.
+- `MockExplanationService` is also what tests use, so test output is deterministic.
+- If/when an AI-backed `ExplanationService` implementation is added, API keys must never be committed to the repository.
 
 ---
 
@@ -231,10 +269,12 @@ Every domain class must implement the following:
 - [CONTRIBUTING.md](CONTRIBUTING.md) — team roles, branch strategy, commit conventions
 - [docs/use-cases.md](docs/use-cases.md) — full use case list with application layer method signatures
 - [docs/integration-test-plan.md](docs/integration-test-plan.md) — CLI integration test design and isolation strategy
+- [docs/demo-plan.md](docs/demo-plan.md) / [docs/demo-script.md](docs/demo-script.md) — in-class demo outline and script
+- [docs/test-live.md](docs/test-live.md) — notes on running the demo against a live shelter home
 - [docs/proposal/proposal-for-pdf.md](docs/proposal/proposal-for-pdf.md) — human-readable proposal
-- [docs/diagram-class.mmd](docs/diagram-class.mmd) — class diagram (Mermaid source)
-- [docs/diagram-layer.mmd](docs/diagram-layer.mmd) — layer architecture diagram
-- [docs/Final_Project_Instructions.pdf](docs/Final_Project_Instructions.pdf) — original assignment instructions
+- [docs/proposal/diagram-class.mmd](docs/proposal/diagram-class.mmd) — class diagram (Mermaid source)
+- [docs/proposal/diagram-layer.mmd](docs/proposal/diagram-layer.mmd) — layer architecture diagram (Mermaid source)
+- [docs/proposal/Final_Project_Instructions.pdf](docs/proposal/Final_Project_Instructions.pdf) — original assignment instructions
 
 ---
 
