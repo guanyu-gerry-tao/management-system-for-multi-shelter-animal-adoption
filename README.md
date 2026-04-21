@@ -3,6 +3,31 @@
 **This system is designed to be operated by an AI agent.**
 The user speaks in natural language. Claude Code interprets the intent and executes `shelter` CLI commands on their behalf.
 
+## Getting Started
+
+**Prerequisites:** Java 21+ (Gradle wrapper is included)
+
+```bash
+git clone https://github.com/guanyu-gerry-tao/management-system-for-multi-shelter-animal-adoption.git
+cd management-system-for-multi-shelter-animal-adoption
+
+./install.sh              # builds, creates ~/shelter/, symlinks `shelter` to /usr/local/bin
+shelter --help
+```
+
+`./install.sh` does everything: checks Java 21+, builds via `./gradlew installDist`, creates `~/shelter/` (with `data/`, `CLAUDE.md`, `AGENTS.md`, `.claude/settings.json`), installs a `shelter` symlink under `/usr/local/bin` (prompts for sudo if needed), and drops you into a new shell at `~/shelter/`.
+
+**To use the AI-agent experience** (natural language → `shelter` commands), run `claude` (Claude Code) or `codex` from inside `~/shelter/` after install. The AI agent will read `CLAUDE.md` / `AGENTS.md` and translate your intent into CLI calls.
+
+**To use the CLI directly**, just run `shelter <subcommand>` from any directory — no agent required.
+
+Run all tests:
+```bash
+./gradlew test
+```
+
+Integration tests spawn real `shelter` subprocesses via `ProcessBuilder`, isolated with `SHELTER_HOME` pointing to a `@TempDir` — the real `~/shelter/` is never touched.
+
 ## What This System Is
 
 Animal shelters have a coordination problem. Dozens of animals need homes. Dozens of prospective adopters have different lifestyles, living spaces, and preferences. Animals move between shelters. Vaccines expire. Requests get approved, rejected, cancelled. Someone needs to keep track of all of it.
@@ -146,27 +171,6 @@ Domain Layer        ←  core entities (Animal, Shelter, Adopter, AdoptionReques
 **Matching** is powered by six composable strategies — `SpeciesPreferenceStrategy`, `BreedPreferenceStrategy`, `ActivityLevelStrategy`, `AgePreferenceStrategy`, `LifestyleCompatibilityStrategy`, `VaccinationPreferenceStrategy` — each independently scoreable and combinable. AI explanation runs *after* scoring and does not affect results.
 
 **Animals** support four species: `Dog`, `Cat`, `Rabbit`, and `Other` (free-form species name).
-
-## Getting Started
-
-**Prerequisites:** Java 21+, Gradle (wrapper included)
-
-```bash
-git clone https://github.com/guanyu-gerry-tao/management-system-for-multi-shelter-animal-adoption.git
-cd management-system-for-multi-shelter-animal-adoption
-
-./gradlew installDist
-export PATH="$HOME/shelter/bin:$PATH"
-
-shelter --help
-```
-
-Run all tests:
-```bash
-./gradlew test
-```
-
-Integration tests spawn real `shelter` subprocesses via `ProcessBuilder`, isolated with `SHELTER_HOME` pointing to a `@TempDir` — the real `~/shelter/` is never touched.
 
 ## Project Structure
 
