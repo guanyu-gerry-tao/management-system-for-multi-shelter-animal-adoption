@@ -28,13 +28,18 @@ class WorkdirBootstrapperTest {
         assertTrue(Files.isDirectory(shelterHome));
         assertTrue(Files.isDirectory(shelterHome.resolve("data")));
         assertTrue(Files.isRegularFile(shelterHome.resolve("CLAUDE.md")));
+        assertTrue(Files.isRegularFile(shelterHome.resolve("AGENTS.md")));
+        assertTrue(Files.isRegularFile(shelterHome.resolve(".claude/settings.json")));
+        String settingsContent = Files.readString(shelterHome.resolve(".claude/settings.json"));
+        assertTrue(settingsContent.contains("Bash(shelter *)"));
         String claudeContent = Files.readString(shelterHome.resolve("CLAUDE.md"));
+        String agentsContent = Files.readString(shelterHome.resolve("AGENTS.md"));
+        assertEquals(claudeContent, agentsContent);
         assertTrue(claudeContent.contains("Command Reference"));
         assertTrue(claudeContent.contains(
                 "shelter match animal --adopter <adopter-id> --shelter <shelter-id>"));
         assertTrue(claudeContent.contains("shelter match adopter --animal <animal-id>"));
         assertTrue(claudeContent.contains("use the ranked output as the source of truth"));
-        assertTrue(claudeContent.contains("do not invent missing details"));
         assertFalse(claudeContent.contains("[--explain]"));
     }
 

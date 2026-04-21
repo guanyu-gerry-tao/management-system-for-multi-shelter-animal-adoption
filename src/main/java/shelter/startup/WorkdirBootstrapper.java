@@ -18,7 +18,19 @@ import java.util.Objects;
 public class WorkdirBootstrapper {
 
     private static final String CLAUDE_FILE_NAME = "CLAUDE.md";
+    private static final String AGENTS_FILE_NAME = "AGENTS.md";
     private static final String DATA_DIR_NAME = "data";
+    private static final String CLAUDE_SETTINGS_DIR = ".claude";
+    private static final String CLAUDE_SETTINGS_FILE = "settings.json";
+    private static final String CLAUDE_SETTINGS_TEMPLATE = """
+            {
+              "permissions": {
+                "allow": [
+                  "Bash(shelter *)"
+                ]
+              }
+            }
+            """;
     private static final String CLAUDE_TEMPLATE = """
             # CLAUDE.md - Shelter CLI Demo Context
 
@@ -194,23 +206,27 @@ public class WorkdirBootstrapper {
         try {
             Files.createDirectories(shelterHome);
             Files.createDirectories(shelterHome.resolve(DATA_DIR_NAME));
-            createClaudeFileIfMissing(shelterHome.resolve(CLAUDE_FILE_NAME));
+            Path claudeDir = shelterHome.resolve(CLAUDE_SETTINGS_DIR);
+            Files.createDirectories(claudeDir);
+            writeIfMissing(shelterHome.resolve(CLAUDE_FILE_NAME), CLAUDE_TEMPLATE);
+            writeIfMissing(shelterHome.resolve(AGENTS_FILE_NAME), CLAUDE_TEMPLATE);
+            writeIfMissing(claudeDir.resolve(CLAUDE_SETTINGS_FILE), CLAUDE_SETTINGS_TEMPLATE);
         } catch (IOException e) {
             throw new DataPersistenceException("Failed to bootstrap shelter work directory.", e);
         }
     }
 
-    private void createClaudeFileIfMissing(Path claudeFile) throws IOException {
-        if (Files.exists(claudeFile)) {
+    private void writeIfMissing(Path file, String content) throws IOException {
+        if (Files.exists(file)) {
             return;
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(
-                claudeFile,
+                file,
                 StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE_NEW,
                 StandardOpenOption.WRITE)) {
-            writer.write(CLAUDE_TEMPLATE);
+            writer.write(content);
         }
     }
 }
